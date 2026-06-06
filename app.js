@@ -903,7 +903,6 @@ function flowNext(){
   else if(due.length){const sorted=due.slice().sort((x,y)=>((S.cards[y.id].miss||0)-(S.cards[x.id].miss||0)));
     item=sorted[Math.floor(Math.random()*Math.min(sorted.length,4))];}
   else if(learned.length){item=learned[Math.floor(Math.random()*learned.length)];}
-  else if(newOnes.length){item=newOnes[0];isNew=true;}
   else{$('#flowStage').innerHTML='<div class="flash"><div class="tr">🎉</div><h2>Harika!</h2><p class="muted">You’ve learned every word — reviews will keep them sharp.</p></div>';return;}
   if(isNew)return teachThenTest(item);
   let d=curDiff();const c=card(item.id);if((c.miss||0)>=2)d=Math.min(d,2);

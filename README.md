@@ -25,7 +25,7 @@ Plain HTML/CSS/JS in a single file, [Chart.js](https://www.chartjs.org/) for cha
 
 ## 🧪 Tests
 
-The logic core (SRS scheduler, sync merge engine, speech matching, levels/streaks/chests, flow engine, data integrity) is covered by a zero-dependency Node test suite — **42 tests, >99% line coverage**:
+The logic core (SRS scheduler, sync merge engine, speech matching, levels/streaks/chests, flow engine, data integrity) is covered by a zero-dependency Node test suite — **45 tests, 100% line coverage**:
 
 ```bash
 node --test --experimental-test-coverage app.test.cjs

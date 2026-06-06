@@ -135,6 +135,7 @@ const A = require(utPath);
 
 const today = () => new Date().toISOString().slice(0, 10);
 function freshS() { A.setS(A.blank()); A.ensureQuest(); return A.getS(); }
+function resetChoices() { qa('.choice').forEach(e => { e.dataset = {}; e.textContent = ''; }); return qa('.choice'); }
 
 /* ---------------- data integrity ---------------- */
 test('vocab has unique ids and required fields', () => {
@@ -461,6 +462,14 @@ test('flowNext: all-words-done branch and learned-only fallback', () => {
   A.flowNext(); // learned-only random pick path
   assert.ok(A.getF().n >= 2);
 });
+test('flowNext picks weighted due card when struggling with enough vocabulary', () => {
+  const S = freshS();
+  A.VOCAB.slice(0, 4).forEach(v => S.cards[v.id] = { learned: true, reps: 2, interval: 9, due: '2999-01-01', ease: 2.5, miss: 0 });
+  S.cards[A.VOCAB[4].id] = { learned: true, reps: 2, interval: 0, due: today(), ease: 2.5, miss: 5 };
+  A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [0, 0, 0, 0] });   // struggling → no new word
+  A.flowNext();                                                        // → due-branch weighted pick
+  assert.ok(A.getF().n >= 2);
+});
 
 /* ---------------- practice modes ---------------- */
 test('unit lesson → learn → quiz pipeline executes', async () => {
@@ -610,9 +619,13 @@ test('dialogue + listening choice handlers fire both branches', async () => {
   els = qa('.choice');
   const heardWord = A.getFlow().pool[0];
   els[0].textContent = heardWord.en; els[0].click();       // correct listen
+  await sleep(15);                                          // let the advance timer run while flow is live
   A.listenCard();
-  els = qa('.choice');
-  els[1].textContent = 'WRONG'; els[1].click();            // wrong listen
+  els = resetChoices();
+  const f = A.getFlow();
+  const cur = f.pool[f.n % f.pool.length];
+  els[0].textContent = cur.en;                              // present so highlight body runs
+  els[1].textContent = 'WRONG'; els[1].click();             // wrong listen
   // finished session screens
   A.setFlow({ mode: 'listen', n: 99, total: 8, score: 5, pool: [heardWord] });
   A.listenCard();
@@ -630,12 +643,13 @@ test('flow bindChoices wrong branch + chMC direction 2', async () => {
   A.card(item.id).learned = true;
   A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [] });
   A.chMC(item, 2);                       // EN→TR recall direction
-  let els = qa('.choice');
+  let els = resetChoices();
+  els[0].dataset.val = item.tr;          // present so the highlight loop body runs
   els[2].dataset.val = 'totally-wrong';
-  els[2].click();                        // wrong → combo reset + explain
+  els[2].click();                        // wrong → combo reset + explain + highlight correct
   A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [] });
   A.chMC(item, 1);                       // TR→EN recognise direction
-  els = qa('.choice');
+  els = resetChoices();
   els[0].dataset.val = item.en;
   els[0].click();                        // correct branch via click
   await sleep(30);
@@ -685,4 +699,21 @@ test('keydown listener guards on flow visibility', () => {
   global.__flowKey = () => hit++;
   listeners.doc.keydown({ key: '1' });
   assert.equal(hit, 1);
+});
+test('flowNext "Harika" end-state when every word is mastered', () => {
+  freshS();
+  const saved = A.VOCAB.splice(0, A.VOCAB.length);   // temporarily empty the vocabulary
+  A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [] });
+  A.flowNext();                                       // → celebration end-state branch
+  A.VOCAB.push(...saved);
+  assert.equal(A.VOCAB.length, saved.length, 'vocab restored');
+});
+test('boots straight to guest when Firebase is absent', () => {
+  const savedFb = global.firebase;
+  global.firebase = undefined;
+  delete require.cache[require.resolve(utPath)];
+  lsStore.clear();
+  const B = require(utPath);                          // re-run module top-level → else bootGuest()
+  assert.equal(typeof B.getS().xp, 'number', 'guest state booted');
+  global.firebase = savedFb;
 });
