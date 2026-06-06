@@ -137,7 +137,7 @@ const VOCAB = [
 {id:'b6',tr:'Hasta',en:'Sick / patient',cat:'Health',skill:'Vocabulary',ex:'Bugün hastayım.'},
 {id:'b7',tr:'Doktor',en:'Doctor',cat:'Health',skill:'Vocabulary',ex:'Doktora gidiyorum.'},
 {id:'b8',tr:'İlaç',en:'Medicine',cat:'Health',skill:'Vocabulary',ex:'İlaç içiyorum.'},
-{id:'b9',tr:'Ağrı',en:'Pain / ache',cat:'Health',skill:'Vocabulary',ex:'Karın ağrım var.'},
+{id:'b9',tr:'Ağrı',en:'Pain / ache',cat:'Health',skill:'Vocabulary',ex:'Bu ağrı geçmiyor.'},
 {id:'b10',tr:'Geçmiş olsun',en:'Get well soon',cat:'Health',skill:'Speaking',ex:'Hastaymışsın, geçmiş olsun.'},
 
 /* A1 — U12 Home */
@@ -331,7 +331,7 @@ const UNITS=[
 {id:'U1',lvl:'A1',title:'Selamlaşma — Greetings',desc:'Hello, thanks & goodbye',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12'],
  lesson:{title:'Greetings & politeness',body:'Greetings change by time of day: <b>Günaydın</b> (morning), <b>İyi günler</b> (day), <b>İyi akşamlar</b> (evening). The person leaving says <b>Hoşça kal</b>; the one staying replies <b>Güle güle</b>. “Thank you” is <b>Teşekkür ederim</b>; the reply is <b>Rica ederim</b>.'}},
 {id:'U2',lvl:'A1',title:'Tanışma — Introductions',desc:'Pronouns & meeting people',ids:['i1','i2','i3','i4','i5','i6','i7','i8','i9','i10','i11'],
- lesson:{title:'Pronouns & “to be” suffix',body:'Pronouns: <b>ben, sen, o, biz, siz, onlar</b>. Turkish has no separate verb “to be” — add a suffix: <b>öğrenci-yim</b> (I am a student), <b>öğrenci-sin</b> (you are). Vowel harmony picks the vowel (-ım/-im/-um/-üm).'}},
+ lesson:{title:'Pronouns & “to be” suffix',body:'Pronouns: <b>ben, sen, o, biz, siz, onlar</b>. Turkish has no separate verb “to be” — add a suffix: <b>öğrenci-yim</b> (I am a student), <b>öğrenci-sin</b> (you are). The suffix vowel follows 4-way harmony with the LAST vowel of the word: a/ı → <b>-ım</b> (kızım), e/i → <b>-im</b> (öğrenciyim), o/u → <b>-um</b> (doktorum), ö/ü → <b>-üm</b> (Türküm).'}},
 {id:'U3',lvl:'A1',title:'Sayılar — Numbers',desc:'Count to 100',ids:['n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12'],
  lesson:{title:'Numbers',body:'1–10: bir, iki, üç, dört, beş, altı, yedi, sekiz, dokuz, on. Then yirmi(20), otuz(30)… yüz(100). The noun after a number stays singular: <b>iki kitap</b> (two books), never “kitaplar”.'}},
 {id:'U4',lvl:'A1',title:'Aile — Family',desc:'Talk about your family',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10'],
@@ -345,7 +345,7 @@ const UNITS=[
 {id:'U8',lvl:'A1',title:'Günlük — Daily phrases',desc:'Survival phrases & questions',ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'],
  lesson:{title:'Question words & mı',body:'Question words: <b>ne</b> (what), <b>nerede</b> (where), <b>ne kadar</b> (how much). Yes/no questions add <b>mı/mi/mu/mü</b>: <b>Çay var mı?</b> = Is there tea?'}},
 {id:'U9',lvl:'A1',title:'Zaman — Time & days',desc:'Days, months, telling time',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12'],
- lesson:{title:'Time & the locative -de',body:'<b>Saat kaç?</b> = What time is it? Days end in -günü when needed: <b>Pazartesi günü</b>. The locative <b>-de/-da</b> means “at/in/on”: <b>sabah-da</b> → sabahleyin, <b>okul-da</b> (at school).'}},
+ lesson:{title:'Time & the locative -de',body:'<b>Saat kaç?</b> = What time is it? Days take <b>günü</b> when specific: <b>Pazartesi günü</b> (on Monday). The locative <b>-de/-da</b> means “at/in/on” and follows vowel harmony: <b>ev-de</b> (at home), <b>okul-da</b> (at school), <b>saat üç-te</b> (at three — d becomes t after voiceless consonants).'}},
 {id:'U10',lvl:'A1',title:'Hava — Weather',desc:'Weather & seasons',ids:['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10'],
  lesson:{title:'Weather expressions',body:'<b>Hava nasıl?</b> = How’s the weather? Use the verb <b>yağmak</b> for falling weather: <b>Yağmur yağıyor</b> (it’s raining), <b>Kar yağıyor</b> (it’s snowing). Seasons: ilkbahar, yaz, sonbahar, kış.'}},
 {id:'U11',lvl:'A1',title:'Vücut — Body & health',desc:'Body parts & the doctor',ids:['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'],
@@ -441,7 +441,7 @@ const DIALOGUES=[
 {id:'D5',ico:'🩺',title:'Doktorda — At the doctor',lines:[
   ['Doktor','Geçmiş olsun. Neyiniz var?','Get well soon. What is wrong?'],
   ['Hasta','Başım ağrıyor ve çok yorgunum.','My head hurts and I am very tired.'],
-  ['Doktor','Bu ilacı için, çok su için.','Take this medicine, drink lots of water.'],
+  ['Doktor','Bu ilacı içiniz ve bol su içiniz.','Take this medicine and drink plenty of water.'],
   ['Hasta','Teşekkür ederim, doktor bey.','Thank you, doctor.']],
  q:[{q:'What hurts?',opts:['His foot','His head','His tooth','His hand'],a:'His head'},
     {q:'The doctor says to drink…',opts:['Tea','Coffee','Lots of water','Milk'],a:'Lots of water'}]},

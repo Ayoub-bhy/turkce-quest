@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Türkçe Quest — Yunus Emre A1→B1</title>
 <meta name="description" content="Gamified Turkish learning (CEFR A1–B1) based on the Yunus Emre / Yedi İklim curriculum — adaptive Flow mode, spaced repetition, speaking practice, cloud sync.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://firestore.googleapis.com">
@@ -224,6 +227,32 @@
     border-radius:16px;padding:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
   .firststeps h3{margin:0 0 4px;font-size:16px}
   .firststeps p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
+  /* 🎨 Artist pass — typography, light & warmth */
+  body{background:
+    radial-gradient(1200px 600px at 80% -10%,rgba(227,10,23,.14),transparent),
+    radial-gradient(900px 480px at -10% 110%,rgba(74,168,255,.10),transparent),
+    radial-gradient(700px 420px at 50% 50%,rgba(246,195,74,.045),transparent),
+    var(--bg)}
+  h1,h2,h3,.big,.btn,.flash .tr,.hello h2,.cnt,.unum,.ringpct{font-family:'Nunito','Segoe UI',system-ui,sans-serif}
+  ::selection{background:rgba(227,10,23,.4)}
+  html{scroll-behavior:smooth}
+  .crest{box-shadow:0 0 22px rgba(227,10,23,.45),var(--shadow)}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 42%),var(--panel)}
+  .flash{background:linear-gradient(180deg,rgba(255,255,255,.03),transparent 50%),var(--panel2);position:relative}
+  .flash::before{content:'✦';position:absolute;top:10px;right:14px;color:var(--gold);opacity:.35;font-size:14px}
+  .chip.streak b{display:inline-block;animation:flicker 2.6s ease-in-out infinite}
+  @keyframes flicker{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+  nav.tabs button.active{box-shadow:0 4px 18px rgba(227,10,23,.45)}
+  .btn{letter-spacing:.2px}
+  .btn:hover{box-shadow:0 6px 22px rgba(227,10,23,.35)}
+  .btn.purple:hover{box-shadow:0 6px 22px rgba(169,135,255,.4)}
+  .btn.green:hover{box-shadow:0 6px 22px rgba(54,201,139,.35)}
+  @media(hover:hover){.choice{border-left:2px solid transparent}
+    .choice:hover{border-left:3px solid var(--accent2);transform:translateX(2px)}}
+  .toast{border-width:1px;background:linear-gradient(180deg,rgba(246,195,74,.10),transparent),var(--panel)}
+  .unit.complete{border-color:rgba(54,201,139,.35)}
+  .cultcard{background:linear-gradient(160deg,rgba(246,195,74,.08),transparent 60%),var(--panel2)}
+  .heat span{transition:transform .12s}.heat span:hover{transform:scale(1.25)}
 </style>
 </head>
 <body>

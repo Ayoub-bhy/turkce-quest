@@ -1,5 +1,5 @@
 /* Türkçe Quest — service worker v8: network-first app shell (instant updates), cache-first assets */
-const CACHE = 'turkce-quest-v11';
+const CACHE = 'turkce-quest-v12';
 const ASSETS = [
   './',
   './index.html',
