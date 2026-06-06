@@ -1,8 +1,9 @@
-/* Türkçe Quest — service worker (offline app shell, v2: accounts + cloud sync) */
-const CACHE = 'turkce-quest-v7';
+/* Türkçe Quest — service worker v8: network-first app shell (instant updates), cache-first assets */
+const CACHE = 'turkce-quest-v8';
 const ASSETS = [
   './',
   './index.html',
+  './app.js',
   './manifest.webmanifest',
   './icon.svg',
   './icon-maskable.svg',
@@ -26,21 +27,34 @@ self.addEventListener('activate', e => {
   );
 });
 
-// Cache-first for the app shell + pinned CDN assets ONLY.
-// Everything else (Firestore, Google auth, APIs) passes straight to the network —
-// caching those would break live sync.
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   const isApp = url.origin === self.location.origin;
   const isPinned = ASSETS.includes(req.url);
-  if (!isApp && !isPinned) return; // network passthrough for auth/db traffic
+  if (!isApp && !isPinned) return; // passthrough: Firestore, auth, APIs
+
+  // Network-first for the page + app code → updates apply on the very next open.
+  // Falls back to cache when offline.
+  const netFirst = req.mode === 'navigate' || url.pathname.endsWith('/app.js');
+  if (netFirst) {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(req).then(hit => hit || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Cache-first for static assets & pinned CDN files.
   e.respondWith(
     caches.match(req).then(hit => hit || fetch(req).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
       return res;
-    }).catch(() => req.mode === 'navigate' ? caches.match('./index.html') : undefined))
+    }))
   );
 });
