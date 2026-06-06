@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Türkçe Quest — Yunus Emre A1·A2</title>
+<title>Türkçe Quest — Yunus Emre A1→B1</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#e30a17">
 <meta name="mobile-web-app-capable" content="yes">
@@ -218,7 +218,7 @@
       <div class="crest">🌙</div>
       <div>
         <h1>Türkçe Quest</h1>
-        <p>Yunus Emre · Yedi İklim · CEFR A1 → A2</p>
+        <p>Yunus Emre · Yedi İklim · CEFR A1 → B1</p>
       </div>
     </div>
     <div class="statbar">
@@ -256,6 +256,7 @@
         <div class="big" id="cefrPct">0%</div>
         <div class="progwrap"><div id="cefrBar" style="width:0%"></div></div>
         <div class="sub" style="margin:10px 0 0" id="cefrNext"></div>
+        <div class="sub" style="margin:6px 0 0;color:var(--blue)" id="cefrEta"></div>
       </div>
       <div class="card">
         <h3>Streak</h3>
@@ -622,6 +623,82 @@ const VOCAB = [
 {id:'tr8',tr:'Deniz',en:'Sea',cat:'Travel',skill:'Vocabulary',ex:'Deniz çok güzel.'},
 {id:'tr9',tr:'Gezmek',en:'To wander / sightsee',cat:'Travel',skill:'Grammar',ex:'Şehri geziyoruz.'},
 {id:'tr10',tr:'Rezervasyon',en:'Reservation',cat:'Travel',skill:'Vocabulary',ex:'Rezervasyon yaptım.'},
+
+/* B1 — U22 Connectors & opinions */
+{id:'ba1',tr:'Çünkü',en:'Because',cat:'Connectors',skill:'Grammar',ex:'Gelmedim çünkü hastaydım.'},
+{id:'ba2',tr:'Ama',en:'But',cat:'Connectors',skill:'Grammar',ex:'İstiyorum ama param yok.'},
+{id:'ba3',tr:'Bence',en:'In my opinion',cat:'Opinions',skill:'Speaking',ex:'Bence bu film çok güzel.'},
+{id:'ba4',tr:'Yani',en:'So / I mean',cat:'Connectors',skill:'Speaking',ex:'Yani, anlaştık mı?'},
+{id:'ba5',tr:'Mesela',en:'For example',cat:'Connectors',skill:'Speaking',ex:'Mesela pazartesi buluşalım.'},
+{id:'ba6',tr:'Önemli',en:'Important',cat:'Opinions',skill:'Vocabulary',ex:'Bu çok önemli bir konu.'},
+{id:'ba7',tr:'Fikir',en:'Idea / opinion',cat:'Opinions',skill:'Vocabulary',ex:'Harika bir fikir!'},
+{id:'ba8',tr:'Katılıyorum',en:'I agree',cat:'Opinions',skill:'Speaking',ex:'Sana katılıyorum.'},
+{id:'ba9',tr:'Haklısın',en:'You are right',cat:'Opinions',skill:'Speaking',ex:'Evet, haklısın.'},
+{id:'ba10',tr:'Ancak',en:'However',cat:'Connectors',skill:'Grammar',ex:'Geldim ancak seni bulamadım.'},
+/* B1 — U23 Ability (-ebil) */
+{id:'ye1',tr:'Yapabilmek',en:'To be able to do',cat:'Ability',skill:'Grammar',ex:'Bunu yapabilirim.'},
+{id:'ye2',tr:'Mümkün',en:'Possible',cat:'Ability',skill:'Vocabulary',ex:'Bu mümkün değil.'},
+{id:'ye3',tr:'İmkânsız',en:'Impossible',cat:'Ability',skill:'Vocabulary',ex:'İmkânsız bir şey yok.'},
+{id:'ye4',tr:'İzin',en:'Permission',cat:'Ability',skill:'Vocabulary',ex:'İzin alabilir miyim?'},
+{id:'ye5',tr:'Kesinlikle',en:'Definitely',cat:'Ability',skill:'Vocabulary',ex:'Kesinlikle katılıyorum.'},
+{id:'ye6',tr:'Asla',en:'Never',cat:'Ability',skill:'Vocabulary',ex:'Asla pes etme!'},
+{id:'ye7',tr:'Tabii ki',en:'Of course',cat:'Ability',skill:'Speaking',ex:'Tabii ki gelebilirsin.'},
+{id:'ye8',tr:'Yardım edebilir misiniz?',en:'Can you help me?',cat:'Ability',skill:'Speaking',ex:'Pardon, yardım edebilir misiniz?'},
+/* B1 — U24 Conditionals (-se) */
+{id:'sa1',tr:'Eğer',en:'If',cat:'Conditionals',skill:'Grammar',ex:'Eğer gelirsen sevinirim.'},
+{id:'sa2',tr:'Keşke',en:'If only / I wish',cat:'Conditionals',skill:'Grammar',ex:'Keşke daha erken gelseydim.'},
+{id:'sa3',tr:'Umarım',en:'I hope',cat:'Conditionals',skill:'Speaking',ex:'Umarım her şey yolundadır.'},
+{id:'sa4',tr:'Şans',en:'Luck',cat:'Conditionals',skill:'Vocabulary',ex:'Bol şans!'},
+{id:'sa5',tr:'Fırsat',en:'Opportunity',cat:'Conditionals',skill:'Vocabulary',ex:'Bu büyük bir fırsat.'},
+{id:'sa6',tr:'Karar',en:'Decision',cat:'Conditionals',skill:'Vocabulary',ex:'Doğru bir karar verdin.'},
+{id:'sa7',tr:'Karar vermek',en:'To decide',cat:'Conditionals',skill:'Grammar',ex:'Gitmeye karar verdim.'},
+{id:'sa8',tr:'Plan yapmak',en:'To make a plan',cat:'Conditionals',skill:'Grammar',ex:'Hafta sonu için plan yapalım.'},
+/* B1 — U25 Reported past (-miş) */
+{id:'ge1',tr:'Hiç',en:'Ever / never',cat:'Reported past',skill:'Grammar',ex:'Hiç Türkiye’ye gittin mi?'},
+{id:'ge2',tr:'Daha önce',en:'Before / previously',cat:'Reported past',skill:'Vocabulary',ex:'Daha önce burada çalıştım.'},
+{id:'ge3',tr:'Deneyim',en:'Experience',cat:'Reported past',skill:'Vocabulary',ex:'Bu işte deneyimim var.'},
+{id:'ge4',tr:'Galiba',en:'Probably / I think',cat:'Reported past',skill:'Vocabulary',ex:'Galiba yağmur yağacak.'},
+{id:'ge5',tr:'Duydum',en:'I heard',cat:'Reported past',skill:'Grammar',ex:'Haberi yeni duydum.'},
+{id:'ge6',tr:'Olmuş',en:'Apparently happened',cat:'Reported past',skill:'Grammar',ex:'Kaza olmuş, yol kapalı.'},
+{id:'ge7',tr:'Demiş',en:'He/she apparently said',cat:'Reported past',skill:'Grammar',ex:'Yarın gelirim demiş.'},
+{id:'ge8',tr:'Hatırlamak',en:'To remember',cat:'Reported past',skill:'Grammar',ex:'O günü hatırlıyorum.'},
+{id:'ge9',tr:'Unutmak',en:'To forget',cat:'Reported past',skill:'Grammar',ex:'Şifremi unuttum.'},
+/* B1 — U26 Deep feelings */
+{id:'du1',tr:'Özlemek',en:'To miss (someone)',cat:'Feelings II',skill:'Grammar',ex:'Seni çok özledim.'},
+{id:'du2',tr:'Güvenmek',en:'To trust',cat:'Feelings II',skill:'Grammar',ex:'Sana güveniyorum.'},
+{id:'du3',tr:'İnanmak',en:'To believe',cat:'Feelings II',skill:'Grammar',ex:'Buna inanmıyorum!'},
+{id:'du4',tr:'Umut',en:'Hope',cat:'Feelings II',skill:'Vocabulary',ex:'Umut her zaman var.'},
+{id:'du5',tr:'Korku',en:'Fear',cat:'Feelings II',skill:'Vocabulary',ex:'Korku filmi sevmem.'},
+{id:'du6',tr:'Endişe',en:'Worry',cat:'Feelings II',skill:'Vocabulary',ex:'Endişe etme, her şey yolunda.'},
+{id:'du7',tr:'Gurur',en:'Pride',cat:'Feelings II',skill:'Vocabulary',ex:'Seninle gurur duyuyorum.'},
+{id:'du8',tr:'Saygı',en:'Respect',cat:'Feelings II',skill:'Vocabulary',ex:'Herkese saygı göstermeliyiz.'},
+/* B1 — U27 Professional life */
+{id:'is1',tr:'Başvuru',en:'Application',cat:'Work II',skill:'Vocabulary',ex:'İş başvurusu yaptım.'},
+{id:'is2',tr:'Mülakat',en:'Interview',cat:'Work II',skill:'Vocabulary',ex:'Yarın mülakatım var.'},
+{id:'is3',tr:'Maaş',en:'Salary',cat:'Work II',skill:'Vocabulary',ex:'Maaş ne kadar?'},
+{id:'is4',tr:'Sorumluluk',en:'Responsibility',cat:'Work II',skill:'Vocabulary',ex:'Bu benim sorumluluğum.'},
+{id:'is5',tr:'Başarı',en:'Success',cat:'Work II',skill:'Vocabulary',ex:'Başarılar dilerim!'},
+{id:'is6',tr:'Hedef',en:'Goal / target',cat:'Work II',skill:'Vocabulary',ex:'Hedefim C1 seviyesi.'},
+{id:'is7',tr:'Proje',en:'Project',cat:'Work II',skill:'Vocabulary',ex:'Yeni bir projede çalışıyorum.'},
+{id:'is8',tr:'Müşteri',en:'Customer',cat:'Work II',skill:'Vocabulary',ex:'Müşteri her zaman haklı mı?'},
+/* B1 — U28 Media & tech */
+{id:'me1',tr:'Haber',en:'News',cat:'Media',skill:'Vocabulary',ex:'Haberleri izledin mi?'},
+{id:'me2',tr:'Gazete',en:'Newspaper',cat:'Media',skill:'Vocabulary',ex:'Babam her sabah gazete okur.'},
+{id:'me3',tr:'Paylaşmak',en:'To share',cat:'Media',skill:'Grammar',ex:'Fotoğrafı paylaştım.'},
+{id:'me4',tr:'İndirmek',en:'To download',cat:'Media',skill:'Grammar',ex:'Uygulamayı indirdim.'},
+{id:'me5',tr:'Ekran',en:'Screen',cat:'Media',skill:'Vocabulary',ex:'Ekrana bak.'},
+{id:'me6',tr:'Şifre',en:'Password',cat:'Media',skill:'Vocabulary',ex:'Şifreni kimseye verme.'},
+{id:'me7',tr:'Bağlantı',en:'Connection / link',cat:'Media',skill:'Vocabulary',ex:'İnternet bağlantısı yok.'},
+{id:'me8',tr:'Sosyal medya',en:'Social media',cat:'Media',skill:'Vocabulary',ex:'Sosyal medyada çok zaman geçiriyorum.'},
+/* B1 — U29 Discussion */
+{id:'go1',tr:'Tartışmak',en:'To discuss / argue',cat:'Discussion',skill:'Speaking',ex:'Bu konuyu tartışalım.'},
+{id:'go2',tr:'Savunmak',en:'To defend',cat:'Discussion',skill:'Grammar',ex:'Fikrini iyi savundun.'},
+{id:'go3',tr:'Karşı',en:'Against',cat:'Discussion',skill:'Vocabulary',ex:'Bu karara karşıyım.'},
+{id:'go4',tr:'Neden',en:'Reason / why',cat:'Discussion',skill:'Vocabulary',ex:'Nedenini bilmiyorum.'},
+{id:'go5',tr:'Sonuç',en:'Result',cat:'Discussion',skill:'Vocabulary',ex:'Sonuç çok iyi.'},
+{id:'go6',tr:'Örnek',en:'Example',cat:'Discussion',skill:'Vocabulary',ex:'Bir örnek verebilir misin?'},
+{id:'go7',tr:'Açıklamak',en:'To explain',cat:'Discussion',skill:'Grammar',ex:'Kuralı açıklar mısın?'},
+{id:'go8',tr:'Anlatmak',en:'To tell / narrate',cat:'Discussion',skill:'Grammar',ex:'Bana her şeyi anlat.'},
 ];
 
 /* ===================== UNITS (skill tree) ===================== */
@@ -668,6 +745,22 @@ const UNITS=[
  lesson:{title:'Describing how you feel',body:'Use the “to be” suffix: <b>mutlu-yum</b> (I’m happy), <b>yorgun-um</b> (I’m tired). Character adjectives describe people: <b>O çok çalışkan</b> (he/she is hardworking).'}},
 {id:'U21',lvl:'A2',title:'Seyahat — Travel',desc:'Holidays & getting around',ids:['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9','tr10'],
  lesson:{title:'Travel essentials',body:'Wish someone <b>İyi seyahatler!</b> (have a good trip). Key words: <b>bilet</b> (ticket), <b>otel</b>, <b>rezervasyon</b>. The verb <b>gezmek</b> = to wander/sightsee: <b>Şehri geziyoruz</b>. This completes Yedi İklim A2! 🎉'}},
+{id:'U22',lvl:'B1',title:'Bağlaçlar — Connectors & opinions',desc:'Link ideas, give your view',ids:['ba1','ba2','ba3','ba4','ba5','ba6','ba7','ba8','ba9','ba10'],
+ lesson:{title:'Linking ideas & giving opinions',body:'B1 is about connected speech. Link clauses with <b>çünkü</b> (because), <b>ama/ancak</b> (but/however), <b>yani</b> (so), <b>mesela</b> (for example). Give opinions with <b>bence</b> (in my view) and react: <b>katılıyorum</b> (I agree), <b>haklısın</b> (you’re right).'}},
+{id:'U23',lvl:'B1',title:'Yetenek — Ability (-ebil)',desc:'Can, may & polite requests',ids:['ye1','ye2','ye3','ye4','ye5','ye6','ye7','ye8'],
+ lesson:{title:'The -ebil/-abil suffix',body:'Add <b>-ebil/-abil</b> for ability or permission: <b>yap-abil-irim</b> (I can do), <b>gel-ebil-irsin</b> (you may come). The negative is <b>-ama/-eme</b>: <b>yapamam</b> (I can’t). Polite requests: <b>Alabilir miyim?</b> (May I take?), <b>Yardım edebilir misiniz?</b>'}},
+{id:'U24',lvl:'B1',title:'Şart — Conditionals (-se)',desc:'If, wishes & hopes',ids:['sa1','sa2','sa3','sa4','sa5','sa6','sa7','sa8'],
+ lesson:{title:'Conditional -se/-sa',body:'Attach <b>-se/-sa</b> for “if”: <b>gelirsen</b> (if you come), <b>olursa</b> (if it happens). <b>Eğer</b> is optional emphasis. Wishes use <b>keşke</b> + past conditional: <b>Keşke gelseydin</b> (I wish you had come). Hopes: <b>umarım</b>.'}},
+{id:'U25',lvl:'B1',title:'Rivayet — Reported past (-miş)',desc:'Hearsay & experiences',ids:['ge1','ge2','ge3','ge4','ge5','ge6','ge7','ge8','ge9'],
+ lesson:{title:'The -miş past (hearsay)',body:'Turkish has TWO pasts: <b>-di</b> for what you witnessed, <b>-miş</b> for what you heard or infer: <b>Kaza olmuş</b> (apparently there was an accident), <b>demiş</b> (he supposedly said). Ask about experiences with <b>hiç</b>: <b>Hiç İstanbul’a gittin mi?</b>'}},
+{id:'U26',lvl:'B1',title:'Duygular II — Deep feelings',desc:'Miss, trust, believe, hope',ids:['du1','du2','du3','du4','du5','du6','du7','du8'],
+ lesson:{title:'Emotion verbs & their cases',body:'Emotion verbs demand specific cases: <b>seni özledim</b> (I missed YOU — accusative), <b>sana güveniyorum</b> (I trust you — dative), <b>buna inanmıyorum</b> (I don’t believe this — dative). <b>Gurur duymak</b> = to feel proud: <b>Seninle gurur duyuyorum</b>.'}},
+{id:'U27',lvl:'B1',title:'İş Hayatı — Professional life',desc:'Applications, interviews, goals',ids:['is1','is2','is3','is4','is5','is6','is7','is8'],
+ lesson:{title:'Work talk & -meli (should)',body:'Job vocabulary: <b>başvuru</b> (application), <b>mülakat</b> (interview), <b>maaş</b> (salary). Obligation uses <b>-meli/-malı</b>: <b>çalışmalıyım</b> (I should work), <b>erken kalkmalısın</b> (you should get up early).'}},
+{id:'U28',lvl:'B1',title:'Medya — Media & tech',desc:'News, internet & devices',ids:['me1','me2','me3','me4','me5','me6','me7','me8'],
+ lesson:{title:'Tech verbs & noun compounds',body:'Modern life verbs: <b>paylaşmak</b> (share), <b>indirmek</b> (download). Turkish builds compounds with possessive endings: <b>internet bağlantı-sı</b> (internet connection), <b>iş başvuru-su</b> (job application).'}},
+{id:'U29',lvl:'B1',title:'Tartışma — Discussion',desc:'Argue your point like a pro',ids:['go1','go2','go3','go4','go5','go6','go7','go8'],
+ lesson:{title:'Structuring an argument',body:'Build a B1 argument: <b>Bence…</b> (opinion) → <b>çünkü…</b> (reason) → <b>mesela…</b> (example) → <b>sonuç olarak…</b> (in conclusion). Agree/disagree: <b>katılıyorum / karşıyım</b>. Finishing this unit completes the B1 starter pack! 🎓'}},
 ];
 
 const BADGES=[
@@ -687,6 +780,7 @@ const BADGES=[
 {id:'chest5',ico:'🎁',name:'Hazine Avcısı',desc:'Open 5 chests',test:s=>s.chests>=5},
 {id:'dlg6',ico:'💬',name:'Konuşkan Usta',desc:'All 6 dialogues',test:s=>s.dlgDone>=6},
 {id:'cult12',ico:'🌹',name:'Gönül Eri',desc:'Full culture deck',test:s=>s.cultureN>=12},
+{id:'b1done',ico:'🎓',name:'B1 Yolcusu',desc:'All 29 units done',test:s=>s.unitsDone>=29},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -767,7 +861,8 @@ function load(){return loadRaw(KEY)||blank();}
 function save(){localStorage.setItem(KEY,JSON.stringify(S));pushCloud();}
 
 const LEVELS=[{xp:0,name:'A1.1'},{xp:200,name:'A1.2'},{xp:450,name:'A1.3'},{xp:750,name:'A1.4'},
-{xp:1100,name:'A2.1'},{xp:1500,name:'A2.2'},{xp:2000,name:'A2.3'},{xp:2600,name:'A2.4'}];
+{xp:1100,name:'A2.1'},{xp:1500,name:'A2.2'},{xp:2000,name:'A2.3'},{xp:2600,name:'A2.4'},
+{xp:3300,name:'B1.1'},{xp:4100,name:'B1.2'},{xp:5000,name:'B1.3'},{xp:6000,name:'B1.4'}];
 function levelInfo(){let cur=LEVELS[0],nxt=null;for(let i=0;i<LEVELS.length;i++){if(S.xp>=LEVELS[i].xp){cur=LEVELS[i];nxt=LEVELS[i+1]||null;}}return{cur,nxt};}
 
 function weekId(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10);}
@@ -846,7 +941,14 @@ function renderDash(){
   const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
   const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
   $('#cefrSub').textContent='Level '+cur.name;$('#cefrPct').textContent=pct+'%';$('#cefrBar').style.width=pct+'%';
-  $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–A2 track 🎉';
+  $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–B1 track 🎉';
+  /* 📅 ETA to next level — based on your average pace over the last 7 days */
+  let sum7=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);sum7+=S.xpLog[d.toISOString().slice(0,10)]||0;}
+  const pace=Math.round(sum7/7);
+  if(!nxt)$('#cefrEta').textContent='';
+  else if(pace>0){const days=Math.max(1,Math.ceil((hi-S.xp)/pace));
+    $('#cefrEta').textContent='📅 ≈ '+days+(days===1?' day':' days')+' to '+nxt.name+' at your pace ('+pace+' XP/day)';}
+  else $('#cefrEta').textContent='📅 Practice today to unlock your pace estimate';
   $('#streakBig').textContent=S.streak;$('#freezes').textContent=S.freezes;$('#bestStreak').textContent=S.bestStreak;
   const known=learnedCards().length;$('#knownWords').textContent=known;$('#totalWords').textContent=VOCAB.length;
   const reviewed=Object.values(S.cards).filter(c=>c.reps>0);const matured=reviewed.filter(c=>c.interval>=3).length;
@@ -913,7 +1015,8 @@ function unitUnlocked(idx){if(idx===0)return true;const prev=UNITS[idx-1];return
 function renderUnits(){
   const wrap=$('#units');wrap.innerHTML='';let lastLvl='';
   UNITS.forEach((u,idx)=>{
-    if(u.lvl!==lastLvl){lastLvl=u.lvl;const tag=document.createElement('div');tag.className='leveltag';tag.textContent=(u.lvl==='A1'?'CEFR A1 · Yedi İklim 1':'CEFR A2 · Yedi İklim 2');wrap.appendChild(tag);}
+    if(u.lvl!==lastLvl){lastLvl=u.lvl;const tag=document.createElement('div');tag.className='leveltag';
+      tag.textContent=({A1:'CEFR A1 · Yedi İklim 1',A2:'CEFR A2 · Yedi İklim 2',B1:'CEFR B1 · Yedi İklim 3 (starter)'})[u.lvl]||u.lvl;wrap.appendChild(tag);}
     const{learned,total}=unitProgress(u);const complete=S.units[u.id]&&S.units[u.id].complete;const unlocked=unitUnlocked(idx);const pct=Math.round(learned/total*100);
     const el=document.createElement('div');el.className='unit'+(complete?' complete':'')+(unlocked?'':' locked');
     el.innerHTML=`<div class="unum">${complete?'✓':(unlocked?idx+1:'🔒')}</div>
