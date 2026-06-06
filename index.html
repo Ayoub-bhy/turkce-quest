@@ -107,7 +107,7 @@
   .srsbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
   .pill{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
   .speak{background:none;border:0;color:var(--blue);cursor:pointer;font-size:20px}
-  .modehub{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .modehub{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
   @media(max-width:680px){.modehub{grid-template-columns:1fr}.choices{grid-template-columns:1fr}}
   .mode{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:.15s}
   .mode:hover{border-color:var(--accent2);transform:translateY(-2px)}
@@ -161,6 +161,18 @@
   .chip.user img{width:20px;height:20px;border-radius:50%}
   .chip.user button{background:none;border:0;color:var(--muted);cursor:pointer;font-size:14px;padding:0 0 0 4px}
   .chip.sync{cursor:pointer;color:var(--blue)}
+  /* Culture deck & dialogues */
+  .cultcard{background:var(--panel2);border:1px solid var(--gold);border-radius:14px;padding:16px;text-align:left}
+  .cultcard.locked{border-color:var(--line);opacity:.45;text-align:center}
+  .cultcard .ctr{font-size:14.5px;font-weight:700;line-height:1.5}
+  .cultcard .cen{font-size:12.5px;color:var(--muted);margin-top:8px;font-style:italic}
+  .cultcard .cby{font-size:11px;color:var(--gold);margin-top:8px;letter-spacing:.5px}
+  .dlgline{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);text-align:left;align-items:flex-start}
+  .dlgline:last-child{border:0}
+  .dlgwho{font-size:11px;font-weight:800;color:var(--accent2);min-width:60px;padding-top:3px}
+  .dlgtr{font-size:15px;font-weight:600} .dlgen{font-size:12px;color:var(--muted);margin-top:2px}
+  .weekbar{height:12px;background:var(--panel2);border-radius:999px;overflow:hidden;margin-top:12px;position:relative}
+  .weekbar>div{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent2));border-radius:999px;transition:width .6s}
 </style>
 </head>
 <body>
@@ -248,7 +260,14 @@
       </div>
     </div>
 
-    <div class="grid g2" style="margin-top:16px">
+    <div class="grid g3" style="margin-top:16px">
+      <div class="card">
+        <h3>🏅 Weekly Goal</h3>
+        <div class="sub">Resets every Monday — earn your trophy</div>
+        <div class="big" style="color:var(--gold)"><span id="weekXp">0</span><span style="font-size:16px;color:var(--muted)"> XP</span> <span id="weekTrophy"></span></div>
+        <div class="weekbar"><div id="weekBar" style="width:0%"></div></div>
+        <div class="sub" style="margin:10px 0 0" id="weekNext"></div>
+      </div>
       <div class="card">
         <h3>Activity Heatmap</h3>
         <div class="sub">Last 5 weeks</div>
@@ -318,6 +337,11 @@
       <h3>🏆 Achievements</h3>
       <div class="sub">Unlock by learning consistently across all four skills.</div>
       <div class="badgegrid" id="badgeGrid"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h3>🌹 Kültür Koleksiyonu — Yunus Emre & Proverbs</h3>
+      <div class="sub" id="cultSub"></div>
+      <div class="badgegrid" id="cultureGrid" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))"></div>
     </div>
   </section>
 </div>
@@ -635,6 +659,72 @@ const BADGES=[
 {id:'a1done',ico:'⛰️',name:'A1 Bitti',desc:'All 15 A1 units',test:s=>s.a1Done>=15},
 {id:'a2done',ico:'🏔️',name:'Yedi İklim',desc:'All A1+A2 units',test:s=>s.unitsDone>=21},
 {id:'quest',ico:'🎯',name:'Görev Tamam',desc:'A daily quest done',test:s=>s.questsDone>=1},
+{id:'streak30',ico:'🗓️',name:'Bir Ay',desc:'30-day streak',test:s=>s.bestStreak>=30},
+{id:'chest5',ico:'🎁',name:'Hazine Avcısı',desc:'Open 5 chests',test:s=>s.chests>=5},
+{id:'dlg6',ico:'💬',name:'Konuşkan Usta',desc:'All 6 dialogues',test:s=>s.dlgDone>=6},
+{id:'cult12',ico:'🌹',name:'Gönül Eri',desc:'Full culture deck',test:s=>s.cultureN>=12},
+];
+
+/* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
+const DIALOGUES=[
+{id:'D1',ico:'☕',title:'Kafede — At the café',lines:[
+  ['Garson','Hoş geldiniz! Ne istersiniz?','Welcome! What would you like?'],
+  ['Ayşe','Bir çay, lütfen.','One tea, please.'],
+  ['Garson','Şekerli mi?','With sugar?'],
+  ['Ayşe','Hayır, şekersiz. Teşekkürler.','No, without sugar. Thank you.']],
+ q:[{q:'What does Ayşe order?',opts:['Coffee','Tea','Water','Juice'],a:'Tea'},
+    {q:'How does she take it?',opts:['With sugar','Without sugar','With milk','Iced'],a:'Without sugar'}]},
+{id:'D2',ico:'🤝',title:'Tanışma — Meeting someone',lines:[
+  ['Ali','Merhaba! Benim adım Ali. Senin adın ne?','Hi! My name is Ali. What is your name?'],
+  ['Sara','Merhaba Ali, ben Sara. Memnun oldum.','Hi Ali, I am Sara. Nice to meet you.'],
+  ['Ali','Ben de memnun oldum. Nerelisin?','Nice to meet you too. Where are you from?'],
+  ['Sara','Ben Suudi Arabistanlıyım.','I am from Saudi Arabia.']],
+ q:[{q:'Where is Sara from?',opts:['Turkey','Saudi Arabia','Egypt','Germany'],a:'Saudi Arabia'},
+    {q:'“Memnun oldum” means…',opts:['Goodbye','Nice to meet you','How are you?','See you'],a:'Nice to meet you'}]},
+{id:'D3',ico:'🛒',title:'Markette — At the market',lines:[
+  ['Müşteri','Pardon, ekmek ne kadar?','Excuse me, how much is the bread?'],
+  ['Satıcı','On lira.','Ten lira.'],
+  ['Müşteri','İki ekmek, lütfen. Su var mı?','Two breads, please. Is there water?'],
+  ['Satıcı','Evet, var. Buyurun.','Yes, there is. Here you go.']],
+ q:[{q:'How much is the bread?',opts:['5 lira','10 lira','20 lira','2 lira'],a:'10 lira'},
+    {q:'“Su var mı?” asks about…',opts:['Bread','Milk','Water','Tea'],a:'Water'}]},
+{id:'D4',ico:'🧭',title:'Yol Sorma — Asking directions',lines:[
+  ['Turist','Affedersiniz, eczane nerede?','Excuse me, where is the pharmacy?'],
+  ['Adam','Sağa dönün. Eczane okulun yanında.','Turn right. The pharmacy is next to the school.'],
+  ['Turist','Uzak mı?','Is it far?'],
+  ['Adam','Hayır, çok yakın. Beş dakika.','No, very near. Five minutes.']],
+ q:[{q:'Where is the pharmacy?',opts:['Next to the school','Next to the bank','Far away','On the left'],a:'Next to the school'},
+    {q:'How long does it take?',opts:['One hour','Five minutes','Ten minutes','Two hours'],a:'Five minutes'}]},
+{id:'D5',ico:'🩺',title:'Doktorda — At the doctor',lines:[
+  ['Doktor','Geçmiş olsun. Neyiniz var?','Get well soon. What is wrong?'],
+  ['Hasta','Başım ağrıyor ve çok yorgunum.','My head hurts and I am very tired.'],
+  ['Doktor','Bu ilacı için, çok su için.','Take this medicine, drink lots of water.'],
+  ['Hasta','Teşekkür ederim, doktor bey.','Thank you, doctor.']],
+ q:[{q:'What hurts?',opts:['His foot','His head','His tooth','His hand'],a:'His head'},
+    {q:'The doctor says to drink…',opts:['Tea','Coffee','Lots of water','Milk'],a:'Lots of water'}]},
+{id:'D6',ico:'⛅',title:'Hava Durumu — The weather',lines:[
+  ['Zeynep','Bugün hava nasıl?','How is the weather today?'],
+  ['Murat','Çok güzel! Güneşli ve sıcak.','Very nice! Sunny and warm.'],
+  ['Zeynep','Yarın yağmur var mı?','Is there rain tomorrow?'],
+  ['Murat','Evet, yarın yağmur yağacak.','Yes, it will rain tomorrow.']],
+ q:[{q:'How is the weather today?',opts:['Rainy','Sunny and warm','Cold','Windy'],a:'Sunny and warm'},
+    {q:'What about tomorrow?',opts:['Snow','Sun','Rain','Wind'],a:'Rain'}]},
+];
+
+/* ===== Culture deck — Yunus Emre & Turkish proverbs (1 card per 150 XP) ===== */
+const CULTURE=[
+{tr:'Sevelim, sevilelim.',en:'Let us love, let us be loved.',by:'Yunus Emre'},
+{tr:'İlim ilim bilmektir, ilim kendin bilmektir.',en:'Knowledge is to know — to know yourself.',by:'Yunus Emre'},
+{tr:'Yaratılanı severiz, Yaratan’dan ötürü.',en:'We love the created, for the Creator’s sake.',by:'Yunus Emre'},
+{tr:'Bilmeyen ne bilsin bizi, bilenlere selam olsun.',en:'How can the unknowing know us — greetings to those who know.',by:'Yunus Emre'},
+{tr:'Damlaya damlaya göl olur.',en:'Drop by drop, a lake forms.',by:'Atasözü · proverb'},
+{tr:'Bir fincan kahvenin kırk yıl hatırı vardır.',en:'A cup of coffee is remembered for forty years.',by:'Atasözü · proverb'},
+{tr:'Tatlı dil yılanı deliğinden çıkarır.',en:'A sweet tongue charms the snake out of its hole.',by:'Atasözü · proverb'},
+{tr:'Ağaç yaşken eğilir.',en:'A tree bends while it is young.',by:'Atasözü · proverb'},
+{tr:'Gülü seven dikenine katlanır.',en:'Who loves the rose endures its thorns.',by:'Atasözü · proverb'},
+{tr:'Ne ekersen onu biçersin.',en:'You reap what you sow.',by:'Atasözü · proverb'},
+{tr:'Akıl akıldan üstündür.',en:'Two minds are better than one.',by:'Atasözü · proverb'},
+{tr:'Sabır acıdır, meyvesi tatlıdır.',en:'Patience is bitter, but its fruit is sweet.',by:'Atasözü · proverb'},
 ];
 
 /* ===================== STATE ===================== */
@@ -644,7 +734,8 @@ function blank(){return{
   xp:0,streak:0,bestStreak:0,freezes:2,lastActive:null,diff:1,
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
-  xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[]
+  xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -655,12 +746,28 @@ const LEVELS=[{xp:0,name:'A1.1'},{xp:200,name:'A1.2'},{xp:450,name:'A1.3'},{xp:7
 {xp:1100,name:'A2.1'},{xp:1500,name:'A2.2'},{xp:2000,name:'A2.3'},{xp:2600,name:'A2.4'}];
 function levelInfo(){let cur=LEVELS[0],nxt=null;for(let i=0;i<LEVELS.length;i++){if(S.xp>=LEVELS[i].xp){cur=LEVELS[i];nxt=LEVELS[i+1]||null;}}return{cur,nxt};}
 
-function addXp(n,skill){S.xp+=n;if(skill&&S.skills[skill]!=null)S.skills[skill]+=n;const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+n;markActive();save();}
+function weekId(){const d=new Date();const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d.toISOString().slice(0,10);}
+function ensureWeek(){const id=weekId();if(!S.week||S.week.id!==id)S.week={id,xp:0};}
+function addXp(n,skill){
+  if(Date.now()<(S.boostUntil||0))n*=2; // 🚀 2× XP boost active
+  S.xp+=n;if(skill&&S.skills[skill]!=null)S.skills[skill]+=n;
+  const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+n;
+  ensureWeek();S.week.xp+=n;
+  markActive();save();}
 function markActive(){const t=todayStr();if(S.lastActive===t)return;
   if(S.lastActive){const diff=Math.round((new Date(t)-new Date(S.lastActive))/86400000);
     if(diff===1)S.streak++;else if(diff===2&&S.freezes>0){S.freezes--;S.streak++;toast('❄️ Streak freeze used!');}else S.streak=1;}
   else S.streak=1;
-  S.lastActive=t;S.bestStreak=Math.max(S.bestStreak,S.streak);}
+  S.lastActive=t;S.bestStreak=Math.max(S.bestStreak,S.streak);
+  if([3,7,30,100].includes(S.streak))setTimeout(()=>openChest('🔥 '+S.streak+'-day streak'),800);}
+/* 🎁 Variable rewards — random chest (research: variable rewards + earned freezes drive retention) */
+function openChest(reason){
+  S.chests=(S.chests||0)+1;
+  const r=Math.random();let msg;
+  if(r<0.4){const amt=20+Math.floor(Math.random()*5)*10;S.xp+=amt;ensureWeek();S.week.xp+=amt;const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+amt;msg='+'+amt+' bonus XP ⚡';}
+  else if(r<0.7){S.freezes=Math.min(5,(S.freezes||0)+1);msg='+1 Streak Freeze ❄️';}
+  else{S.boostUntil=Date.now()+15*60*1000;msg='2× XP for 15 minutes! 🚀';}
+  save();renderHeader();toast('🎁 '+reason+' — '+msg);}
 
 /* SRS (SM-2 lite) */
 function card(id){return S.cards[id]||(S.cards[id]={ease:2.5,interval:0,reps:0,due:todayStr(),learned:false});}
@@ -698,7 +805,8 @@ function speechMatch(alts,item){
 }
 
 /* ===================== HEADER & DASHBOARD ===================== */
-function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name;$('#cXp').textContent=S.xp;$('#cStreak').textContent=S.streak;}
+function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name;
+  $('#cXp').textContent=S.xp+((Date.now()<(S.boostUntil||0))?' ⚡2×':'');$('#cStreak').textContent=S.streak;}
 function renderDash(){
   const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
   const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
@@ -712,7 +820,17 @@ function renderDash(){
   $('#kUnits').textContent=Object.values(S.units).filter(u=>u.complete).length;
   $('#kLessons').textContent=S.lessons;$('#kReviews').textContent=S.reviews;
   $('#kLS').textContent=S.listen+' / '+S.speak;$('#kBadges').textContent=S.badges.length+' / '+BADGES.length;
-  renderHeat();renderCharts();
+  renderWeek();renderHeat();renderCharts();
+}
+const WEEK_TIERS=[{xp:300,t:'🥉 Bronze'},{xp:700,t:'🥈 Silver'},{xp:1500,t:'🏆 Gold'}];
+function renderWeek(){
+  ensureWeek();const w=S.week.xp||0;
+  $('#weekXp').textContent=w;
+  const earned=WEEK_TIERS.filter(x=>w>=x.xp);
+  $('#weekTrophy').textContent=earned.length?earned[earned.length-1].t.split(' ')[0]:'';
+  const next=WEEK_TIERS.find(x=>w<x.xp);
+  $('#weekBar').style.width=(next?Math.min(100,Math.round(w/next.xp*100)):100)+'%';
+  $('#weekNext').textContent=next?((next.xp-w)+' XP to '+next.t):'🏆 Gold week — efsane!';
 }
 function renderHeat(){const wrap=$('#heat');wrap.innerHTML='';const arr=[];
   for(let i=34;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);arr.push(d.toISOString().slice(0,10));}
@@ -748,7 +866,7 @@ function renderQuest(){
     <div><div class="qtitle">${g.title}</div><div class="qmeta">${g.meta}</div></div>
     <div class="qright">${g.xp}</div></div>`).join('');
   $('#questStatus').textContent=done+' / 4 done';
-  if(done===4&&!S.quest.claimed){S.quest.claimed=true;S.questsDone++;addXp(50);checkBadges();toast('🎯 Quest complete! +50 XP');save();}
+  if(done===4&&!S.quest.claimed){S.quest.claimed=true;S.questsDone++;addXp(50);checkBadges();toast('🎯 Quest complete! +50 XP');save();setTimeout(()=>openChest('Daily quest'),1200);}
   const checked=S.lastActive===todayStr();
   $('#checkinBtn').disabled=checked;
   $('#checkinMsg').textContent=checked?('✓ Checked in. Streak: '+S.streak+' days 🔥'):'You haven’t logged today yet.';
@@ -804,7 +922,7 @@ function renderQuiz(){flow.phase='quiz';flow.qIdx=0;flow.qScore=0;flow.qItems=sh
 function nextQuiz(){
   if(flow.qIdx>=flow.qItems.length){
     const pass=flow.qScore>=Math.ceil(flow.qItems.length*0.6);
-    if(pass){S.quiz++;addXp(15,'Grammar');if(!S.units[flow.unit.id])S.units[flow.unit.id]={};S.units[flow.unit.id].complete=true;checkBadges();save();
+    if(pass){S.quiz++;addXp(15,'Grammar');if(!S.units[flow.unit.id])S.units[flow.unit.id]={};S.units[flow.unit.id].complete=true;checkBadges();save();setTimeout(()=>openChest('Unit complete'),1100);
       $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🎉</div><h2>Aferin! Unit complete</h2><p class="muted">Score ${flow.qScore}/${flow.qItems.length} · +15 XP · next unit unlocked</p></div><button class="btn" onclick="flow=null;switchView('learn')">Back to tree</button></div>`;
       toast('🏆 Unit complete!');}
     else{$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">😅</div><h2>Almost!</h2><p class="muted">Score ${flow.qScore}/${flow.qItems.length}. Need 60% — try again.</p></div><button class="btn" id="retry">Retry unit</button></div>`;
@@ -823,18 +941,73 @@ function nextQuiz(){
 }
 
 /* ===================== PRACTICE HUB ===================== */
+function weakCards(){return VOCAB.filter(v=>{const c=S.cards[v.id];return c&&c.learned&&(c.miss||0)>=2;});}
 function renderPracticeHome(){
   flow=null;$('#practiceSub').textContent='Pick a drill. Reviews resurface words right before you’d forget them (SM-2).';
-  const due=dueCards().length,known=learnedCards().length;
+  const due=dueCards().length,known=learnedCards().length,weak=weakCards().length;
+  const dlgDone=Object.values(S.dlg||{}).filter(Boolean).length;
   $('#practiceStage').innerHTML=`<div class="modehub">
     <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
+    <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
+    <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
     <div class="mode" id="mListen"><div class="mi">👂</div><h4>Listening</h4><p>Hear it, pick the meaning</p><div class="cnt" style="color:var(--blue)">${known}</div></div>
     <div class="mode" id="mSpeak"><div class="mi">🎤</div><h4>Speaking</h4><p>Say it back out loud</p><div class="cnt" style="color:var(--purple)">${known}</div></div>
   </div>
-  <p class="muted center" style="margin-top:16px">${known<4?'Learn at least 4 words in the Learn tab to unlock Listening & Speaking.':'Listening & Speaking draw from your '+known+' learned words.'}</p>`;
+  <p class="muted center" style="margin-top:16px">${known<4?'Learn at least 4 words in the Learn tab to unlock the drills.':'Drills draw from your '+known+' learned words.'}</p>`;
   $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
+  $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
+  $('#mDlg').onclick=()=>dlgList();
   $('#mListen').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startListen();};
   $('#mSpeak').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startSpeak();};
+}
+/* Weak-words drill — retrieval practice on your personal trouble list */
+function startWeak(){flow={mode:'srs',queue:shuffle(weakCards()).map(v=>v.id),i:0};srsCard();}
+/* Dialogues — communicative practice with TTS + comprehension check */
+function speakSeq(texts){try{speechSynthesis.cancel();texts.forEach(t=>{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';u.rate=.9;speechSynthesis.speak(u);});}catch(e){}}
+function dlgList(){
+  flow={mode:'dlg'};
+  $('#practiceStage').innerHTML=`<div class="units">${DIALOGUES.map(d=>`
+    <div class="unit ${S.dlg&&S.dlg[d.id]?'complete':''}" data-d="${d.id}">
+      <div class="unum">${S.dlg&&S.dlg[d.id]?'✓':d.ico}</div>
+      <div class="uinfo"><h4>${d.title}</h4><p>${d.lines.length} lines · listen, read, answer · +25 XP</p></div>
+    </div>`).join('')}</div>
+    <p class="center" style="margin-top:14px"><button class="btn ghost" id="backP">← Back to practice</button></p>`;
+  $$('#practiceStage .unit').forEach(el=>el.onclick=()=>playDialogue(DIALOGUES.find(d=>d.id===el.dataset.d)));
+  $('#backP').onclick=renderPracticeHome;
+}
+function playDialogue(d){
+  $('#practiceStage').innerHTML=`<div class="pill">💬 ${d.title}</div>
+    <div class="flash" style="max-width:560px;text-align:left">
+      ${d.lines.map((l,i)=>`<div class="dlgline"><div class="dlgwho">${l[0]}</div>
+        <div><div class="dlgtr">${l[1]} <button class="speak" data-i="${i}">🔊</button></div><div class="dlgen">${l[2]}</div></div></div>`).join('')}
+    </div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn blue" id="playAll">▶ Play all</button>
+      <button class="btn" id="toQuiz">Questions →</button>
+    </div>`;
+  $$('#practiceStage .speak').forEach(b=>b.onclick=()=>speak(d.lines[+b.dataset.i][1]));
+  $('#playAll').onclick=()=>speakSeq(d.lines.map(l=>l[1]));
+  $('#toQuiz').onclick=()=>dlgQuiz(d,0,0);
+}
+function dlgQuiz(d,qi,score){
+  if(qi>=d.q.length){
+    const first=!(S.dlg&&S.dlg[d.id]);
+    if(!S.dlg)S.dlg={};S.dlg[d.id]=true;
+    if(first){addXp(15,'Listening');addXp(10,'Reading');toast('💬 Dialogue complete! +25 XP');}
+    S.quest.listen=true;checkBadges();save();
+    $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">${score===d.q.length?'🎉':'👍'}</div>
+      <h2>${d.title.split('—')[0]} done</h2><p class="muted">${score}/${d.q.length} correct${first?' · +25 XP':''}</p></div>
+      <button class="btn" id="backD">More dialogues →</button></div>`;
+    $('#backD').onclick=dlgList;return;
+  }
+  const q=d.q[qi];
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">💬 Question ${qi+1} / ${d.q.length}</div>
+    <div class="flash"><div class="cat">${d.title}</div><div class="tr" style="font-size:22px">${q.q}</div></div>
+    <div class="choices">${shuffle(q.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===q.a;
+    if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===q.a)c.classList.add('correct');});}
+    setTimeout(()=>dlgQuiz(d,qi+1,score+(ok?1:0)),900);});
 }
 
 /* SRS review session */
@@ -901,10 +1074,21 @@ function speakCard(){
 
 /* ===================== BADGES ===================== */
 function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:learnedCards().length,reviews:S.reviews,quiz:S.quiz,questsDone:S.questsDone,listen:S.listen,speak:S.speak,
+  chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
-function checkBadges(){const st=badgeStats();BADGES.forEach(b=>{if(b.test(st)&&!S.badges.includes(b.id)){S.badges.push(b.id);toast('🏆 Badge: '+b.name);}});save();}
-function renderBadges(){$('#badgeGrid').innerHTML=BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?'unlocked':''}"><div class="ico">${b.ico}</div><div class="bname">${b.name}</div><div class="bdesc">${b.desc}</div></div>`).join('');}
+function checkBadges(){
+  const n=Math.min(CULTURE.length,Math.floor((S.xp||0)/150));
+  if(n>(S.cultureN||0)){S.cultureN=n;toast('🌹 New culture card unlocked! See Achievements');}
+  const st=badgeStats();BADGES.forEach(b=>{if(b.test(st)&&!S.badges.includes(b.id)){S.badges.push(b.id);toast('🏆 Badge: '+b.name);}});save();}
+function renderBadges(){
+  $('#badgeGrid').innerHTML=BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?'unlocked':''}"><div class="ico">${b.ico}</div><div class="bname">${b.name}</div><div class="bdesc">${b.desc}</div></div>`).join('');
+  const n=S.cultureN||0;
+  $('#cultureGrid').innerHTML=CULTURE.map((c,i)=>i<n
+    ?`<div class="cultcard"><div class="ctr">“${c.tr}” <button class="speak" onclick="speak('${c.tr.replace(/'/g,"\\'")}')">🔊</button></div><div class="cen">${c.en}</div><div class="cby">— ${c.by}</div></div>`
+    :`<div class="cultcard locked"><div class="ctr">🔒</div><div class="cen">Unlocks at ${(i+1)*150} XP</div></div>`).join('');
+  $('#cultSub').textContent='Collected '+n+' / '+CULTURE.length+' — one card per 150 XP';
+}
 
 /* ===================== FLOW — adaptive endless roadmap ===================== */
 const ID2UNIT={};UNITS.forEach(u=>u.ids.forEach(id=>{ID2UNIT[id]=u;}));
@@ -926,7 +1110,8 @@ function renderFlowHome(){
   $('#goFlow').onclick=startFlow;
 }
 function startFlow(){F={combo:0,best:0,xp:0,n:0,recent:[]};switchView('flow');flowNext();}
-function endFlow(){const msg='Session: +'+F.xp+' XP · best combo '+F.best+'🔥';F=null;renderFlowHome();renderHeader();renderDash();toast(msg);}
+function endFlow(){const sx=F.xp,msg='Session: +'+F.xp+' XP · best combo '+F.best+'🔥';F=null;renderFlowHome();renderHeader();renderDash();toast(msg);
+  if(sx>=60&&Math.random()<0.35)setTimeout(()=>openChest('Great session'),1400);}
 function updateFlowHud(){if(!F)return;const mom=Math.min(100,F.combo*12);
   $('#flowHud').innerHTML=`<div class="hud combo">🔥 ${F.combo}</div><div class="hud sxp">+${F.xp} XP</div>
     <div class="hud diff">🎚️ ${DIFF_LABEL[curDiff()]}</div>
@@ -939,7 +1124,8 @@ function flowNext(){
   const struggling=F.recent.slice(-4).filter(x=>!x).length>=2;
   let item,isNew=false;
   if(newOnes.length&&(learned.length<4||(!struggling&&F.n%3===0))){item=newOnes[0];isNew=true;}
-  else if(due.length){item=due[Math.floor(Math.random()*Math.min(due.length,6))];}
+  else if(due.length){const sorted=due.slice().sort((x,y)=>((S.cards[y.id].miss||0)-(S.cards[x.id].miss||0)));
+    item=sorted[Math.floor(Math.random()*Math.min(sorted.length,4))];}
   else if(learned.length){item=learned[Math.floor(Math.random()*learned.length)];}
   else if(newOnes.length){item=newOnes[0];isNew=true;}
   else{$('#flowStage').innerHTML='<div class="flash"><div class="tr">🎉</div><h2>Harika!</h2><p class="muted">You’ve learned every word — reviews will keep them sharp.</p></div>';return;}
@@ -1080,8 +1266,11 @@ function bootGuest(){KEY=KEY_BASE;S=load();localStorage.setItem('tq_mode','guest
 function mergeStates(a,b){
   if(!a)return b;if(!b)return a;
   const m=blank(),t=todayStr();
-  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak']
+  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil']
     .forEach(k=>m[k]=Math.max(a[k]||0,b[k]||0));
+  const wid=weekId();
+  m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
+  m.dlg=Object.assign({},a.dlg||{},b.dlg||{});
   m.lastActive=((a.lastActive||'')>(b.lastActive||''))?a.lastActive:b.lastActive;
   const cids=new Set([...Object.keys(a.cards||{}),...Object.keys(b.cards||{})]);
   cids.forEach(id=>{const ca=(a.cards||{})[id],cb=(b.cards||{})[id];
