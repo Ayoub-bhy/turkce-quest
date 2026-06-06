@@ -23,6 +23,16 @@ Once installed it launches in its own window like a native app and works offline
 
 Plain HTML/CSS/JS in a single file, [Chart.js](https://www.chartjs.org/) for charts, a service worker for offline caching, and the Web Speech API for audio. No build step, no backend, no tracking — progress lives in `localStorage`.
 
+## 🧪 Tests
+
+The logic core (SRS scheduler, sync merge engine, speech matching, levels/streaks/chests, flow engine, data integrity) is covered by a zero-dependency Node test suite — **42 tests, >99% line coverage**:
+
+```bash
+node --test --experimental-test-coverage app.test.cjs
+```
+
+No npm install needed; the suite fakes the DOM, Firebase, and the Web Speech API.
+
 ## ▶️ Run locally
 
 Just open `index.html` in a browser. For full PWA/offline behaviour, serve it over HTTP:

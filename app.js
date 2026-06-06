@@ -520,7 +520,7 @@ function learnedCards(){return VOCAB.filter(v=>S.cards[v.id]&&S.cards[v.id].lear
 function unlearned(){return VOCAB.filter(v=>!(S.cards[v.id]&&S.cards[v.id].learned));}
 function gradeCard(id,q){const c=card(id);c.reps++;
   if(q===0){c.interval=0;c.ease=Math.max(1.3,c.ease-0.2);}
-  else{if(c.interval===0)c.interval=1;else if(c.interval===1)c.interval=q===3?6:3;else c.interval=Math.round(c.interval*(c.ease+(q-2)*0.15));c.ease=Math.min(3.0,c.ease+(q-2)*0.1);}
+  else{if(c.interval===0)c.interval=1;else if(c.interval===1)c.interval=q===3?6:3;else c.interval=Math.min(365,Math.round(c.interval*(c.ease+(q-2)*0.15)));c.ease=Math.min(3.0,c.ease+(q-2)*0.1);}
   const d=new Date();d.setDate(d.getDate()+c.interval);c.due=d.toISOString().slice(0,10);
   S.reviews++;if(q>0)addXp(5,VOCAB.find(v=>v.id===id).skill);else save();}
 
@@ -692,6 +692,7 @@ function renderLearnCard(){
 }
 function renderQuiz(){flow.phase='quiz';flow.qIdx=0;flow.qScore=0;flow.qItems=shuffle(flow.unit.ids.map(id=>VOCAB.find(v=>v.id===id))).slice(0,6);nextQuiz();}
 function nextQuiz(){
+  if(!flow||!flow.qItems)return; // guard: mode switched mid-timeout
   if(flow.qIdx>=flow.qItems.length){
     const pass=flow.qScore>=Math.ceil(flow.qItems.length*0.6);
     if(pass){S.quiz++;addXp(15,'Grammar');if(!S.units[flow.unit.id])S.units[flow.unit.id]={};S.units[flow.unit.id].complete=true;checkBadges();save();setTimeout(()=>openChest('Unit complete'),1100);
@@ -709,7 +710,7 @@ function nextQuiz(){
   $('.speak').onclick=()=>speak(v.tr);
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
     if(ch.textContent===v.en){buzz(12);ch.classList.add('correct');flow.qScore++;}else{buzz(60);ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
-    setTimeout(()=>{flow.qIdx++;nextQuiz();},800);});
+    setTimeout(()=>{if(flow){flow.qIdx++;nextQuiz();}},800);});
 }
 
 /* ===================== PRACTICE HUB ===================== */
@@ -785,6 +786,7 @@ function dlgQuiz(d,qi,score){
 /* SRS review session */
 function startSrs(){flow={mode:'srs',queue:dueCards().map(v=>v.id),i:0};srsCard();}
 function srsCard(){
+  if(!flow||!flow.queue)return; // guard: mode switched mid-timeout
   if(flow.i>=flow.queue.length){toast('🃏 Review done!');renderPracticeHome();return;}
   const v=VOCAB.find(x=>x.id===flow.queue[flow.i]);
   $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">${flow.i+1} / ${flow.queue.length} · review</div>
@@ -800,6 +802,7 @@ function srsCard(){
 /* Listening drill */
 function startListen(){flow={mode:'listen',n:0,score:0,total:8,pool:shuffle(learnedCards())};listenCard();}
 function listenCard(){
+  if(!flow||!flow.pool)return; // guard: mode switched mid-timeout
   if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">👂</div><h2>Listening done</h2><p class="muted">${flow.score}/${flow.total} correct · skill: Listening</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
   const v=flow.pool[flow.n%flow.pool.length];const opts=[v.en];const pool=shuffle(VOCAB.filter(x=>x.id!==v.id));while(opts.length<4)opts.push(pool.pop().en);
   $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">👂 ${flow.n+1} / ${flow.total}</div>
@@ -810,12 +813,13 @@ function listenCard(){
   $('#play').onclick=()=>speak(v.tr);speak(v.tr);
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
     const ok=ch.textContent===v.en;if(ok){ch.classList.add('correct');flow.score++;addXp(6,'Listening');}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
-    S.listen++;S.quest.listen=true;checkBadges();save();setTimeout(()=>{flow.n++;listenCard();},900);});
+    S.listen++;S.quest.listen=true;checkBadges();save();setTimeout(()=>{if(flow){flow.n++;listenCard();}},900);});
 }
 
 /* Speaking practice */
 function startSpeak(){flow={mode:'speak',n:0,score:0,total:6,pool:shuffle(learnedCards())};speakCard();}
 function speakCard(){
+  if(!flow||!flow.pool)return; // guard: mode switched mid-timeout
   if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🎤</div><h2>Speaking done</h2><p class="muted">${flow.score}/${flow.total} good · skill: Speaking</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
   const v=flow.pool[flow.n%flow.pool.length];
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -829,7 +833,7 @@ function speakCard(){
     <p class="heard" id="heard">${SR?'Tap the mic and speak':'No speech recognition in this browser — use the button below'}</p>
     <div class="row" style="justify-content:center"><button class="btn ghost" id="saidIt">🎙️ Mic trouble? I said it 👍</button></div></div>`;
   $('.speak').onclick=()=>speak(sayText);
-  const adv=(good)=>{if(good){flow.score++;addXp(8,'Speaking');toast('👏 Güzel!');}S.speak++;checkBadges();save();setTimeout(()=>{flow.n++;speakCard();},650);};
+  const adv=(good)=>{if(good){flow.score++;addXp(8,'Speaking');toast('👏 Güzel!');}S.speak++;checkBadges();save();setTimeout(()=>{if(flow){flow.n++;speakCard();}},650);};
   $('#saidIt').onclick=()=>adv(true);
   $('#mic').onclick=()=>{
     if(!SR){speak(sayText);return;}
