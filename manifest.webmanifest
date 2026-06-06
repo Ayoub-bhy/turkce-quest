@@ -1,0 +1,17 @@
+{
+  "name": "Türkçe Quest — Yunus Emre",
+  "short_name": "Türkçe Quest",
+  "description": "Gamified Turkish (A1–A2) based on the Yunus Emre / Yedi İklim curriculum, with adaptive Flow Mode, spaced repetition, and listening & speaking practice.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1117",
+  "theme_color": "#e30a17",
+  "lang": "en",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Türkçe Quest — Yunus Emre A1·A2</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e30a17">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Türkçe Quest">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1f2330; --line:#2a2f3e;
+    --txt:#e8eaf0; --muted:#9aa0b4; --accent:#e30a17; --accent2:#ff5a64;
+    --gold:#f6c34a; --green:#36c98b; --blue:#4aa8ff; --purple:#a987ff;
+    --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:
+    radial-gradient(1200px 600px at 80% -10%,rgba(227,10,23,.12),transparent),
+    radial-gradient(1000px 500px at -10% 110%,rgba(74,168,255,.10),transparent),var(--bg);
+    color:var(--txt);min-height:100vh}
+  .wrap{max-width:1080px;margin:0 auto;padding:18px 18px 80px}
+  header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px}
+  .crest{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#8c060f);
+    display:grid;place-items:center;font-size:24px;box-shadow:var(--shadow)}
+  .brand h1{font-size:19px;margin:0;letter-spacing:.3px}
+  .brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+  .statbar{display:flex;gap:10px;flex-wrap:wrap}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:8px 14px;
+    display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+  .chip b{font-size:15px}
+  .chip.streak{color:var(--gold)} .chip.xp{color:var(--green)} .chip.lvl{color:var(--blue)}
+  nav.tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:6px;margin-bottom:20px;overflow-x:auto}
+  nav.tabs button{flex:1;min-width:90px;background:transparent;border:0;color:var(--muted);padding:10px 8px;
+    border-radius:10px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s;white-space:nowrap}
+  nav.tabs button:hover{color:var(--txt)}
+  nav.tabs button.active{background:linear-gradient(135deg,var(--accent),#a8070f);color:#fff;box-shadow:var(--shadow)}
+  .view{display:none;animation:fade .3s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 4px;font-size:14px;letter-spacing:.3px}
+  .card .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .big{font-size:34px;font-weight:800;line-height:1}
+  .progwrap{height:12px;background:var(--panel2);border-radius:999px;overflow:hidden;margin-top:12px}
+  .progwrap>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px;transition:width .6s}
+  .heat{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:6px}
+  .heat span{aspect-ratio:1;border-radius:5px;background:var(--panel2);position:relative}
+  .heat span[data-l="1"]{background:rgba(54,201,139,.35)}
+  .heat span[data-l="2"]{background:rgba(54,201,139,.6)}
+  .heat span[data-l="3"]{background:rgba(54,201,139,.9)}
+  .btn{background:linear-gradient(135deg,var(--accent),#a8070f);color:#fff;border:0;border-radius:12px;
+    padding:13px 20px;font-size:15px;font-weight:700;cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .btn.ghost{background:var(--panel2);border:1px solid var(--line)}
+  .btn.green{background:linear-gradient(135deg,var(--green),#1f9d68)}
+  .btn.blue{background:linear-gradient(135deg,var(--blue),#2b6fb8)}
+  .btn.purple{background:linear-gradient(135deg,var(--purple),#6f4ed8)}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+  .quest{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .quest:last-child{border-bottom:0}
+  .qdot{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:16px;background:var(--panel2);flex-shrink:0}
+  .quest.done .qdot{background:var(--green)} .quest.done .qtitle{text-decoration:line-through;color:var(--muted)}
+  .qtitle{font-weight:600;font-size:14px} .qmeta{font-size:12px;color:var(--muted)}
+  .qright{margin-left:auto;font-weight:700;color:var(--gold);font-size:13px}
+  .badgegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+  .badge{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;opacity:.4;transition:.2s}
+  .badge.unlocked{opacity:1;border-color:var(--gold)}
+  .badge .ico{font-size:30px} .badge .bname{font-size:12px;font-weight:700;margin-top:6px}
+  .badge .bdesc{font-size:10.5px;color:var(--muted);margin-top:3px}
+  .units{display:flex;flex-direction:column;gap:12px}
+  .leveltag{display:flex;align-items:center;gap:10px;margin:18px 0 4px;font-size:12px;font-weight:800;letter-spacing:2px;color:var(--accent2)}
+  .leveltag:first-child{margin-top:0}
+  .leveltag::after{content:'';flex:1;height:1px;background:var(--line)}
+  .unit{display:flex;align-items:center;gap:14px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px;cursor:pointer;transition:.15s}
+  .unit:hover{border-color:var(--accent2)} .unit.locked{opacity:.5;cursor:not-allowed}
+  .unum{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--blue),#2b6fb8);display:grid;place-items:center;font-weight:800;flex-shrink:0}
+  .unit.complete .unum{background:linear-gradient(135deg,var(--green),#1f9d68)}
+  .uinfo{flex:1} .uinfo h4{margin:0;font-size:15px} .uinfo p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+  .ubar{width:90px;height:8px;background:var(--bg);border-radius:999px;overflow:hidden;flex-shrink:0}
+  .ubar>div{height:100%;background:var(--green)}
+  .stage{min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:18px}
+  .flash{background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:38px 26px;width:100%;max-width:460px;box-shadow:var(--shadow)}
+  .flash .tr{font-size:40px;font-weight:800;letter-spacing:.5px}
+  .flash .cat{font-size:12px;color:var(--accent2);text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .flash .en{font-size:22px;color:var(--green);margin-top:14px;min-height:28px}
+  .flash .ex{font-size:14px;color:var(--muted);margin-top:14px;font-style:italic;min-height:20px}
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:460px}
+  .choice{background:var(--panel2);border:2px solid var(--line);border-radius:14px;padding:16px;font-size:16px;font-weight:600;cursor:pointer;transition:.12s}
+  .choice:hover{border-color:var(--accent2)}
+  .choice.correct{border-color:var(--green);background:rgba(54,201,139,.15)}
+  .choice.wrong{border-color:var(--accent);background:rgba(227,10,23,.15)}
+  .srsbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .pill{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--muted)}
+  .speak{background:none;border:0;color:var(--blue);cursor:pointer;font-size:20px}
+  .modehub{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  @media(max-width:680px){.modehub{grid-template-columns:1fr}.choices{grid-template-columns:1fr}}
+  .mode{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:20px;text-align:center;cursor:pointer;transition:.15s}
+  .mode:hover{border-color:var(--accent2);transform:translateY(-2px)}
+  .mode .mi{font-size:34px} .mode h4{margin:10px 0 4px;font-size:15px} .mode p{margin:0;font-size:12px;color:var(--muted)}
+  .mode .cnt{margin-top:10px;font-weight:800;font-size:20px}
+  .micbig{width:96px;height:96px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--purple),#6f4ed8);
+    color:#fff;font-size:40px;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+  .micbig.rec{animation:pulse 1s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(169,135,255,.5)}70%{box-shadow:0 0 0 18px rgba(169,135,255,0)}100%{box-shadow:0 0 0 0 rgba(169,135,255,0)}}
+  .heard{font-size:15px;color:var(--muted);min-height:22px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--panel);
+    border:1px solid var(--gold);color:var(--gold);padding:14px 22px;border-radius:14px;font-weight:700;box-shadow:var(--shadow);
+    transition:.35s;z-index:50;max-width:90%}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .muted{color:var(--muted)} .center{text-align:center}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .kpi{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .kpi:last-child{border:0} .kpi b{color:var(--txt)}
+  a.reset{color:var(--muted);font-size:11px;text-decoration:underline;cursor:pointer}
+  /* Flow mode */
+  .flowcta{display:flex;align-items:center;justify-content:space-between;gap:14px;
+    background:linear-gradient(135deg,rgba(169,135,255,.20),rgba(227,10,23,.14));
+    border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;flex-wrap:wrap}
+  .flowcta h3{margin:0;font-size:16px} .flowcta p{margin:4px 0 0;font-size:13px;color:var(--muted);max-width:520px}
+  .flowhud{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .flowhud .hud{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:7px 13px;font-weight:700;font-size:13.5px}
+  .flowhud .combo{color:var(--gold)} .flowhud .sxp{color:var(--green)} .flowhud .diff{color:var(--purple)}
+  .momentum{flex:1;min-width:90px;height:9px;background:var(--panel2);border-radius:999px;overflow:hidden}
+  .momentum>div{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--accent2));transition:width .4s}
+  .endlink{color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer}
+  .typein{width:100%;max-width:380px;padding:14px 16px;font-size:20px;text-align:center;border-radius:14px;
+    border:2px solid var(--line);background:var(--panel2);color:var(--txt);outline:none}
+  .typein:focus{border-color:var(--accent2)}
+  .explain{background:var(--panel2);border:1px solid var(--gold);border-radius:18px;padding:24px;max-width:500px;box-shadow:var(--shadow)}
+  .explain .x-tr{font-size:30px;font-weight:800;text-align:center}
+  .explain .x-en{color:var(--green);text-align:center;font-size:18px;margin-top:4px}
+  .explain .x-ex{font-style:italic;color:var(--muted);text-align:center;margin:12px 0}
+  .explain .tip{background:var(--panel);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.65;margin-top:10px;text-align:left}
+  .kbd{font-size:11px;color:var(--muted);margin-top:8px}
+  .choice .num{display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;background:var(--bg);
+    border-radius:6px;font-size:11px;margin-right:8px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <div class="crest">🌙</div>
+      <div>
+        <h1>Türkçe Quest</h1>
+        <p>Yunus Emre · Yedi İklim · CEFR A1 → A2</p>
+      </div>
+    </div>
+    <div class="statbar">
+      <div class="chip lvl">🎖️ <span><b id="cLevel">A1.1</b></span></div>
+      <div class="chip xp">⚡ <b id="cXp">0</b> XP</div>
+      <div class="chip streak">🔥 <b id="cStreak">0</b> gün</div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-v="dash">📊 Dashboard</button>
+    <button data-v="flow">🚀 Flow</button>
+    <button data-v="quest">🎯 Daily Quest</button>
+    <button data-v="learn">📚 Learn</button>
+    <button data-v="practice">🧠 Practice</button>
+    <button data-v="badges">🏆 Achievements</button>
+  </nav>
+
+  <!-- DASHBOARD -->
+  <section class="view active" id="dash">
+    <div class="flowcta">
+      <div><h3>🚀 Continue your roadmap</h3>
+        <p>Adaptive, endless practice — one challenge flows straight into the next, gets harder when you're cruising, and explains more the moment you stumble.</p></div>
+      <button class="btn purple" id="dashFlow">▶ Enter Flow</button>
+    </div>
+    <div class="grid g3">
+      <div class="card">
+        <h3>CEFR Progress</h3>
+        <div class="sub" id="cefrSub">Level A1.1</div>
+        <div class="big" id="cefrPct">0%</div>
+        <div class="progwrap"><div id="cefrBar" style="width:0%"></div></div>
+        <div class="sub" style="margin:10px 0 0" id="cefrNext"></div>
+      </div>
+      <div class="card">
+        <h3>Streak</h3>
+        <div class="sub">Consecutive active days</div>
+        <div class="big" style="color:var(--gold)"><span id="streakBig">0</span> 🔥</div>
+        <div class="sub" style="margin-top:8px">Freezes left: <b id="freezes">2</b> ❄️ · Best: <b id="bestStreak">0</b></div>
+      </div>
+      <div class="card">
+        <h3>Vocabulary Mastery</h3>
+        <div class="sub">Words known / retention</div>
+        <div class="big" style="color:var(--green)"><span id="knownWords">0</span><span style="font-size:18px;color:var(--muted)"> / <span id="totalWords">0</span></span></div>
+        <div class="sub" style="margin-top:8px">Retention: <b id="retention">—</b> · Due today: <b id="dueToday">0</b></div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>Skill Balance</h3>
+        <div class="sub">XP per skill — the 4 Yedi İklim domains + core</div>
+        <canvas id="radar" height="240"></canvas>
+      </div>
+      <div class="card">
+        <h3>XP — Last 14 Days</h3>
+        <div class="sub">Daily learning momentum</div>
+        <canvas id="line" height="240"></canvas>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <h3>Activity Heatmap</h3>
+        <div class="sub">Last 5 weeks</div>
+        <div class="heat" id="heat"></div>
+      </div>
+      <div class="card">
+        <h3>At a Glance</h3>
+        <div class="sub">Lifetime stats</div>
+        <div class="kpi"><span>Units completed</span><b id="kUnits">0</b></div>
+        <div class="kpi"><span>Lessons completed</span><b id="kLessons">0</b></div>
+        <div class="kpi"><span>Cards reviewed</span><b id="kReviews">0</b></div>
+        <div class="kpi"><span>Listening / Speaking reps</span><b id="kLS">0 / 0</b></div>
+        <div class="kpi"><span>Badges unlocked</span><b id="kBadges">0 / 12</b></div>
+      </div>
+    </div>
+    <p class="center" style="margin-top:24px"><a class="reset" id="resetBtn">reset all progress</a></p>
+  </section>
+
+  <!-- DAILY QUEST -->
+  <section class="view" id="quest">
+    <div class="card">
+      <h3>🎯 Today's Quest</h3>
+      <div class="sub" id="questDate"></div>
+      <div id="questList"></div>
+      <div class="row" style="margin-top:16px;justify-content:space-between">
+        <span class="muted">Complete all for <b style="color:var(--gold)">+50 bonus XP</b></span>
+        <span class="pill" id="questStatus">0 / 4 done</span>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;text-align:center">
+      <h3>Daily Check-in</h3>
+      <div class="sub">Keep your 🔥 streak alive — one tap logs today</div>
+      <button class="btn green" id="checkinBtn" style="margin-top:8px">✓ Check in for today</button>
+      <p class="muted" id="checkinMsg" style="margin-top:12px;font-size:13px"></p>
+    </div>
+  </section>
+
+  <!-- FLOW -->
+  <section class="view" id="flow">
+    <div class="card">
+      <div class="flowhud" id="flowHud"></div>
+      <div id="flowStage" class="stage"></div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section class="view" id="learn">
+    <div class="card">
+      <h3>📚 Skill Tree — Yedi İklim A1 & A2</h3>
+      <div class="sub">Finish a unit to unlock the next. Each gives a lesson, vocab cards & a quiz.</div>
+      <div class="units" id="units"></div>
+    </div>
+  </section>
+
+  <!-- PRACTICE -->
+  <section class="view" id="practice">
+    <div class="card">
+      <h3>🧠 Practice</h3>
+      <div class="sub" id="practiceSub">Pick a drill. Reviews resurface words right before you'd forget them (SM-2).</div>
+      <div id="practiceStage"></div>
+    </div>
+  </section>
+
+  <!-- BADGES -->
+  <section class="view" id="badges">
+    <div class="card">
+      <h3>🏆 Achievements</h3>
+      <div class="sub">Unlock by learning consistently across all four skills.</div>
+      <div class="badgegrid" id="badgeGrid"></div>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA: Turkish A1 + A2 (Yedi İklim) ===================== */
+const VOCAB = [
+/* A1 — U1 Greetings */
+{id:'g1',tr:'Merhaba',en:'Hello',cat:'Greetings',skill:'Speaking',ex:'Merhaba, nasılsın?'},
+{id:'g2',tr:'Günaydın',en:'Good morning',cat:'Greetings',skill:'Speaking',ex:'Günaydın! İyi günler.'},
+{id:'g3',tr:'İyi akşamlar',en:'Good evening',cat:'Greetings',skill:'Speaking',ex:'İyi akşamlar efendim.'},
+{id:'g4',tr:'İyi geceler',en:'Good night',cat:'Greetings',skill:'Speaking',ex:'İyi geceler, yarın görüşürüz.'},
+{id:'g5',tr:'Teşekkür ederim',en:'Thank you',cat:'Greetings',skill:'Speaking',ex:'Yardımın için teşekkür ederim.'},
+{id:'g6',tr:'Rica ederim',en:"You're welcome",cat:'Greetings',skill:'Speaking',ex:'— Teşekkürler. — Rica ederim.'},
+{id:'g7',tr:'Lütfen',en:'Please',cat:'Greetings',skill:'Speaking',ex:'Bir su, lütfen.'},
+{id:'g8',tr:'Evet',en:'Yes',cat:'Greetings',skill:'Speaking',ex:'Evet, doğru.'},
+{id:'g9',tr:'Hayır',en:'No',cat:'Greetings',skill:'Speaking',ex:'Hayır, teşekkürler.'},
+{id:'g10',tr:'Görüşürüz',en:'See you',cat:'Greetings',skill:'Speaking',ex:'Hadi, görüşürüz!'},
+{id:'g11',tr:'Hoşça kal',en:'Goodbye (to one leaving)',cat:'Greetings',skill:'Speaking',ex:'Hoşça kal, kendine iyi bak.'},
+{id:'g12',tr:'Güle güle',en:'Goodbye (to one staying)',cat:'Greetings',skill:'Speaking',ex:'Güle güle, yine bekleriz.'},
+
+/* A1 — U2 Introductions */
+{id:'i1',tr:'Ben',en:'I',cat:'Pronouns',skill:'Grammar',ex:'Ben öğrenciyim.'},
+{id:'i2',tr:'Sen',en:'You',cat:'Pronouns',skill:'Grammar',ex:'Sen nerelisin?'},
+{id:'i3',tr:'O',en:'He / she / it',cat:'Pronouns',skill:'Grammar',ex:'O bir doktor.'},
+{id:'i4',tr:'Biz',en:'We',cat:'Pronouns',skill:'Grammar',ex:'Biz arkadaşız.'},
+{id:'i5',tr:'Siz',en:'You (plural/formal)',cat:'Pronouns',skill:'Grammar',ex:'Siz nerede oturuyorsunuz?'},
+{id:'i6',tr:'Onlar',en:'They',cat:'Pronouns',skill:'Grammar',ex:'Onlar öğretmen.'},
+{id:'i7',tr:'İsim',en:'Name',cat:'Introductions',skill:'Vocabulary',ex:'Benim ismim Ali.'},
+{id:'i8',tr:'Memnun oldum',en:'Nice to meet you',cat:'Introductions',skill:'Speaking',ex:'Tanıştığımıza memnun oldum.'},
+{id:'i9',tr:'Nerelisin?',en:'Where are you from?',cat:'Introductions',skill:'Speaking',ex:'Merhaba, nerelisin?'},
+{id:'i10',tr:'Öğrenci',en:'Student',cat:'Introductions',skill:'Vocabulary',ex:'Ben bir öğrenciyim.'},
+{id:'i11',tr:'Arkadaş',en:'Friend',cat:'Introductions',skill:'Vocabulary',ex:'O benim arkadaşım.'},
+
+/* A1 — U3 Numbers */
+{id:'n1',tr:'Bir',en:'One (1)',cat:'Numbers',skill:'Vocabulary',ex:'Bir kahve, lütfen.'},
+{id:'n2',tr:'İki',en:'Two (2)',cat:'Numbers',skill:'Vocabulary',ex:'İki kardeşim var.'},
+{id:'n3',tr:'Üç',en:'Three (3)',cat:'Numbers',skill:'Vocabulary',ex:'Saat üç.'},
+{id:'n4',tr:'Dört',en:'Four (4)',cat:'Numbers',skill:'Vocabulary',ex:'Dört mevsim.'},
+{id:'n5',tr:'Beş',en:'Five (5)',cat:'Numbers',skill:'Vocabulary',ex:'Beş dakika.'},
+{id:'n6',tr:'Altı',en:'Six (6)',cat:'Numbers',skill:'Vocabulary',ex:'Altı kişi.'},
+{id:'n7',tr:'Yedi',en:'Seven (7)',cat:'Numbers',skill:'Vocabulary',ex:'Yedi iklim.'},
+{id:'n8',tr:'Sekiz',en:'Eight (8)',cat:'Numbers',skill:'Vocabulary',ex:'Sekiz saat.'},
+{id:'n9',tr:'Dokuz',en:'Nine (9)',cat:'Numbers',skill:'Vocabulary',ex:'Dokuz numara.'},
+{id:'n10',tr:'On',en:'Ten (10)',cat:'Numbers',skill:'Vocabulary',ex:'On lira.'},
+{id:'n11',tr:'Yirmi',en:'Twenty (20)',cat:'Numbers',skill:'Vocabulary',ex:'Yirmi yaşındayım.'},
+{id:'n12',tr:'Yüz',en:'Hundred (100)',cat:'Numbers',skill:'Vocabulary',ex:'Yüz lira.'},
+
+/* A1 — U4 Family */
+{id:'f1',tr:'Anne',en:'Mother',cat:'Family',skill:'Vocabulary',ex:'Annem çok iyi.'},
+{id:'f2',tr:'Baba',en:'Father',cat:'Family',skill:'Vocabulary',ex:'Babam çalışıyor.'},
+{id:'f3',tr:'Kardeş',en:'Sibling',cat:'Family',skill:'Vocabulary',ex:'Bir kardeşim var.'},
+{id:'f4',tr:'Abla',en:'Older sister',cat:'Family',skill:'Vocabulary',ex:'Ablam İstanbul’da.'},
+{id:'f5',tr:'Ağabey',en:'Older brother',cat:'Family',skill:'Vocabulary',ex:'Ağabeyim mühendis.'},
+{id:'f6',tr:'Dede',en:'Grandfather',cat:'Family',skill:'Vocabulary',ex:'Dedem köyde yaşıyor.'},
+{id:'f7',tr:'Nine',en:'Grandmother',cat:'Family',skill:'Vocabulary',ex:'Ninem çok yaşlı.'},
+{id:'f8',tr:'Eş',en:'Spouse',cat:'Family',skill:'Vocabulary',ex:'Eşim doktor.'},
+{id:'f9',tr:'Çocuk',en:'Child',cat:'Family',skill:'Vocabulary',ex:'İki çocuk.'},
+{id:'f10',tr:'Aile',en:'Family',cat:'Family',skill:'Vocabulary',ex:'Ailem büyük.'},
+
+/* A1 — U5 Colors */
+{id:'c1',tr:'Kırmızı',en:'Red',cat:'Colors',skill:'Vocabulary',ex:'Kırmızı elma.'},
+{id:'c2',tr:'Mavi',en:'Blue',cat:'Colors',skill:'Vocabulary',ex:'Mavi deniz.'},
+{id:'c3',tr:'Yeşil',en:'Green',cat:'Colors',skill:'Vocabulary',ex:'Yeşil çay.'},
+{id:'c4',tr:'Sarı',en:'Yellow',cat:'Colors',skill:'Vocabulary',ex:'Sarı limon.'},
+{id:'c5',tr:'Siyah',en:'Black',cat:'Colors',skill:'Vocabulary',ex:'Siyah kahve.'},
+{id:'c6',tr:'Beyaz',en:'White',cat:'Colors',skill:'Vocabulary',ex:'Beyaz peynir.'},
+{id:'c7',tr:'Turuncu',en:'Orange',cat:'Colors',skill:'Vocabulary',ex:'Turuncu portakal.'},
+{id:'c8',tr:'Pembe',en:'Pink',cat:'Colors',skill:'Vocabulary',ex:'Pembe çiçek.'},
+{id:'c9',tr:'Kahverengi',en:'Brown',cat:'Colors',skill:'Vocabulary',ex:'Kahverengi göz.'},
+
+/* A1 — U6 Food */
+{id:'d1',tr:'Su',en:'Water',cat:'Food',skill:'Vocabulary',ex:'Bir bardak su.'},
+{id:'d2',tr:'Ekmek',en:'Bread',cat:'Food',skill:'Vocabulary',ex:'Taze ekmek.'},
+{id:'d3',tr:'Çay',en:'Tea',cat:'Food',skill:'Vocabulary',ex:'Bir çay, lütfen.'},
+{id:'d4',tr:'Kahve',en:'Coffee',cat:'Food',skill:'Vocabulary',ex:'Türk kahvesi.'},
+{id:'d5',tr:'Peynir',en:'Cheese',cat:'Food',skill:'Vocabulary',ex:'Beyaz peynir.'},
+{id:'d6',tr:'Elma',en:'Apple',cat:'Food',skill:'Vocabulary',ex:'Kırmızı bir elma.'},
+{id:'d7',tr:'Süt',en:'Milk',cat:'Food',skill:'Vocabulary',ex:'Bir bardak süt.'},
+{id:'d8',tr:'Yumurta',en:'Egg',cat:'Food',skill:'Vocabulary',ex:'İki yumurta.'},
+{id:'d9',tr:'Et',en:'Meat',cat:'Food',skill:'Vocabulary',ex:'Et yemiyorum.'},
+{id:'d10',tr:'Çorba',en:'Soup',cat:'Food',skill:'Vocabulary',ex:'Mercimek çorbası.'},
+{id:'d11',tr:'Şeker',en:'Sugar / candy',cat:'Food',skill:'Vocabulary',ex:'Şekersiz çay.'},
+{id:'d12',tr:'Kahvaltı',en:'Breakfast',cat:'Food',skill:'Vocabulary',ex:'Kahvaltı hazır.'},
+
+/* A1 — U7 Verbs & present continuous */
+{id:'v1',tr:'Gitmek',en:'To go',cat:'Verbs',skill:'Grammar',ex:'Okula gidiyorum.'},
+{id:'v2',tr:'Gelmek',en:'To come',cat:'Verbs',skill:'Grammar',ex:'Eve geliyorum.'},
+{id:'v3',tr:'Yemek',en:'To eat',cat:'Verbs',skill:'Grammar',ex:'Elma yiyorum.'},
+{id:'v4',tr:'İçmek',en:'To drink',cat:'Verbs',skill:'Grammar',ex:'Çay içiyorum.'},
+{id:'v5',tr:'Okumak',en:'To read',cat:'Verbs',skill:'Reading',ex:'Kitap okuyorum.'},
+{id:'v6',tr:'Yazmak',en:'To write',cat:'Verbs',skill:'Writing',ex:'Mektup yazıyorum.'},
+{id:'v7',tr:'Konuşmak',en:'To speak',cat:'Verbs',skill:'Speaking',ex:'Türkçe konuşuyorum.'},
+{id:'v8',tr:'Sevmek',en:'To like / love',cat:'Verbs',skill:'Grammar',ex:'Çayı seviyorum.'},
+{id:'v9',tr:'İstemek',en:'To want',cat:'Verbs',skill:'Grammar',ex:'Su istiyorum.'},
+{id:'v10',tr:'Çalışmak',en:'To work / study',cat:'Verbs',skill:'Grammar',ex:'Bankada çalışıyorum.'},
+
+/* A1 — U8 Daily phrases */
+{id:'p1',tr:'Var',en:'There is / have',cat:'Daily',skill:'Grammar',ex:'Bir sorum var.'},
+{id:'p2',tr:'Yok',en:'There isn’t / none',cat:'Daily',skill:'Grammar',ex:'Param yok.'},
+{id:'p3',tr:'Çok',en:'Very / a lot',cat:'Daily',skill:'Vocabulary',ex:'Çok güzel!'},
+{id:'p4',tr:'Güzel',en:'Beautiful / nice',cat:'Daily',skill:'Vocabulary',ex:'Hava çok güzel.'},
+{id:'p5',tr:'Nerede?',en:'Where?',cat:'Daily',skill:'Speaking',ex:'Tuvalet nerede?'},
+{id:'p6',tr:'Ne?',en:'What?',cat:'Daily',skill:'Speaking',ex:'Bu ne?'},
+{id:'p7',tr:'Ne kadar?',en:'How much?',cat:'Daily',skill:'Speaking',ex:'Bu ne kadar?'},
+{id:'p8',tr:'Anlamadım',en:'I didn’t understand',cat:'Daily',skill:'Speaking',ex:'Pardon, anlamadım.'},
+{id:'p9',tr:'Tamam',en:'OK',cat:'Daily',skill:'Speaking',ex:'Tamam, anladım.'},
+{id:'p10',tr:'Pardon',en:'Excuse me / sorry',cat:'Daily',skill:'Speaking',ex:'Pardon, geç kaldım.'},
+
+/* A1 — U9 Time, days, months */
+{id:'t1',tr:'Gün',en:'Day',cat:'Time',skill:'Vocabulary',ex:'Güzel bir gün.'},
+{id:'t2',tr:'Hafta',en:'Week',cat:'Time',skill:'Vocabulary',ex:'Bu hafta meşgulüm.'},
+{id:'t3',tr:'Ay',en:'Month / moon',cat:'Time',skill:'Vocabulary',ex:'Gelecek ay tatil.'},
+{id:'t4',tr:'Yıl',en:'Year',cat:'Time',skill:'Vocabulary',ex:'Bu yıl çok soğuk.'},
+{id:'t5',tr:'Saat',en:'Hour / clock',cat:'Time',skill:'Vocabulary',ex:'Saat kaç?'},
+{id:'t6',tr:'Bugün',en:'Today',cat:'Time',skill:'Vocabulary',ex:'Bugün pazartesi.'},
+{id:'t7',tr:'Yarın',en:'Tomorrow',cat:'Time',skill:'Vocabulary',ex:'Yarın görüşürüz.'},
+{id:'t8',tr:'Dün',en:'Yesterday',cat:'Time',skill:'Vocabulary',ex:'Dün evdeydim.'},
+{id:'t9',tr:'Sabah',en:'Morning',cat:'Time',skill:'Vocabulary',ex:'Sabah erken kalkıyorum.'},
+{id:'t10',tr:'Akşam',en:'Evening',cat:'Time',skill:'Vocabulary',ex:'Akşam yemeği.'},
+{id:'t11',tr:'Pazartesi',en:'Monday',cat:'Time',skill:'Vocabulary',ex:'Pazartesi okul var.'},
+{id:'t12',tr:'Cuma',en:'Friday',cat:'Time',skill:'Vocabulary',ex:'Cuma günü.'},
+
+/* A1 — U10 Weather & seasons */
+{id:'w1',tr:'Hava',en:'Weather / air',cat:'Weather',skill:'Vocabulary',ex:'Hava nasıl?'},
+{id:'w2',tr:'Güneş',en:'Sun',cat:'Weather',skill:'Vocabulary',ex:'Güneş açtı.'},
+{id:'w3',tr:'Yağmur',en:'Rain',cat:'Weather',skill:'Vocabulary',ex:'Yağmur yağıyor.'},
+{id:'w4',tr:'Kar',en:'Snow',cat:'Weather',skill:'Vocabulary',ex:'Kar yağıyor.'},
+{id:'w5',tr:'Rüzgar',en:'Wind',cat:'Weather',skill:'Vocabulary',ex:'Bugün çok rüzgar var.'},
+{id:'w6',tr:'Sıcak',en:'Hot',cat:'Weather',skill:'Vocabulary',ex:'Hava çok sıcak.'},
+{id:'w7',tr:'Soğuk',en:'Cold',cat:'Weather',skill:'Vocabulary',ex:'Su soğuk.'},
+{id:'w8',tr:'Mevsim',en:'Season',cat:'Weather',skill:'Vocabulary',ex:'En güzel mevsim ilkbahar.'},
+{id:'w9',tr:'Yaz',en:'Summer',cat:'Weather',skill:'Vocabulary',ex:'Yazın denize giderim.'},
+{id:'w10',tr:'Kış',en:'Winter',cat:'Weather',skill:'Vocabulary',ex:'Kış çok soğuk.'},
+
+/* A1 — U11 Body & health */
+{id:'b1',tr:'Baş',en:'Head',cat:'Body',skill:'Vocabulary',ex:'Başım ağrıyor.'},
+{id:'b2',tr:'Göz',en:'Eye',cat:'Body',skill:'Vocabulary',ex:'Mavi gözler.'},
+{id:'b3',tr:'El',en:'Hand',cat:'Body',skill:'Vocabulary',ex:'Ellerini yıka.'},
+{id:'b4',tr:'Ayak',en:'Foot',cat:'Body',skill:'Vocabulary',ex:'Ayağım ağrıyor.'},
+{id:'b5',tr:'Diş',en:'Tooth',cat:'Body',skill:'Vocabulary',ex:'Dişim ağrıyor.'},
+{id:'b6',tr:'Hasta',en:'Sick / patient',cat:'Health',skill:'Vocabulary',ex:'Bugün hastayım.'},
+{id:'b7',tr:'Doktor',en:'Doctor',cat:'Health',skill:'Vocabulary',ex:'Doktora gidiyorum.'},
+{id:'b8',tr:'İlaç',en:'Medicine',cat:'Health',skill:'Vocabulary',ex:'İlaç içiyorum.'},
+{id:'b9',tr:'Ağrı',en:'Pain / ache',cat:'Health',skill:'Vocabulary',ex:'Karın ağrım var.'},
+{id:'b10',tr:'Geçmiş olsun',en:'Get well soon',cat:'Health',skill:'Speaking',ex:'Hastaymışsın, geçmiş olsun.'},
+
+/* A1 — U12 Home */
+{id:'h1',tr:'Ev',en:'House / home',cat:'Home',skill:'Vocabulary',ex:'Evdeyim.'},
+{id:'h2',tr:'Oda',en:'Room',cat:'Home',skill:'Vocabulary',ex:'Üç odalı ev.'},
+{id:'h3',tr:'Mutfak',en:'Kitchen',cat:'Home',skill:'Vocabulary',ex:'Mutfakta yemek var.'},
+{id:'h4',tr:'Banyo',en:'Bathroom',cat:'Home',skill:'Vocabulary',ex:'Banyo nerede?'},
+{id:'h5',tr:'Kapı',en:'Door',cat:'Home',skill:'Vocabulary',ex:'Kapıyı kapat.'},
+{id:'h6',tr:'Pencere',en:'Window',cat:'Home',skill:'Vocabulary',ex:'Pencereyi aç.'},
+{id:'h7',tr:'Masa',en:'Table',cat:'Home',skill:'Vocabulary',ex:'Masada kitap var.'},
+{id:'h8',tr:'Sandalye',en:'Chair',cat:'Home',skill:'Vocabulary',ex:'Bir sandalye, lütfen.'},
+{id:'h9',tr:'Yatak',en:'Bed',cat:'Home',skill:'Vocabulary',ex:'Yatak çok rahat.'},
+
+/* A1 — U13 City & places */
+{id:'y1',tr:'Şehir',en:'City',cat:'City',skill:'Vocabulary',ex:'İstanbul büyük bir şehir.'},
+{id:'y2',tr:'Sokak',en:'Street',cat:'City',skill:'Vocabulary',ex:'Sokakta çocuklar var.'},
+{id:'y3',tr:'Okul',en:'School',cat:'City',skill:'Vocabulary',ex:'Okula gidiyorum.'},
+{id:'y4',tr:'Hastane',en:'Hospital',cat:'City',skill:'Vocabulary',ex:'Hastane yakın mı?'},
+{id:'y5',tr:'Market',en:'Grocery / market',cat:'City',skill:'Vocabulary',ex:'Markete gidiyorum.'},
+{id:'y6',tr:'Eczane',en:'Pharmacy',cat:'City',skill:'Vocabulary',ex:'Eczane nerede?'},
+{id:'y7',tr:'Banka',en:'Bank',cat:'City',skill:'Vocabulary',ex:'Banka kapalı.'},
+{id:'y8',tr:'Restoran',en:'Restaurant',cat:'City',skill:'Vocabulary',ex:'Güzel bir restoran.'},
+{id:'y9',tr:'Park',en:'Park',cat:'City',skill:'Vocabulary',ex:'Parkta yürüyorum.'},
+{id:'y10',tr:'Cami',en:'Mosque',cat:'City',skill:'Vocabulary',ex:'Cami çok eski.'},
+
+/* A1 — U14 Transport & directions */
+{id:'r1',tr:'Araba',en:'Car',cat:'Transport',skill:'Vocabulary',ex:'Arabam yok.'},
+{id:'r2',tr:'Otobüs',en:'Bus',cat:'Transport',skill:'Vocabulary',ex:'Otobüse biniyorum.'},
+{id:'r3',tr:'Tren',en:'Train',cat:'Transport',skill:'Vocabulary',ex:'Tren geç kaldı.'},
+{id:'r4',tr:'Uçak',en:'Plane',cat:'Transport',skill:'Vocabulary',ex:'Uçak saat üçte.'},
+{id:'r5',tr:'Taksi',en:'Taxi',cat:'Transport',skill:'Vocabulary',ex:'Bir taksi çağır.'},
+{id:'r6',tr:'Metro',en:'Metro',cat:'Transport',skill:'Vocabulary',ex:'Metro çok hızlı.'},
+{id:'r7',tr:'Sağ',en:'Right',cat:'Directions',skill:'Vocabulary',ex:'Sağa dön.'},
+{id:'r8',tr:'Sol',en:'Left',cat:'Directions',skill:'Vocabulary',ex:'Sola dön.'},
+{id:'r9',tr:'Yakın',en:'Near',cat:'Directions',skill:'Vocabulary',ex:'Ev çok yakın.'},
+{id:'r10',tr:'Uzak',en:'Far',cat:'Directions',skill:'Vocabulary',ex:'Okul uzak mı?'},
+
+/* A1 — U15 Adjectives & opposites */
+{id:'a1',tr:'Büyük',en:'Big',cat:'Adjectives',skill:'Vocabulary',ex:'Büyük bir ev.'},
+{id:'a2',tr:'Küçük',en:'Small',cat:'Adjectives',skill:'Vocabulary',ex:'Küçük bir köpek.'},
+{id:'a3',tr:'Yeni',en:'New',cat:'Adjectives',skill:'Vocabulary',ex:'Yeni telefon.'},
+{id:'a4',tr:'Eski',en:'Old',cat:'Adjectives',skill:'Vocabulary',ex:'Eski bir araba.'},
+{id:'a5',tr:'İyi',en:'Good',cat:'Adjectives',skill:'Vocabulary',ex:'İyi bir fikir.'},
+{id:'a6',tr:'Kötü',en:'Bad',cat:'Adjectives',skill:'Vocabulary',ex:'Kötü hava.'},
+{id:'a7',tr:'Uzun',en:'Long / tall',cat:'Adjectives',skill:'Vocabulary',ex:'Uzun bir yol.'},
+{id:'a8',tr:'Kısa',en:'Short',cat:'Adjectives',skill:'Vocabulary',ex:'Kısa bir film.'},
+{id:'a9',tr:'Kolay',en:'Easy',cat:'Adjectives',skill:'Vocabulary',ex:'Türkçe kolay.'},
+{id:'a10',tr:'Zor',en:'Hard / difficult',cat:'Adjectives',skill:'Vocabulary',ex:'Bu soru zor.'},
+
+/* A2 — U16 Past tense */
+{id:'k1',tr:'Geldim',en:'I came',cat:'Past',skill:'Grammar',ex:'Dün eve geç geldim.'},
+{id:'k2',tr:'Gittim',en:'I went',cat:'Past',skill:'Grammar',ex:'Markete gittim.'},
+{id:'k3',tr:'Yedim',en:'I ate',cat:'Past',skill:'Grammar',ex:'Kahvaltı yedim.'},
+{id:'k4',tr:'Gördüm',en:'I saw',cat:'Past',skill:'Grammar',ex:'Onu dün gördüm.'},
+{id:'k5',tr:'Yaptım',en:'I did / made',cat:'Past',skill:'Grammar',ex:'Ödevimi yaptım.'},
+{id:'k6',tr:'Dün gece',en:'Last night',cat:'Past',skill:'Vocabulary',ex:'Dün gece geç yattım.'},
+{id:'k7',tr:'Geçen hafta',en:'Last week',cat:'Past',skill:'Vocabulary',ex:'Geçen hafta hastaydım.'},
+{id:'k8',tr:'Önce',en:'Before / ago',cat:'Past',skill:'Vocabulary',ex:'Bir saat önce geldi.'},
+
+/* A2 — U17 Future & plans */
+{id:'fu1',tr:'Geleceğim',en:'I will come',cat:'Future',skill:'Grammar',ex:'Yarın geleceğim.'},
+{id:'fu2',tr:'Gideceğim',en:'I will go',cat:'Future',skill:'Grammar',ex:'Tatile gideceğim.'},
+{id:'fu3',tr:'Yapacağım',en:'I will do',cat:'Future',skill:'Grammar',ex:'Yarın yapacağım.'},
+{id:'fu4',tr:'Plan',en:'Plan',cat:'Future',skill:'Vocabulary',ex:'Hafta sonu planın ne?'},
+{id:'fu5',tr:'Gelecek',en:'Future / next',cat:'Future',skill:'Vocabulary',ex:'Gelecek hafta.'},
+{id:'fu6',tr:'Belki',en:'Maybe',cat:'Future',skill:'Vocabulary',ex:'Belki yarın gelirim.'},
+{id:'fu7',tr:'Sonra',en:'Later / after',cat:'Future',skill:'Vocabulary',ex:'Sonra konuşuruz.'},
+
+/* A2 — U18 Shopping & money */
+{id:'s1',tr:'Alışveriş',en:'Shopping',cat:'Shopping',skill:'Vocabulary',ex:'Alışverişe çıktım.'},
+{id:'s2',tr:'Para',en:'Money',cat:'Shopping',skill:'Vocabulary',ex:'Param yok.'},
+{id:'s3',tr:'Fiyat',en:'Price',cat:'Shopping',skill:'Vocabulary',ex:'Fiyat ne kadar?'},
+{id:'s4',tr:'Ucuz',en:'Cheap',cat:'Shopping',skill:'Vocabulary',ex:'Çok ucuz!'},
+{id:'s5',tr:'Pahalı',en:'Expensive',cat:'Shopping',skill:'Vocabulary',ex:'Bu çok pahalı.'},
+{id:'s6',tr:'İndirim',en:'Discount / sale',cat:'Shopping',skill:'Vocabulary',ex:'İndirim var mı?'},
+{id:'s7',tr:'Kaç para?',en:'How much (money)?',cat:'Shopping',skill:'Speaking',ex:'Bu kaç para?'},
+{id:'s8',tr:'Almak',en:'To buy / take',cat:'Shopping',skill:'Grammar',ex:'Bir ekmek aldım.'},
+
+/* A2 — U19 Work & study */
+{id:'j1',tr:'İş',en:'Job / work',cat:'Work',skill:'Vocabulary',ex:'İşim çok yoğun.'},
+{id:'j2',tr:'Meslek',en:'Profession',cat:'Work',skill:'Vocabulary',ex:'Mesleğin ne?'},
+{id:'j3',tr:'Ofis',en:'Office',cat:'Work',skill:'Vocabulary',ex:'Ofiste çalışıyorum.'},
+{id:'j4',tr:'Toplantı',en:'Meeting',cat:'Work',skill:'Vocabulary',ex:'Saat 10’da toplantı var.'},
+{id:'j5',tr:'Öğretmen',en:'Teacher',cat:'Work',skill:'Vocabulary',ex:'O bir öğretmen.'},
+{id:'j6',tr:'Mühendis',en:'Engineer',cat:'Work',skill:'Vocabulary',ex:'Ben mühendisim.'},
+{id:'j7',tr:'Ders',en:'Lesson / class',cat:'Work',skill:'Vocabulary',ex:'Türkçe dersi var.'},
+{id:'j8',tr:'Sınav',en:'Exam',cat:'Work',skill:'Vocabulary',ex:'Yarın sınav var.'},
+
+/* A2 — U20 Feelings & people */
+{id:'e1',tr:'Mutlu',en:'Happy',cat:'Feelings',skill:'Vocabulary',ex:'Çok mutluyum.'},
+{id:'e2',tr:'Üzgün',en:'Sad',cat:'Feelings',skill:'Vocabulary',ex:'Bugün biraz üzgünüm.'},
+{id:'e3',tr:'Yorgun',en:'Tired',cat:'Feelings',skill:'Vocabulary',ex:'Çok yorgunum.'},
+{id:'e4',tr:'Kızgın',en:'Angry',cat:'Feelings',skill:'Vocabulary',ex:'Bana kızgın mısın?'},
+{id:'e5',tr:'Heyecanlı',en:'Excited',cat:'Feelings',skill:'Vocabulary',ex:'Çok heyecanlıyım.'},
+{id:'e6',tr:'Çalışkan',en:'Hardworking',cat:'People',skill:'Vocabulary',ex:'O çok çalışkan.'},
+{id:'e7',tr:'Tembel',en:'Lazy',cat:'People',skill:'Vocabulary',ex:'Bugün biraz tembelim.'},
+{id:'e8',tr:'Akıllı',en:'Smart',cat:'People',skill:'Vocabulary',ex:'Çok akıllı bir çocuk.'},
+{id:'e9',tr:'Nazik',en:'Kind / polite',cat:'People',skill:'Vocabulary',ex:'Çok nazik birisin.'},
+
+/* A2 — U21 Travel & holiday */
+{id:'tr1',tr:'Seyahat',en:'Travel / trip',cat:'Travel',skill:'Vocabulary',ex:'İyi seyahatler!'},
+{id:'tr2',tr:'Tatil',en:'Holiday / vacation',cat:'Travel',skill:'Vocabulary',ex:'Tatile çıkıyorum.'},
+{id:'tr3',tr:'Otel',en:'Hotel',cat:'Travel',skill:'Vocabulary',ex:'Otel deniz kenarında.'},
+{id:'tr4',tr:'Bilet',en:'Ticket',cat:'Travel',skill:'Vocabulary',ex:'İki bilet, lütfen.'},
+{id:'tr5',tr:'Pasaport',en:'Passport',cat:'Travel',skill:'Vocabulary',ex:'Pasaportunuz lütfen.'},
+{id:'tr6',tr:'Valiz',en:'Suitcase',cat:'Travel',skill:'Vocabulary',ex:'Valizim ağır.'},
+{id:'tr7',tr:'Plaj',en:'Beach',cat:'Travel',skill:'Vocabulary',ex:'Plaja gidelim.'},
+{id:'tr8',tr:'Deniz',en:'Sea',cat:'Travel',skill:'Vocabulary',ex:'Deniz çok güzel.'},
+{id:'tr9',tr:'Gezmek',en:'To wander / sightsee',cat:'Travel',skill:'Grammar',ex:'Şehri geziyoruz.'},
+{id:'tr10',tr:'Rezervasyon',en:'Reservation',cat:'Travel',skill:'Vocabulary',ex:'Rezervasyon yaptım.'},
+];
+
+/* ===================== UNITS (skill tree) ===================== */
+const UNITS=[
+{id:'U1',lvl:'A1',title:'Selamlaşma — Greetings',desc:'Hello, thanks & goodbye',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12'],
+ lesson:{title:'Greetings & politeness',body:'Greetings change by time of day: <b>Günaydın</b> (morning), <b>İyi günler</b> (day), <b>İyi akşamlar</b> (evening). The person leaving says <b>Hoşça kal</b>; the one staying replies <b>Güle güle</b>. “Thank you” is <b>Teşekkür ederim</b>; the reply is <b>Rica ederim</b>.'}},
+{id:'U2',lvl:'A1',title:'Tanışma — Introductions',desc:'Pronouns & meeting people',ids:['i1','i2','i3','i4','i5','i6','i7','i8','i9','i10','i11'],
+ lesson:{title:'Pronouns & “to be” suffix',body:'Pronouns: <b>ben, sen, o, biz, siz, onlar</b>. Turkish has no separate verb “to be” — add a suffix: <b>öğrenci-yim</b> (I am a student), <b>öğrenci-sin</b> (you are). Vowel harmony picks the vowel (-ım/-im/-um/-üm).'}},
+{id:'U3',lvl:'A1',title:'Sayılar — Numbers',desc:'Count to 100',ids:['n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12'],
+ lesson:{title:'Numbers',body:'1–10: bir, iki, üç, dört, beş, altı, yedi, sekiz, dokuz, on. Then yirmi(20), otuz(30)… yüz(100). The noun after a number stays singular: <b>iki kitap</b> (two books), never “kitaplar”.'}},
+{id:'U4',lvl:'A1',title:'Aile — Family',desc:'Talk about your family',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10'],
+ lesson:{title:'Possessive “my” + var/yok',body:'Add a possessive suffix for “my”: <b>anne-m</b> (my mother), <b>baba-m</b>. To say you have something use <b>var</b>: <b>Bir kardeşim var</b>. The negative is <b>yok</b>: <b>Param yok</b>.'}},
+{id:'U5',lvl:'A1',title:'Renkler — Colors',desc:'Describe with color',ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],
+ lesson:{title:'Adjectives before nouns',body:'Adjectives come <b>before</b> the noun and don’t change: <b>kırmızı elma</b> (red apple), <b>mavi deniz</b> (blue sea). Add <b>çok</b> for emphasis: <b>çok güzel</b>.'}},
+{id:'U6',lvl:'A1',title:'Yiyecekler — Food',desc:'Order food & drink',ids:['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12'],
+ lesson:{title:'Ordering politely',body:'Order with <b>… lütfen</b>: <b>Bir çay, lütfen</b>. Say what you want with <b>istiyorum</b>: <b>Su istiyorum</b>. Turkish breakfast (<b>kahvaltı</b>) — peynir, ekmek, çay — is a cultural cornerstone.'}},
+{id:'U7',lvl:'A1',title:'Fiiller — Present tense',desc:'Present continuous -iyor',ids:['v1','v2','v3','v4','v5','v6','v7','v8','v9','v10'],
+ lesson:{title:'Present continuous (-iyor)',body:'For “I am doing”, drop <b>-mek/-mak</b> and add <b>-iyor</b> + person ending: <b>git → gidiyorum</b> (I’m going), <b>iç → içiyorum</b>. The vowel harmonizes: -ıyor/-iyor/-uyor/-üyor.'}},
+{id:'U8',lvl:'A1',title:'Günlük — Daily phrases',desc:'Survival phrases & questions',ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'],
+ lesson:{title:'Question words & mı',body:'Question words: <b>ne</b> (what), <b>nerede</b> (where), <b>ne kadar</b> (how much). Yes/no questions add <b>mı/mi/mu/mü</b>: <b>Çay var mı?</b> = Is there tea?'}},
+{id:'U9',lvl:'A1',title:'Zaman — Time & days',desc:'Days, months, telling time',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12'],
+ lesson:{title:'Time & the locative -de',body:'<b>Saat kaç?</b> = What time is it? Days end in -günü when needed: <b>Pazartesi günü</b>. The locative <b>-de/-da</b> means “at/in/on”: <b>sabah-da</b> → sabahleyin, <b>okul-da</b> (at school).'}},
+{id:'U10',lvl:'A1',title:'Hava — Weather',desc:'Weather & seasons',ids:['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10'],
+ lesson:{title:'Weather expressions',body:'<b>Hava nasıl?</b> = How’s the weather? Use the verb <b>yağmak</b> for falling weather: <b>Yağmur yağıyor</b> (it’s raining), <b>Kar yağıyor</b> (it’s snowing). Seasons: ilkbahar, yaz, sonbahar, kış.'}},
+{id:'U11',lvl:'A1',title:'Vücut — Body & health',desc:'Body parts & the doctor',ids:['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'],
+ lesson:{title:'Saying what hurts',body:'Use the verb <b>ağrımak</b> (to ache) with a possessive: <b>Başım ağrıyor</b> = My head hurts, <b>Dişim ağrıyor</b>. To someone ill you say <b>Geçmiş olsun</b> (get well soon).'}},
+{id:'U12',lvl:'A1',title:'Ev — Home',desc:'Rooms & furniture',ids:['h1','h2','h3','h4','h5','h6','h7','h8','h9'],
+ lesson:{title:'Location with -de + var',body:'Combine locative + var: <b>Masada kitap var</b> = There’s a book on the table. <b>Mutfakta</b> (in the kitchen), <b>banyoda</b> (in the bathroom).'}},
+{id:'U13',lvl:'A1',title:'Şehir — City & places',desc:'Places around town',ids:['y1','y2','y3','y4','y5','y6','y7','y8','y9','y10'],
+ lesson:{title:'Going places with -e/-a (dative)',body:'The dative <b>-e/-a</b> means “to”: <b>okul-a</b> (to school), <b>market-e</b> (to the market). With the verb gitmek: <b>Markete gidiyorum</b>.'}},
+{id:'U14',lvl:'A1',title:'Ulaşım — Transport',desc:'Getting around & directions',ids:['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10'],
+ lesson:{title:'binmek & directions',body:'Use <b>binmek</b> (to board) with the dative: <b>Otobüse biniyorum</b>. Directions: <b>sağ</b> (right), <b>sol</b> (left), <b>Sağa dön</b> (turn right). <b>yakın/uzak</b> = near/far.'}},
+{id:'U15',lvl:'A1',title:'Sıfatlar — Adjectives',desc:'Opposites & describing',ids:['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10'],
+ lesson:{title:'Opposites & comparison',body:'Pairs: büyük/küçük, yeni/eski, iyi/kötü, uzun/kısa, kolay/zor. For “more” use <b>daha</b>: <b>daha büyük</b> (bigger). “The most” uses <b>en</b>: <b>en güzel</b>.'}},
+{id:'U16',lvl:'A2',title:'Geçmiş Zaman — Past',desc:'Definite past tense -di',ids:['k1','k2','k3','k4','k5','k6','k7','k8'],
+ lesson:{title:'Past tense (-di)',body:'Add <b>-di</b> + person ending (harmonizes to -dı/-di/-du/-dü, and -tı/-ti after voiceless): <b>gel → geldim</b> (I came), <b>git → gittim</b>, <b>ye → yedim</b>. Time markers: <b>dün</b>, <b>geçen hafta</b>.'}},
+{id:'U17',lvl:'A2',title:'Gelecek Zaman — Future',desc:'Future tense -ecek & plans',ids:['fu1','fu2','fu3','fu4','fu5','fu6','fu7'],
+ lesson:{title:'Future tense (-ecek/-acak)',body:'Add <b>-ecek/-acak</b> + person: <b>gel → geleceğim</b> (I will come), <b>git → gideceğim</b>, <b>yap → yapacağım</b>. Soften with <b>belki</b> (maybe): <b>Belki yarın geleceğim</b>.'}},
+{id:'U18',lvl:'A2',title:'Alışveriş — Shopping',desc:'Money & bargaining',ids:['s1','s2','s3','s4','s5','s6','s7','s8'],
+ lesson:{title:'Prices & buying',body:'Ask <b>Bu ne kadar?</b> / <b>Kaç para?</b> = How much? Useful: <b>ucuz</b> (cheap), <b>pahalı</b> (expensive), <b>indirim</b> (discount). The verb <b>almak</b> = to buy: <b>Bunu aldım</b>.'}},
+{id:'U19',lvl:'A2',title:'İş — Work & study',desc:'Jobs & the office',ids:['j1','j2','j3','j4','j5','j6','j7','j8'],
+ lesson:{title:'Professions & schedules',body:'Ask <b>Mesleğin ne?</b> = What’s your job? State it with the “to be” suffix: <b>mühendis-im</b> (I am an engineer). Time: <b>Saat 10’da toplantı var</b> (meeting at 10).'}},
+{id:'U20',lvl:'A2',title:'Duygular — Feelings',desc:'Emotions & character',ids:['e1','e2','e3','e4','e5','e6','e7','e8','e9'],
+ lesson:{title:'Describing how you feel',body:'Use the “to be” suffix: <b>mutlu-yum</b> (I’m happy), <b>yorgun-um</b> (I’m tired). Character adjectives describe people: <b>O çok çalışkan</b> (he/she is hardworking).'}},
+{id:'U21',lvl:'A2',title:'Seyahat — Travel',desc:'Holidays & getting around',ids:['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9','tr10'],
+ lesson:{title:'Travel essentials',body:'Wish someone <b>İyi seyahatler!</b> (have a good trip). Key words: <b>bilet</b> (ticket), <b>otel</b>, <b>rezervasyon</b>. The verb <b>gezmek</b> = to wander/sightsee: <b>Şehri geziyoruz</b>. This completes Yedi İklim A2! 🎉'}},
+];
+
+const BADGES=[
+{id:'first',ico:'🐣',name:'İlk Adım',desc:'First lesson done',test:s=>s.lessons>=1},
+{id:'streak3',ico:'🔥',name:'Üç Gün',desc:'3-day streak',test:s=>s.bestStreak>=3},
+{id:'streak7',ico:'🌟',name:'Bir Hafta',desc:'7-day streak',test:s=>s.bestStreak>=7},
+{id:'words50',ico:'📖',name:'Kelime Avcısı',desc:'50 words learned',test:s=>s.known>=50},
+{id:'words100',ico:'🧠',name:'Söz Ustası',desc:'100 words learned',test:s=>s.known>=100},
+{id:'rev100',ico:'🃏',name:'Tekrarcı',desc:'100 reviews',test:s=>s.reviews>=100},
+{id:'listen',ico:'👂',name:'Kulak Dolgunu',desc:'25 listening reps',test:s=>s.listen>=25},
+{id:'speak',ico:'🎤',name:'Konuşkan',desc:'25 speaking reps',test:s=>s.speak>=25},
+{id:'quiz10',ico:'✅',name:'Sınav Kralı',desc:'10 quizzes passed',test:s=>s.quiz>=10},
+{id:'a1done',ico:'⛰️',name:'A1 Bitti',desc:'All 15 A1 units',test:s=>s.a1Done>=15},
+{id:'a2done',ico:'🏔️',name:'Yedi İklim',desc:'All A1+A2 units',test:s=>s.unitsDone>=21},
+{id:'quest',ico:'🎯',name:'Görev Tamam',desc:'A daily quest done',test:s=>s.questsDone>=1},
+];
+
+/* ===================== STATE ===================== */
+const KEY='turkce_quest_v2';
+const todayStr=()=>new Date().toISOString().slice(0,10);
+function blank(){return{
+  xp:0,streak:0,bestStreak:0,freezes:2,lastActive:null,diff:1,
+  lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
+  cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
+  xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[]
+};}
+let S=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));return d?Object.assign(blank(),d):blank();}catch(e){return blank();}}
+function save(){localStorage.setItem(KEY,JSON.stringify(S));}
+
+const LEVELS=[{xp:0,name:'A1.1'},{xp:200,name:'A1.2'},{xp:450,name:'A1.3'},{xp:750,name:'A1.4'},
+{xp:1100,name:'A2.1'},{xp:1500,name:'A2.2'},{xp:2000,name:'A2.3'},{xp:2600,name:'A2.4'}];
+function levelInfo(){let cur=LEVELS[0],nxt=null;for(let i=0;i<LEVELS.length;i++){if(S.xp>=LEVELS[i].xp){cur=LEVELS[i];nxt=LEVELS[i+1]||null;}}return{cur,nxt};}
+
+function addXp(n,skill){S.xp+=n;if(skill&&S.skills[skill]!=null)S.skills[skill]+=n;const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+n;markActive();save();}
+function markActive(){const t=todayStr();if(S.lastActive===t)return;
+  if(S.lastActive){const diff=Math.round((new Date(t)-new Date(S.lastActive))/86400000);
+    if(diff===1)S.streak++;else if(diff===2&&S.freezes>0){S.freezes--;S.streak++;toast('❄️ Streak freeze used!');}else S.streak=1;}
+  else S.streak=1;
+  S.lastActive=t;S.bestStreak=Math.max(S.bestStreak,S.streak);}
+
+/* SRS (SM-2 lite) */
+function card(id){return S.cards[id]||(S.cards[id]={ease:2.5,interval:0,reps:0,due:todayStr(),learned:false});}
+function dueCards(){const t=todayStr();return VOCAB.filter(v=>S.cards[v.id]&&S.cards[v.id].learned&&S.cards[v.id].due<=t);}
+function learnedCards(){return VOCAB.filter(v=>S.cards[v.id]&&S.cards[v.id].learned);}
+function unlearned(){return VOCAB.filter(v=>!(S.cards[v.id]&&S.cards[v.id].learned));}
+function gradeCard(id,q){const c=card(id);c.reps++;
+  if(q===0){c.interval=0;c.ease=Math.max(1.3,c.ease-0.2);}
+  else{if(c.interval===0)c.interval=1;else if(c.interval===1)c.interval=q===3?6:3;else c.interval=Math.round(c.interval*(c.ease+(q-2)*0.15));c.ease=Math.min(3.0,c.ease+(q-2)*0.1);}
+  const d=new Date();d.setDate(d.getDate()+c.interval);c.due=d.toISOString().slice(0,10);
+  S.reviews++;if(q>0)addXp(5,VOCAB.find(v=>v.id===id).skill);else save();}
+
+/* ===================== HELPERS ===================== */
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2400);}
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';u.rate=.9;const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('tr'));if(vs[0])u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+function shuffle(a){return a.slice().sort(()=>Math.random()-0.5);}
+function norm(s){return (s||'').toLocaleLowerCase('tr-TR').replace(/[.,!?¡¿'"’]/g,'').trim();}
+function lev(a,b){const m=a.length,n=b.length,d=Array.from({length:m+1},(_,i)=>[i,...Array(n).fill(0)]);for(let j=0;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+
+/* ===================== HEADER & DASHBOARD ===================== */
+function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name;$('#cXp').textContent=S.xp;$('#cStreak').textContent=S.streak;}
+function renderDash(){
+  const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
+  const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
+  $('#cefrSub').textContent='Level '+cur.name;$('#cefrPct').textContent=pct+'%';$('#cefrBar').style.width=pct+'%';
+  $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–A2 track 🎉';
+  $('#streakBig').textContent=S.streak;$('#freezes').textContent=S.freezes;$('#bestStreak').textContent=S.bestStreak;
+  const known=learnedCards().length;$('#knownWords').textContent=known;$('#totalWords').textContent=VOCAB.length;
+  const reviewed=Object.values(S.cards).filter(c=>c.reps>0);const matured=reviewed.filter(c=>c.interval>=3).length;
+  $('#retention').textContent=reviewed.length?Math.round(matured/reviewed.length*100)+'%':'—';
+  $('#dueToday').textContent=dueCards().length;
+  $('#kUnits').textContent=Object.values(S.units).filter(u=>u.complete).length;
+  $('#kLessons').textContent=S.lessons;$('#kReviews').textContent=S.reviews;
+  $('#kLS').textContent=S.listen+' / '+S.speak;$('#kBadges').textContent=S.badges.length+' / '+BADGES.length;
+  renderHeat();renderCharts();
+}
+function renderHeat(){const wrap=$('#heat');wrap.innerHTML='';const arr=[];
+  for(let i=34;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);arr.push(d.toISOString().slice(0,10));}
+  arr.forEach(ds=>{const xp=S.xpLog[ds]||0;let l=0;if(xp>0)l=1;if(xp>=50)l=2;if(xp>=100)l=3;
+    const s=document.createElement('span');s.dataset.l=l;s.title=ds+' · '+xp+' XP';wrap.appendChild(s);});}
+let radarChart,lineChart;
+function renderCharts(){
+  const rc=$('#radar').getContext('2d');const labels=Object.keys(S.skills),data=Object.values(S.skills);
+  if(radarChart)radarChart.destroy();
+  radarChart=new Chart(rc,{type:'radar',data:{labels,datasets:[{data,fill:true,backgroundColor:'rgba(227,10,23,.18)',borderColor:'#e30a17',pointBackgroundColor:'#ff5a64',borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{r:{angleLines:{color:'#2a2f3e'},grid:{color:'#2a2f3e'},pointLabels:{color:'#9aa0b4',font:{size:11}},ticks:{display:false,backdropColor:'transparent'}}}}});
+  const lc=$('#line').getContext('2d');const ll=[],ld=[];
+  for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);ll.push(ds.slice(5));ld.push(S.xpLog[ds]||0);}
+  if(lineChart)lineChart.destroy();
+  lineChart=new Chart(lc,{type:'line',data:{labels:ll,datasets:[{data:ld,fill:true,tension:.35,backgroundColor:'rgba(54,201,139,.15)',borderColor:'#36c98b',pointRadius:2,borderWidth:2}]},
+    options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#9aa0b4',font:{size:9},maxRotation:0,autoSkip:true,maxTicksLimit:7}},y:{grid:{color:'#222637'},ticks:{color:'#9aa0b4',font:{size:10}},beginAtZero:true}}}});
+}
+
+/* ===================== DAILY QUEST ===================== */
+function ensureQuest(){const t=todayStr();if(S.quest.date!==t){S.quest={date:t,newWords:0,reviews:0,lesson:false,listen:false};save();}}
+function renderQuest(){
+  ensureQuest();
+  $('#questDate').textContent=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const goals=[
+    {ico:'📖',title:'Learn 5 new words',meta:S.quest.newWords+' / 5',done:S.quest.newWords>=5,xp:'+50'},
+    {ico:'🃏',title:'Review 10 cards',meta:S.quest.reviews+' / 10',done:S.quest.reviews>=10,xp:'+50'},
+    {ico:'📚',title:'Complete 1 lesson',meta:S.quest.lesson?'done':'0 / 1',done:S.quest.lesson,xp:'+20'},
+    {ico:'👂',title:'Do a listening drill',meta:S.quest.listen?'done':'0 / 1',done:S.quest.listen,xp:'+15'},
+  ];
+  const done=goals.filter(g=>g.done).length;
+  $('#questList').innerHTML=goals.map(g=>`<div class="quest ${g.done?'done':''}">
+    <div class="qdot">${g.done?'✓':g.ico}</div>
+    <div><div class="qtitle">${g.title}</div><div class="qmeta">${g.meta}</div></div>
+    <div class="qright">${g.xp}</div></div>`).join('');
+  $('#questStatus').textContent=done+' / 4 done';
+  if(done===4&&!S.quest.claimed){S.quest.claimed=true;S.questsDone++;addXp(50);checkBadges();toast('🎯 Quest complete! +50 XP');save();}
+  const checked=S.lastActive===todayStr();
+  $('#checkinBtn').disabled=checked;
+  $('#checkinMsg').textContent=checked?('✓ Checked in. Streak: '+S.streak+' days 🔥'):'You haven’t logged today yet.';
+}
+
+/* ===================== LEARN / UNITS ===================== */
+function unitProgress(u){const learned=u.ids.filter(id=>S.cards[id]&&S.cards[id].learned).length;return{learned,total:u.ids.length};}
+function unitUnlocked(idx){if(idx===0)return true;const prev=UNITS[idx-1];return S.units[prev.id]&&S.units[prev.id].complete;}
+function renderUnits(){
+  const wrap=$('#units');wrap.innerHTML='';let lastLvl='';
+  UNITS.forEach((u,idx)=>{
+    if(u.lvl!==lastLvl){lastLvl=u.lvl;const tag=document.createElement('div');tag.className='leveltag';tag.textContent=(u.lvl==='A1'?'CEFR A1 · Yedi İklim 1':'CEFR A2 · Yedi İklim 2');wrap.appendChild(tag);}
+    const{learned,total}=unitProgress(u);const complete=S.units[u.id]&&S.units[u.id].complete;const unlocked=unitUnlocked(idx);const pct=Math.round(learned/total*100);
+    const el=document.createElement('div');el.className='unit'+(complete?' complete':'')+(unlocked?'':' locked');
+    el.innerHTML=`<div class="unum">${complete?'✓':(unlocked?idx+1:'🔒')}</div>
+      <div class="uinfo"><h4>${u.title}</h4><p>${u.desc} · ${learned}/${total} words</p></div>
+      <div class="ubar"><div style="width:${pct}%"></div></div>`;
+    if(unlocked)el.onclick=()=>startUnit(u);
+    wrap.appendChild(el);
+  });
+}
+
+/* Unit flow: lesson -> learn -> quiz */
+let flow=null;
+function startUnit(u){switchView('practice');$('#practiceSub').textContent='Unit: '+u.title;flow={mode:'unit',unit:u,phase:'lesson'};renderLesson();}
+function renderLesson(){const u=flow.unit,l=u.lesson;
+  $('#practiceStage').innerHTML=`<div class="stage">
+    <div class="flash" style="max-width:580px"><div class="cat">📚 Lesson · ${u.title}</div>
+    <h2 style="margin:10px 0">${l.title}</h2>
+    <p style="font-size:15px;line-height:1.7;text-align:left;color:var(--txt)">${l.body}</p></div>
+    <button class="btn" id="lessonNext">Start learning words →</button></div>`;
+  $('#lessonNext').onclick=()=>{if(!S.units[u.id])S.units[u.id]={};
+    if(!S.units[u.id].lessonDone){S.units[u.id].lessonDone=true;S.lessons++;S.quest.lesson=true;addXp(20,'Reading');toast('📚 +20 XP');}
+    flow.phase='learn';flow.queue=u.ids.slice();flow.i=0;save();renderLearnCard();};
+}
+function renderLearnCard(){
+  if(flow.i>=flow.queue.length)return renderQuiz();
+  const v=VOCAB.find(x=>x.id===flow.queue[flow.i]);const c=card(v.id);const isNew=!c.learned;
+  $('#practiceStage').innerHTML=`<div class="stage">
+    <div class="pill">${flow.i+1} / ${flow.queue.length} · ${isNew?'NEW':'review'}</div>
+    <div class="flash"><div class="cat">${v.cat}</div>
+    <div class="tr">${v.tr} <button class="speak" title="listen">🔊</button></div>
+    <div class="en" id="rev" style="opacity:0">${v.en}</div>
+    <div class="ex" id="rex" style="opacity:0">“${v.ex}”</div></div>
+    <div id="learnCtrl"><button class="btn ghost" id="reveal">Show meaning</button></div></div>`;
+  $('.speak').onclick=()=>speak(v.tr);speak(v.tr);
+  $('#reveal').onclick=()=>{$('#rev').style.opacity=1;$('#rex').style.opacity=1;
+    $('#learnCtrl').innerHTML=`<div class="srsbtns"><button class="btn ghost" data-q="0">Again</button><button class="btn" data-q="2">Got it 👍</button><button class="btn green" data-q="3">Easy ⚡</button></div>`;
+    $$('#learnCtrl [data-q]').forEach(b=>b.onclick=()=>{const q=+b.dataset.q;
+      if(isNew){c.learned=true;addXp(10,v.skill);S.quest.newWords++;}gradeCard(v.id,q);S.quest.reviews++;flow.i++;save();renderLearnCard();});};
+}
+function renderQuiz(){flow.phase='quiz';flow.qIdx=0;flow.qScore=0;flow.qItems=shuffle(flow.unit.ids.map(id=>VOCAB.find(v=>v.id===id))).slice(0,6);nextQuiz();}
+function nextQuiz(){
+  if(flow.qIdx>=flow.qItems.length){
+    const pass=flow.qScore>=Math.ceil(flow.qItems.length*0.6);
+    if(pass){S.quiz++;addXp(15,'Grammar');if(!S.units[flow.unit.id])S.units[flow.unit.id]={};S.units[flow.unit.id].complete=true;checkBadges();save();
+      $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🎉</div><h2>Aferin! Unit complete</h2><p class="muted">Score ${flow.qScore}/${flow.qItems.length} · +15 XP · next unit unlocked</p></div><button class="btn" onclick="flow=null;switchView('learn')">Back to tree</button></div>`;
+      toast('🏆 Unit complete!');}
+    else{$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">😅</div><h2>Almost!</h2><p class="muted">Score ${flow.qScore}/${flow.qItems.length}. Need 60% — try again.</p></div><button class="btn" id="retry">Retry unit</button></div>`;
+      $('#retry').onclick=()=>startUnit(flow.unit);}
+    save();return;
+  }
+  const v=flow.qItems[flow.qIdx];const opts=[v.en];const pool=shuffle(VOCAB.filter(x=>x.id!==v.id));
+  while(opts.length<4)opts.push(pool.pop().en);
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">Quiz ${flow.qIdx+1} / ${flow.qItems.length}</div>
+    <div class="flash"><div class="cat">Choose the meaning</div><div class="tr">${v.tr} <button class="speak">🔊</button></div></div>
+    <div class="choices">${shuffle(opts).map(o=>`<div class="choice">${o}</div>`).join('')}</div></div>`;
+  $('.speak').onclick=()=>speak(v.tr);
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    if(ch.textContent===v.en){ch.classList.add('correct');flow.qScore++;}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
+    setTimeout(()=>{flow.qIdx++;nextQuiz();},800);});
+}
+
+/* ===================== PRACTICE HUB ===================== */
+function renderPracticeHome(){
+  flow=null;$('#practiceSub').textContent='Pick a drill. Reviews resurface words right before you’d forget them (SM-2).';
+  const due=dueCards().length,known=learnedCards().length;
+  $('#practiceStage').innerHTML=`<div class="modehub">
+    <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
+    <div class="mode" id="mListen"><div class="mi">👂</div><h4>Listening</h4><p>Hear it, pick the meaning</p><div class="cnt" style="color:var(--blue)">${known}</div></div>
+    <div class="mode" id="mSpeak"><div class="mi">🎤</div><h4>Speaking</h4><p>Say it back out loud</p><div class="cnt" style="color:var(--purple)">${known}</div></div>
+  </div>
+  <p class="muted center" style="margin-top:16px">${known<4?'Learn at least 4 words in the Learn tab to unlock Listening & Speaking.':'Listening & Speaking draw from your '+known+' learned words.'}</p>`;
+  $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
+  $('#mListen').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startListen();};
+  $('#mSpeak').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startSpeak();};
+}
+
+/* SRS review session */
+function startSrs(){flow={mode:'srs',queue:dueCards().map(v=>v.id),i:0};srsCard();}
+function srsCard(){
+  if(flow.i>=flow.queue.length){toast('🃏 Review done!');renderPracticeHome();return;}
+  const v=VOCAB.find(x=>x.id===flow.queue[flow.i]);
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">${flow.i+1} / ${flow.queue.length} · review</div>
+    <div class="flash"><div class="cat">${v.cat}</div><div class="tr">${v.tr} <button class="speak">🔊</button></div>
+    <div class="en" id="rev" style="opacity:0">${v.en}</div></div>
+    <div id="learnCtrl"><button class="btn ghost" id="reveal">Show meaning</button></div></div>`;
+  $('.speak').onclick=()=>speak(v.tr);
+  $('#reveal').onclick=()=>{$('#rev').style.opacity=1;speak(v.tr);
+    $('#learnCtrl').innerHTML=`<div class="srsbtns"><button class="btn ghost" data-q="0">Again</button><button class="btn" data-q="2">Good 👍</button><button class="btn green" data-q="3">Easy ⚡</button></div>`;
+    $$('#learnCtrl [data-q]').forEach(b=>b.onclick=()=>{gradeCard(v.id,+b.dataset.q);S.quest.reviews++;flow.i++;save();srsCard();});};
+}
+
+/* Listening drill */
+function startListen(){flow={mode:'listen',n:0,score:0,total:8,pool:shuffle(learnedCards())};listenCard();}
+function listenCard(){
+  if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">👂</div><h2>Listening done</h2><p class="muted">${flow.score}/${flow.total} correct · skill: Listening</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
+  const v=flow.pool[flow.n%flow.pool.length];const opts=[v.en];const pool=shuffle(VOCAB.filter(x=>x.id!==v.id));while(opts.length<4)opts.push(pool.pop().en);
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">👂 ${flow.n+1} / ${flow.total}</div>
+    <div class="flash"><div class="cat">Listen & choose the meaning</div>
+    <button class="micbig" id="play" style="background:linear-gradient(135deg,var(--blue),#2b6fb8)">🔊</button>
+    <p class="muted" style="margin:12px 0 0;font-size:13px">Tap to replay</p></div>
+    <div class="choices">${shuffle(opts).map(o=>`<div class="choice">${o}</div>`).join('')}</div></div>`;
+  $('#play').onclick=()=>speak(v.tr);speak(v.tr);
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.textContent===v.en;if(ok){ch.classList.add('correct');flow.score++;addXp(6,'Listening');}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
+    S.listen++;S.quest.listen=true;checkBadges();save();setTimeout(()=>{flow.n++;listenCard();},900);});
+}
+
+/* Speaking practice */
+function startSpeak(){flow={mode:'speak',n:0,score:0,total:6,pool:shuffle(learnedCards())};speakCard();}
+function speakCard(){
+  if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🎤</div><h2>Speaking done</h2><p class="muted">${flow.score}/${flow.total} good · skill: Speaking</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
+  const v=flow.pool[flow.n%flow.pool.length];
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🎤 ${flow.n+1} / ${flow.total}</div>
+    <div class="flash"><div class="cat">Say this in Turkish</div><div class="tr">${v.tr} <button class="speak">🔊</button></div>
+    <div class="ex" style="opacity:1">${v.en}</div></div>
+    <button class="micbig purple" id="mic">🎤</button>
+    <p class="heard" id="heard">${SR?'Tap the mic and say the word':'Speech recognition isn’t supported in this browser — use self-rate below'}</p>
+    <div id="spkCtrl"></div></div>`;
+  $('.speak').onclick=()=>speak(v.tr);
+  const adv=(good)=>{if(good){flow.score++;addXp(8,'Speaking');toast('👏 Güzel!');}S.speak++;checkBadges();save();setTimeout(()=>{flow.n++;speakCard();},700);};
+  if(SR){
+    $('#mic').onclick=()=>{const rec=new SR();rec.lang='tr-TR';rec.interimResults=false;rec.maxAlternatives=3;
+      $('#mic').classList.add('rec');$('#heard').textContent='Listening…';
+      rec.onresult=ev=>{const alts=[...ev.results[0]].map(r=>norm(r.transcript));const target=norm(v.tr);
+        const best=alts.some(a=>a===target||a.includes(target)||lev(a,target)<=Math.max(1,Math.floor(target.length*0.25)));
+        $('#mic').classList.remove('rec');$('#heard').innerHTML='You said: <b>'+(alts[0]||'—')+'</b>';
+        $('#spkCtrl').innerHTML=best?'<span class="pill" style="color:var(--green)">✓ Match!</span>':'<button class="btn ghost" id="next">Next →</button>';
+        if(best){adv(true);}else{$('#next')&&($('#next').onclick=()=>adv(false));}};
+      rec.onerror=()=>{$('#mic').classList.remove('rec');$('#heard').textContent='Mic error — use self-rate';selfRate();};
+      rec.onend=()=>$('#mic').classList.remove('rec');
+      try{rec.start();}catch(e){selfRate();}};
+  }else{$('#mic').onclick=()=>speak(v.tr);selfRate();}
+  function selfRate(){$('#spkCtrl').innerHTML=`<div class="srsbtns"><button class="btn ghost" id="hard">Try again</button><button class="btn green" id="ok">I said it 👍</button></div>`;
+    $('#ok').onclick=()=>adv(true);$('#hard').onclick=()=>speak(v.tr);}
+}
+
+/* ===================== BADGES ===================== */
+function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:learnedCards().length,reviews:S.reviews,quiz:S.quiz,questsDone:S.questsDone,listen:S.listen,speak:S.speak,
+  unitsDone:Object.values(S.units).filter(u=>u.complete).length,
+  a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
+function checkBadges(){const st=badgeStats();BADGES.forEach(b=>{if(b.test(st)&&!S.badges.includes(b.id)){S.badges.push(b.id);toast('🏆 Badge: '+b.name);}});save();}
+function renderBadges(){$('#badgeGrid').innerHTML=BADGES.map(b=>`<div class="badge ${S.badges.includes(b.id)?'unlocked':''}"><div class="ico">${b.ico}</div><div class="bname">${b.name}</div><div class="bdesc">${b.desc}</div></div>`).join('');}
+
+/* ===================== FLOW — adaptive endless roadmap ===================== */
+const ID2UNIT={};UNITS.forEach(u=>u.ids.forEach(id=>{ID2UNIT[id]=u;}));
+let F=null;
+const DIFF_LABEL={1:'Tanıma · Recognise',2:'Hatırlama · Recall',3:'Dinleme · Listen',4:'Yazma · Type',5:'Konuşma · Speak'};
+function flowMax(){const known=learnedCards().length;let m=2;if(known>=6)m=3;if(known>=10)m=4;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(known>=14&&SR)m=5;return m;}
+function curDiff(){return Math.min(S.diff,flowMax());}
+
+function renderFlowHome(){
+  $('#flowHud').innerHTML='';
+  const known=learnedCards().length,due=dueCards().length;
+  $('#flowStage').innerHTML=`<div class="flash" style="max-width:540px"><div class="cat">🚀 Flow Mode</div>
+    <h2 style="margin:10px 0">Endless adaptive roadmap</h2>
+    <p style="font-size:14px;line-height:1.7;color:var(--txt)">One continuous stream of challenges that picks your next step automatically — it gets <b>harder</b> when you're on a roll and <b>explains the grammar</b> when you slip. No menus, no dead ends.</p>
+    <p class="muted" style="font-size:12.5px">${known} words learned · ${due} due to review · starting at <b>${DIFF_LABEL[curDiff()]}</b></p></div>
+    <button class="btn purple" id="goFlow">▶ Start Flow</button>
+    <div class="kbd">⌨️ keys 1–4 pick answers · Enter to continue</div>`;
+  $('#goFlow').onclick=startFlow;
+}
+function startFlow(){F={combo:0,best:0,xp:0,n:0,recent:[]};switchView('flow');flowNext();}
+function endFlow(){const msg='Session: +'+F.xp+' XP · best combo '+F.best+'🔥';F=null;renderFlowHome();renderHeader();renderDash();toast(msg);}
+function updateFlowHud(){if(!F)return;const mom=Math.min(100,F.combo*12);
+  $('#flowHud').innerHTML=`<div class="hud combo">🔥 ${F.combo}</div><div class="hud sxp">+${F.xp} XP</div>
+    <div class="hud diff">🎚️ ${DIFF_LABEL[curDiff()]}</div>
+    <div class="momentum"><div style="width:${mom}%"></div></div>
+    <span class="endlink" id="endFlow">end</span>`;
+  $('#endFlow').onclick=endFlow;}
+function flowNext(){
+  window.__flowKey=null;F.n++;updateFlowHud();
+  const newOnes=unlearned(),due=dueCards(),learned=learnedCards();
+  const struggling=F.recent.slice(-4).filter(x=>!x).length>=2;
+  let item,isNew=false;
+  if(newOnes.length&&(learned.length<4||(!struggling&&F.n%3===0))){item=newOnes[0];isNew=true;}
+  else if(due.length){item=due[Math.floor(Math.random()*Math.min(due.length,6))];}
+  else if(learned.length){item=learned[Math.floor(Math.random()*learned.length)];}
+  else if(newOnes.length){item=newOnes[0];isNew=true;}
+  else{$('#flowStage').innerHTML='<div class="flash"><div class="tr">🎉</div><h2>Harika!</h2><p class="muted">You’ve learned every word — reviews will keep them sharp.</p></div>';return;}
+  if(isNew)return teachThenTest(item);
+  let d=curDiff();const c=card(item.id);if((c.miss||0)>=2)d=Math.min(d,2);
+  renderChallenge(item,d);
+}
+function teachThenTest(item){
+  const c=card(item.id),u=ID2UNIT[item.id];
+  $('#flowStage').innerHTML=`<div class="pill">✨ New word${u?' · '+u.title:''}</div>
+    <div class="flash"><div class="cat">${item.cat}</div><div class="tr">${item.tr} <button class="speak">🔊</button></div>
+    <div class="en" style="opacity:1">${item.en}</div><div class="ex" style="opacity:1">“${item.ex}”</div></div>
+    <button class="btn green" id="gotit">Got it 👍</button><div class="kbd">it'll be tested right away — press Enter</div>`;
+  $('.speak').onclick=()=>speak(item.tr);speak(item.tr);
+  const go=()=>{if(!c.learned){c.learned=true;addXp(10,item.skill);S.quest.newWords++;save();}renderChallenge(item,1);};
+  $('#gotit').onclick=go;window.__flowKey=e=>{if(e.key==='Enter')go();};
+}
+function renderChallenge(item,d){if(d===3)return chListen(item);if(d===4)return chType(item);if(d===5)return chSpeak(item);return chMC(item,d);}
+function mcChoices(item,field){const opts=[item[field]];const pool=shuffle(VOCAB.filter(x=>x.id!==item.id&&x[field]!==item[field]));
+  while(opts.length<4&&pool.length)opts.push(pool.pop()[field]);return shuffle(opts);}
+function bindChoices(correctText,item){
+  $$('.choice').forEach((ch,i)=>{const num=ch.querySelector('.num');if(num)num.textContent=i+1;
+    ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+      const ok=ch.dataset.val===correctText;
+      if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===correctText)c.classList.add('correct');});}
+      flowAnswer(ok,item);};});
+  window.__flowKey=e=>{if(e.key>='1'&&e.key<='4'){const el=$$('.choice')[+e.key-1];if(el)el.click();}};
+}
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+function chMC(item,d){
+  const ask=(d===2);const prompt=ask?item.en:item.tr;const correct=ask?item.tr:item.en;const field=ask?'tr':'en';
+  const opts=mcChoices(item,field);
+  $('#flowStage').innerHTML=`<div class="pill">${ask?'Pick the Turkish':'Pick the meaning'}</div>
+    <div class="flash"><div class="cat">${item.cat}</div><div class="tr">${prompt} ${ask?'':'<button class="speak">🔊</button>'}</div></div>
+    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}"><span class="num"></span>${o}</div>`).join('')}</div>`;
+  const sp=$('.speak');if(sp)sp.onclick=()=>speak(item.tr);if(!ask)speak(item.tr);
+  bindChoices(correct,item);
+}
+function chListen(item){
+  const opts=mcChoices(item,'en');
+  $('#flowStage').innerHTML=`<div class="pill">👂 Listen & choose</div>
+    <div class="flash"><div class="cat">What did you hear?</div>
+    <button class="micbig" id="play" style="background:linear-gradient(135deg,var(--blue),#2b6fb8)">🔊</button>
+    <p class="muted" style="margin:12px 0 0;font-size:12px">tap to replay</p></div>
+    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}"><span class="num"></span>${o}</div>`).join('')}</div>`;
+  $('#play').onclick=()=>speak(item.tr);speak(item.tr);
+  S.listen++;S.quest.listen=true;
+  bindChoices(item.en,item);
+}
+function chType(item){
+  $('#flowStage').innerHTML=`<div class="pill">⌨️ Type it in Turkish</div>
+    <div class="flash"><div class="cat">${item.cat}</div><div class="tr" style="font-size:26px">${item.en}</div>
+    <button class="speak" style="margin-top:8px">🔊 hint</button></div>
+    <input class="typein" id="tin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type Turkish…">
+    <button class="btn" id="tsub">Check</button><div class="kbd">press Enter to check</div>`;
+  $('.speak').onclick=()=>speak(item.tr);
+  const inp=$('#tin');setTimeout(()=>inp.focus(),60);
+  const submit=()=>{const a=norm(inp.value),t=norm(item.tr);if(!a)return;
+    const ok=a===t||lev(a,t)<=Math.max(1,Math.floor(t.length*0.2));
+    inp.style.borderColor=ok?'var(--green)':'var(--accent)';inp.disabled=true;$('#tsub').disabled=true;flowAnswer(ok,item);};
+  $('#tsub').onclick=submit;window.__flowKey=e=>{if(e.key==='Enter')submit();};
+}
+function chSpeak(item){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  $('#flowStage').innerHTML=`<div class="pill">🎤 Say it in Turkish</div>
+    <div class="flash"><div class="cat">${item.en}</div><div class="tr">${item.tr} <button class="speak">🔊</button></div></div>
+    <button class="micbig purple" id="mic">🎤</button><p class="heard" id="heard">tap & speak</p>`;
+  $('.speak').onclick=()=>speak(item.tr);S.speak++;
+  $('#mic').onclick=()=>{if(!SR){flowAnswer(true,item);return;}const rec=new SR();rec.lang='tr-TR';rec.maxAlternatives=3;
+    $('#mic').classList.add('rec');$('#heard').textContent='listening…';
+    rec.onresult=ev=>{const alts=[...ev.results[0]].map(r=>norm(r.transcript));const t=norm(item.tr);
+      const ok=alts.some(a=>a===t||a.includes(t)||lev(a,t)<=Math.max(1,Math.floor(t.length*0.25)));
+      $('#mic').classList.remove('rec');$('#heard').innerHTML='you said: <b>'+(alts[0]||'—')+'</b>';flowAnswer(ok,item);};
+    rec.onerror=()=>{$('#mic').classList.remove('rec');$('#heard').textContent='mic issue — counted, keep going';flowAnswer(true,item);};
+    rec.onend=()=>$('#mic').classList.remove('rec');try{rec.start();}catch(e){flowAnswer(true,item);}};
+}
+function flowAnswer(ok,item){
+  const c=card(item.id);
+  if(ok){F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
+  else{F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
+  S.quest.reviews++;F.recent.push(ok?1:0);if(F.recent.length>6)F.recent.shift();
+  adaptDiff();checkBadges();save();updateFlowHud();
+  if(ok){window.__flowKey=null;setTimeout(flowNext,650);}else showExplain(item);
+}
+function adaptDiff(){if(F.recent.length<4)return;const acc=F.recent.reduce((a,b)=>a+b,0)/F.recent.length;
+  if(acc>=0.8&&S.diff<flowMax()){S.diff++;F.recent=[];toast('⚡ Difficulty up — '+DIFF_LABEL[curDiff()]);}
+  else if(acc<=0.4&&S.diff>1){S.diff--;F.recent=[];toast('🧩 Easing up — more practice first');}
+  save();}
+function showExplain(item){
+  const u=ID2UNIT[item.id];const tip=u?('💡 <b>'+u.lesson.title+'</b><br>'+u.lesson.body):'';
+  const hard=(card(item.id).miss||0)>=2;
+  $('#flowStage').innerHTML=`<div class="explain">
+    <div class="x-tr">${item.tr} <button class="speak">🔊</button></div>
+    <div class="x-en">${item.en}</div><div class="x-ex">“${item.ex}”</div>
+    ${tip?`<div class="tip">${tip}</div>`:''}
+    ${hard?'<div class="tip" style="border:1px solid var(--accent2)">🔁 This one keeps catching you — easing the difficulty so it sticks.</div>':''}
+  </div><button class="btn green" id="cont">Got it — continue</button><div class="kbd">press Enter</div>`;
+  $('.speak').onclick=()=>speak(item.tr);speak(item.tr);
+  const go=()=>{window.__flowKey=null;flowNext();};
+  $('#cont').onclick=go;window.__flowKey=e=>{if(e.key==='Enter')go();};
+}
+
+/* ===================== NAV ===================== */
+function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('active',s.id===v));
+  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='badges')renderBadges();}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
+$('#dashFlow').onclick=startFlow;
+document.addEventListener('keydown',e=>{if(!document.getElementById('flow').classList.contains('active'))return;if(window.__flowKey)window.__flowKey(e);});
+$('#checkinBtn').onclick=()=>{markActive();checkBadges();save();renderHeader();renderQuest();renderDash();toast('✓ Checked in! 🔥 '+S.streak);};
+$('#resetBtn').onclick=()=>{if(confirm('Erase all progress?')){localStorage.removeItem(KEY);S=blank();renderAll();switchView('dash');}};
+
+function renderAll(){renderHeader();renderDash();renderQuest();renderUnits();renderBadges();}
+if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{};
+ensureQuest();checkBadges();renderAll();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('service-worker.js').catch(function(){});});}</script>
+</body>
+</html>
