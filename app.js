@@ -406,6 +406,8 @@ const BADGES=[
 {id:'dlg6',ico:'💬',name:'Konuşkan Usta',desc:'All 6 dialogues',test:s=>s.dlgDone>=6},
 {id:'cult12',ico:'🌹',name:'Gönül Eri',desc:'Full culture deck',test:s=>s.cultureN>=12},
 {id:'b1done',ico:'🎓',name:'B1 Yolcusu',desc:'All 29 units done',test:s=>s.unitsDone>=29},
+{id:'write25',ico:'✍️',name:'Kalem Ustası',desc:'25 writing reps',test:s=>s.writes>=25},
+{id:'read6',ico:'📖',name:'Kitap Kurdu',desc:'All 6 readings',test:s=>s.readDone>=6},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -454,6 +456,22 @@ const DIALOGUES=[
     {q:'What about tomorrow?',opts:['Snow','Sun','Rain','Wind'],a:'Rain'}]},
 ];
 
+/* ===== Reading corner — A1 micro-stories with comprehension checks ===== */
+const READING=[
+{id:'R1',ico:'🏠',title:'Ali’nin Evi',txt:'Ali’nin evi küçük ama çok güzel. Evde iki oda var. Mutfak temiz ve aydınlık.',
+ q:{q:'How is Ali’s house?',opts:['Big and old','Small but beautiful','Dark and cold','New and expensive'],a:'Small but beautiful'}},
+{id:'R2',ico:'☀️',title:'Sabah',txt:'Zeynep her sabah saat yedide kalkıyor. Kahvaltıda peynir, ekmek ve çay var. Sonra okula gidiyor.',
+ q:{q:'What time does Zeynep get up?',opts:['At six','At seven','At eight','At nine'],a:'At seven'}},
+{id:'R3',ico:'🛒',title:'Markette',txt:'Murat markette. İki ekmek, bir kilo elma ve süt alıyor. Toplam yüz lira ödüyor.',
+ q:{q:'How much does Murat pay?',opts:['Ten lira','Fifty lira','One hundred lira','Two hundred lira'],a:'One hundred lira'}},
+{id:'R4',ico:'🌧️',title:'Hava',txt:'Bugün hava soğuk ve yağmurlu. Elif şemsiyesini alıyor ve otobüse biniyor. Otobüs çok kalabalık.',
+ q:{q:'How is the bus?',opts:['Empty','Fast','Very crowded','Late'],a:'Very crowded'}},
+{id:'R5',ico:'🎂',title:'Doğum Günü',txt:'Yarın annemin doğum günü. Ona kırmızı çiçekler ve bir kitap alıyorum. Akşam ailece pasta yiyeceğiz.',
+ q:{q:'What is the narrator buying?',opts:['A cake and tea','Red flowers and a book','A red dress','Bread and milk'],a:'Red flowers and a book'}},
+{id:'R6',ico:'🐈',title:'Kedi',txt:'Bizim bir kedimiz var. Adı Boncuk. Boncuk bütün gün uyuyor, akşam evde koşuyor ve oynuyor.',
+ q:{q:'What does Boncuk do all day?',opts:['Eats','Runs','Sleeps','Plays outside'],a:'Sleeps'}},
+];
+
 /* ===== Culture deck — Yunus Emre & Turkish proverbs (1 card per 150 XP) ===== */
 const CULTURE=[
 {tr:'Sevelim, sevilelim.',en:'Let us love, let us be loved.',by:'Yunus Emre'},
@@ -478,7 +496,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -751,10 +769,13 @@ function renderPracticeHome(){
   flow=null;$('#practiceSub').textContent='Pick a drill. Reviews resurface words right before you’d forget them (SM-2).';
   const due=dueCards().length,known=learnedCards().length,weak=weakCards().length;
   const dlgDone=Object.values(S.dlg||{}).filter(Boolean).length;
+  const readDone=Object.values(S.read||{}).filter(Boolean).length;
   $('#practiceStage').innerHTML=`<div class="modehub">
     <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
     <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
     <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
+    <div class="mode" id="mRead"><div class="mi">📖</div><h4>Reading</h4><p>Micro-stories + question</p><div class="cnt" style="color:var(--gold)">${readDone}/${READING.length}</div></div>
+    <div class="mode" id="mWrite"><div class="mi">✍️</div><h4>Writing</h4><p>Type it in Turkish</p><div class="cnt" style="color:var(--accent2)">${S.writes||0}</div></div>
     <div class="mode" id="mListen"><div class="mi">👂</div><h4>Listening</h4><p>Hear it, pick the meaning</p><div class="cnt" style="color:var(--blue)">${known}</div></div>
     <div class="mode" id="mSpeak"><div class="mi">🎤</div><h4>Speaking</h4><p>Say it back out loud</p><div class="cnt" style="color:var(--purple)">${known}</div></div>
   </div>
@@ -762,8 +783,73 @@ function renderPracticeHome(){
   $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
   $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
   $('#mDlg').onclick=()=>dlgList();
+  $('#mRead').onclick=()=>readList();
+  $('#mWrite').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startWrite();};
   $('#mListen').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startListen();};
   $('#mSpeak').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startSpeak();};
+}
+/* ✍️ Writing drill — recall + spelling, credits the Writing skill */
+function startWrite(){flow={mode:'write',n:0,score:0,total:8,pool:shuffle(learnedCards())};writeCard();}
+function writeCard(){
+  if(!flow||!flow.pool)return;
+  if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">✍️</div><h2>Writing done</h2><p class="muted">${flow.score}/${flow.total} correct · skill: Writing</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
+  const v=flow.pool[flow.n%flow.pool.length];
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">✍️ ${flow.n+1} / ${flow.total}</div>
+    <div class="flash"><div class="cat">Write it in Turkish</div><div class="tr" style="font-size:26px">${v.en}</div>
+    <button class="speak" style="margin-top:8px">🔊 hint</button></div>
+    <input class="typein" id="win" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="type Turkish…">
+    <div class="row" style="justify-content:center"><button class="btn" id="wsub">Check</button>
+    <button class="btn ghost" id="wshow">Show answer</button></div><div class="kbd">press Enter to check</div></div>`;
+  $('.speak').onclick=()=>speak(v.tr);
+  const inp=$('#win');setTimeout(()=>inp.focus(),60);
+  const adv=(ok)=>{if(ok){flow.score++;addXp(8,'Writing');xpPop(8);}S.writes=(S.writes||0)+1;checkBadges();save();
+    setTimeout(()=>{if(flow){flow.n++;writeCard();}},800);};
+  const submit=()=>{const a=norm(inp.value),t=norm(v.tr);if(!a)return;
+    const ok=a===t||lev(a,t)<=Math.max(1,Math.floor(t.length*0.2));
+    inp.style.borderColor=ok?'var(--green)':'var(--accent)';inp.disabled=true;$('#wsub').disabled=true;
+    buzz(ok?12:60);snd(ok?'ok':'no');
+    if(!ok)$('#win').value=inp.value+'  →  '+v.tr;
+    adv(ok);};
+  $('#wsub').onclick=submit;
+  $('#wshow').onclick=()=>{inp.value=v.tr;speak(v.tr);inp.disabled=true;$('#wsub').disabled=true;snd('no');adv(false);};
+  window.__flowKey=e=>{if(e.key==='Enter')submit();};
+}
+/* 📖 Reading corner — comprehension on tiny authentic texts */
+function readList(){
+  flow={mode:'read'};
+  $('#practiceStage').innerHTML=`<div class="units">${READING.map(r=>`
+    <div class="unit ${S.read&&S.read[r.id]?'complete':''}" data-r="${r.id}">
+      <div class="unum">${S.read&&S.read[r.id]?'✓':r.ico}</div>
+      <div class="uinfo"><h4>${r.title}</h4><p>${r.txt.split(' ').length} words · read, listen, answer · +12 XP</p></div>
+    </div>`).join('')}</div>
+    <p class="center" style="margin-top:14px"><button class="btn ghost" id="backPR">← Back to practice</button></p>`;
+  $$('#practiceStage .unit').forEach(el=>el.onclick=()=>readView(READING.find(r=>r.id===el.dataset.r)));
+  $('#backPR').onclick=renderPracticeHome;
+}
+function readView(r){
+  $('#practiceStage').innerHTML=`<div class="pill">📖 ${r.title}</div>
+    <div class="flash" style="max-width:560px;text-align:left">
+      <p style="font-size:17px;line-height:2;margin:0">${r.txt}</p>
+    </div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn blue" id="readAloud">🔊 Read to me</button>
+      <button class="btn" id="toRQuiz">Question →</button>
+    </div>`;
+  $('#readAloud').onclick=()=>speakSeq(r.txt.split('. ').map(s=>s.trim()).filter(Boolean));
+  $('#toRQuiz').onclick=()=>readQuiz(r);
+}
+function readQuiz(r){
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">📖 ${r.title}</div>
+    <div class="flash"><div class="cat">Did you understand?</div><div class="tr" style="font-size:21px">${r.q.q}</div></div>
+    <div class="choices">${shuffle(r.q.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===r.q.a;buzz(ok?12:60);snd(ok?'ok':'no');
+    if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===r.q.a)c.classList.add('correct');});}
+    const first=!(S.read&&S.read[r.id]);
+    if(!S.read)S.read={};
+    if(ok){S.read[r.id]=true;addXp(first?12:4,'Reading');xpPop(first?12:4);}
+    S.reads=(S.reads||0)+1;checkBadges();save();
+    setTimeout(()=>readList(),1000);});
 }
 /* Weak-words drill — retrieval practice on your personal trouble list */
 function startWeak(){flow={mode:'srs',queue:shuffle(weakCards()).map(v=>v.id),i:0};srsCard();}
@@ -883,6 +969,7 @@ function speakCard(){
 /* ===================== BADGES ===================== */
 function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:learnedCards().length,reviews:S.reviews,quiz:S.quiz,questsDone:S.questsDone,listen:S.listen,speak:S.speak,
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
+  writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -965,7 +1052,8 @@ function teachThenTest(item){
   const go=()=>{if(!c.learned){c.learned=true;addXp(10,item.skill);S.quest.newWords++;save();}renderChallenge(item,1);};
   $('#gotit').onclick=go;window.__flowKey=e=>{if(e.key==='Enter')go();};
 }
-function renderChallenge(item,d){if(d===3)return chListen(item);if(d===4)return chType(item);if(d===5)return chSpeak(item);return chMC(item,d);}
+function renderChallenge(item,d){if(F)F.chType=d; /* remember modality so XP credits the skill you used */
+  if(d===3)return chListen(item);if(d===4)return chType(item);if(d===5)return chSpeak(item);return chMC(item,d);}
 function mcChoices(item,field){const opts=[item[field]];const pool=shuffle(VOCAB.filter(x=>x.id!==item.id&&x[field]!==item[field]));
   while(opts.length<4&&pool.length)opts.push(pool.pop()[field]);return shuffle(opts);}
 function bindChoices(correctText,item){
@@ -1036,7 +1124,9 @@ function chSpeak(item){
 }
 function flowAnswer(ok,item){
   const c=card(item.id);
-  if(ok){buzz(12);snd('ok');F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;xpPop(gain);addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
+  const mod=({3:'Listening',4:'Writing',5:'Speaking'})[F.chType]||item.skill; // credit the exercised skill
+  if(ok){buzz(12);snd('ok');F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;xpPop(gain);addXp(gain,mod);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);
+    if(F.chType===4)S.writes=(S.writes||0)+1;}
   else{buzz(60);snd('no');F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
   S.quest.reviews++;F.recent.push(ok?1:0);if(F.recent.length>6)F.recent.shift();
   adaptDiff();checkBadges();save();updateFlowHud();
@@ -1092,8 +1182,9 @@ function bootGuest(){KEY=KEY_BASE;S=load();localStorage.setItem('tq_mode','guest
 function mergeStates(a,b){
   if(!a)return b;if(!b)return a;
   const m=blank(),t=todayStr();
-  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil']
+  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil','writes','reads']
     .forEach(k=>m[k]=Math.max(a[k]||0,b[k]||0));
+  m.read=Object.assign({},a.read||{},b.read||{});
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});

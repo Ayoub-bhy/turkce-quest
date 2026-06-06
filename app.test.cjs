@@ -134,7 +134,8 @@ bindChoices,chMC,chListen,chType,chSpeak,flowAnswer,adaptDiff,showExplain,
 badgeStats,checkBadges,switchView,
 getS:()=>S,setS:v=>{S=v;},getF:()=>F,setF:v=>{F=v;},getKEY:()=>KEY,
 getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;},
-snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND};`;
+snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND,
+READING,startWrite,writeCard,readList,readView,readQuiz};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -369,7 +370,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -764,6 +765,84 @@ test('endFlow shows summary with celebration and chest', async () => {
   q('#flowAgain').click();                       // keep flowing
   Math.random = realRandom;
   await sleep(30);
+});
+test('reading data integrity: answers among options, unique ids', () => {
+  assert.equal(A.READING.length, 6);
+  const seen = new Set();
+  for (const r of A.READING) {
+    assert.ok(r.q.opts.includes(r.q.a), r.id);
+    assert.ok(r.txt.length > 30 && r.title && r.ico);
+    assert.ok(!seen.has(r.id)); seen.add(r.id);
+  }
+});
+test('writing drill: correct, fuzzy, wrong, show-answer, empty guard, finish', async () => {
+  const S = freshS();
+  A.VOCAB.slice(0, 6).forEach(v => S.cards[v.id] = { learned: true, reps: 1, interval: 1, due: '2999-01-01', ease: 2.5 });
+  A.startWrite();
+  let v = A.getFlow().pool[0];
+  q('#win').value = '';   q('#wsub').click();          // empty input guard
+  q('#win').value = v.tr; q('#wsub').click();          // exact correct → +8 Writing
+  await sleep(15);
+  const w1 = S.skills.Writing;
+  assert.ok(w1 >= 8, 'Writing XP credited');
+  v = A.getFlow().pool[A.getFlow().n % A.getFlow().pool.length];
+  q('#win').value = 'zzzzzzzz'; q('#wsub').click();    // wrong → shows answer
+  await sleep(15);
+  q('#wshow').click();                                  // show-answer path
+  await sleep(15);
+  A.setFlow({ mode: 'write', n: 99, total: 8, score: 5, pool: [v] });
+  A.writeCard();                                        // finished screen
+  q('#again').click();
+  A.setFlow(null); A.writeCard();                       // stale guard
+  assert.ok(S.writes >= 3);
+});
+test('reading corner: list, view, read-aloud, quiz right/wrong, repeat XP', async () => {
+  const S = freshS();
+  A.readList();
+  A.readView(A.READING[0]);
+  q('#readAloud').click();
+  q('#toRQuiz').click();
+  let els = resetChoices();
+  els[0].dataset.val = A.READING[0].q.a; els[0].click();          // correct first time → +12 Reading
+  await sleep(15);
+  assert.ok(S.read.R1, 'story marked read');
+  assert.ok(S.skills.Reading >= 12);
+  A.readQuiz(A.READING[0]);
+  els = resetChoices();
+  els[0].dataset.val = A.READING[0].q.a; els[0].click();          // repeat → +4
+  await sleep(15);
+  A.readQuiz(A.READING[1]);
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[0].dataset.val = A.READING[1].q.a; els[1].click(); // wrong branch
+  await sleep(15);
+  assert.ok(!S.read.R2, 'wrong answer does not mark story');
+  assert.ok(S.reads >= 3);
+});
+test('flow credits the exercised modality, not the word category', () => {
+  const S = freshS();
+  const item = A.VOCAB.find(v => v.skill === 'Vocabulary');
+  A.card(item.id).learned = true;
+  A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [], chType: 3 });   // listening challenge
+  A.flowAnswer(true, item);
+  assert.ok(S.skills.Listening >= 5, 'Listening credited');
+  A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [], chType: 4 });   // typing challenge
+  A.flowAnswer(true, item);
+  assert.ok(S.skills.Writing >= 5, 'Writing credited');
+  assert.equal(S.writes, 1, 'flow typing counts as a write');
+  A.setF({ combo: 0, best: 0, xp: 0, n: 1, recent: [], chType: 5 });   // speaking challenge
+  A.flowAnswer(true, item);
+  assert.ok(S.skills.Speaking >= 5, 'Speaking credited');
+  A.renderChallenge(item, 3);                                          // renderChallenge stamps chType
+  assert.equal(A.getF().chType, 3);
+});
+test('merge keeps read map and writes/reads counters', () => {
+  const a = A.blank(), b = A.blank();
+  a.read = { R1: true }; b.read = { R2: true };
+  a.writes = 9; b.writes = 4; b.reads = 7;
+  const m = A.mergeStates(a, b);
+  assert.ok(m.read.R1 && m.read.R2);
+  assert.equal(m.writes, 9);
+  assert.equal(m.reads, 7);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;
