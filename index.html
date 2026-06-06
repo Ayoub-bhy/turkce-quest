@@ -197,6 +197,19 @@
     nav.tabs button[data-v="badges"]{display:none}
   }
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+  /* Lovable design port: greeting, progress ring, trophy markers */
+  .hello{margin:2px 0 16px}
+  .hello h2{margin:0;font-size:22px;letter-spacing:.2px}
+  .hello p{margin:4px 0 0;font-size:12.5px}
+  .ringrow{display:flex;align-items:center;gap:20px;margin-top:10px}
+  .ringbg{fill:none;stroke:var(--panel2);stroke-width:10}
+  .ringfg{fill:none;stroke:url(#ringGrad);stroke-width:10;stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;
+    transform:rotate(-90deg);transform-origin:60px 60px;transition:stroke-dashoffset .8s ease}
+  .ringpct{fill:var(--txt);font-size:23px;font-weight:800;text-anchor:middle}
+  .ringsub{fill:var(--muted);font-size:9.5px;text-anchor:middle}
+  .wmark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bg);opacity:.9}
+  .wlabels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px}
+  @media(hover:hover){.card{transition:transform .15s ease}.card:hover{transform:translateY(-2px)}}
 </style>
 </head>
 <body>
@@ -244,6 +257,7 @@
 
   <!-- DASHBOARD -->
   <section class="view active" id="dash">
+    <div class="hello"><h2 id="helloName">Merhaba! 👋</h2><p class="muted" id="helloSub"></p></div>
     <div class="flowcta">
       <div><h3>🚀 Continue your roadmap</h3>
         <p>Adaptive, endless practice — one challenge flows straight into the next, gets harder when you're cruising, and explains more the moment you stumble.</p></div>
@@ -253,8 +267,21 @@
       <div class="card">
         <h3>CEFR Progress</h3>
         <div class="sub" id="cefrSub">Level A1.1</div>
-        <div class="big" id="cefrPct">0%</div>
-        <div class="progwrap"><div id="cefrBar" style="width:0%"></div></div>
+        <div class="ringrow">
+          <svg class="ring" viewBox="0 0 120 120" width="108" height="108" aria-hidden="true">
+            <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#f6c34a"/><stop offset="1" stop-color="#ff5a64"/>
+            </linearGradient></defs>
+            <circle cx="60" cy="60" r="52" class="ringbg"/>
+            <circle cx="60" cy="60" r="52" class="ringfg" id="ringFg"/>
+            <text x="60" y="58" class="ringpct" id="cefrPct">0%</text>
+            <text x="60" y="76" class="ringsub" id="ringTo">to next</text>
+          </svg>
+          <div>
+            <div class="big" id="cefrLevel" style="color:var(--accent2)">A1.1</div>
+            <div class="sub" style="margin:6px 0 0" id="cefrXpFrac"></div>
+          </div>
+        </div>
         <div class="sub" style="margin:10px 0 0" id="cefrNext"></div>
         <div class="sub" style="margin:6px 0 0;color:var(--blue)" id="cefrEta"></div>
       </div>
@@ -290,8 +317,10 @@
         <h3>🏅 Weekly Goal</h3>
         <div class="sub">Resets every Monday — earn your trophy</div>
         <div class="big" style="color:var(--gold)"><span id="weekXp">0</span><span style="font-size:16px;color:var(--muted)"> XP</span> <span id="weekTrophy"></span></div>
-        <div class="weekbar"><div id="weekBar" style="width:0%"></div></div>
-        <div class="sub" style="margin:10px 0 0" id="weekNext"></div>
+        <div class="weekbar"><div id="weekBar" style="width:0%"></div>
+          <span class="wmark" style="left:20%"></span><span class="wmark" style="left:46.7%"></span></div>
+        <div class="wlabels"><span>🥉 300</span><span>🥈 700</span><span>🏆 1500</span></div>
+        <div class="sub" style="margin:8px 0 0" id="weekNext"></div>
       </div>
       <div class="card">
         <h3>Activity Heatmap</h3>
@@ -940,7 +969,15 @@ function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name
 function renderDash(){
   const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
   const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
-  $('#cefrSub').textContent='Level '+cur.name;$('#cefrPct').textContent=pct+'%';$('#cefrBar').style.width=pct+'%';
+  $('#cefrSub').textContent='Level '+cur.name;$('#cefrPct').textContent=pct+'%';
+  $('#cefrLevel').textContent=cur.name;
+  $('#cefrXpFrac').textContent=S.xp+' / '+(nxt?hi:S.xp)+' XP';
+  $('#ringTo').textContent=nxt?('to '+nxt.name):'max level';
+  $('#ringFg').style.strokeDashoffset=326.7*(1-pct/100);
+  const nm=window.TQ_NAME;
+  $('#helloName').textContent='Merhaba'+(nm?', '+nm:'')+'! 👋';
+  const subs=['Az az, her gün — başarı böyle gelir.','Bugün 5 dakika yeter. Hadi!','Tekrar etmek, hatırlamaktır. Devam!'];
+  $('#helloSub').textContent=subs[new Date().getDate()%subs.length];
   $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–B1 track 🎉';
   /* 📅 ETA to next level — based on your average pace over the last 7 days */
   let sum7=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);sum7+=S.xpLog[d.toISOString().slice(0,10)]||0;}
@@ -966,7 +1003,7 @@ function renderWeek(){
   const earned=WEEK_TIERS.filter(x=>w>=x.xp);
   $('#weekTrophy').textContent=earned.length?earned[earned.length-1].t.split(' ')[0]:'';
   const next=WEEK_TIERS.find(x=>w<x.xp);
-  $('#weekBar').style.width=(next?Math.min(100,Math.round(w/next.xp*100)):100)+'%';
+  $('#weekBar').style.width=Math.min(100,Math.round(w/1500*100))+'%';
   $('#weekNext').textContent=next?((next.xp-w)+' XP to '+next.t):'🏆 Gold week — efsane!';
 }
 function renderHeat(){const wrap=$('#heat');wrap.innerHTML='';const arr=[];
@@ -1398,7 +1435,7 @@ function setSync(t){const c=$('#syncChip');if(c){c.style.display='';$('#syncTxt'
 function showAuth(){$('#authScreen').style.display='grid';}
 function hideAuth(){$('#authScreen').style.display='none';}
 function bootApp(){ensureQuest();checkBadges();renderAll();}
-function bootGuest(){KEY=KEY_BASE;S=load();localStorage.setItem('tq_mode','guest');
+function bootGuest(){KEY=KEY_BASE;S=load();localStorage.setItem('tq_mode','guest');window.TQ_NAME=null;
   $('#userChip').style.display='none';setSync('local only');hideAuth();bootApp();}
 
 /* merge two states — keeps the best of both devices, never loses progress */
@@ -1474,6 +1511,7 @@ if(typeof firebase!=='undefined'){
       localStorage.setItem(KEY,JSON.stringify(S));pushCloud(true);
       $('#userChip').style.display='';
       $('#userChip').title=user.email||'';
+      window.TQ_NAME=(user.displayName||'').split(' ')[0]||null;
       $('#uName').textContent=(user.displayName||user.email||'me').split(' ')[0];
       const av=$('#uAvatar');if(user.photoURL){av.src=user.photoURL;av.style.display='';}else av.style.display='none';
       hideAuth();bootApp();
