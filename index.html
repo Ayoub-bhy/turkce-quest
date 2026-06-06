@@ -215,6 +215,15 @@
   .wmark{position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--bg);opacity:.9}
   .wlabels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:5px}
   @media(hover:hover){.card{transition:transform .15s ease}.card:hover{transform:translateY(-2px)}}
+  /* Delight pass: press feel, +XP pops, onboarding */
+  .btn:active,.choice:active,.mode:active,.unit:active{transform:scale(.97)}
+  .xppop{position:fixed;top:84px;right:24px;z-index:250;font-weight:800;font-size:20px;color:var(--green);
+    pointer-events:none;animation:xpfly .9s ease forwards;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+  @keyframes xpfly{0%{opacity:0;transform:translateY(14px) scale(.8)}25%{opacity:1;transform:translateY(0) scale(1.1)}100%{opacity:0;transform:translateY(-34px) scale(1)}}
+  .firststeps{background:linear-gradient(135deg,rgba(54,201,139,.16),rgba(246,195,74,.12));border:1px solid var(--green);
+    border-radius:16px;padding:18px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .firststeps h3{margin:0 0 4px;font-size:16px}
+  .firststeps p{margin:0;font-size:13px;color:var(--muted);line-height:1.6}
 </style>
 </head>
 <body>
@@ -243,6 +252,7 @@
       <div class="chip lvl">🎖️ <span><b id="cLevel">A1.1</b></span></div>
       <div class="chip xp">⚡ <b id="cXp">0</b> XP</div>
       <div class="chip streak">🔥 <b id="cStreak">0</b> gün</div>
+      <div class="chip" id="sndChip" style="cursor:pointer" title="Toggle sounds">🔊</div>
       <div class="chip sync" id="syncChip" style="display:none" title="Tap to sync now">☁️ <b id="syncTxt">…</b></div>
       <div class="chip user" id="userChip" style="display:none">
         <img id="uAvatar" alt="" style="display:none"><span id="uName"></span>
@@ -262,10 +272,12 @@
 
   <!-- DASHBOARD -->
   <section class="view active" id="dash">
-    <div class="hello"><h2 id="helloName">Merhaba! 👋</h2><p class="muted" id="helloSub"></p></div>
+    <div class="hello"><h2 id="helloName">Merhaba! 👋</h2><p class="muted" id="helloSub"></p>
+      <span class="pill" id="helloQuest" style="cursor:pointer;margin-top:8px;display:inline-block">🎯 Quest 0/4</span></div>
+    <div id="fsWrap"></div>
     <div class="flowcta">
       <div><h3>🚀 Continue your roadmap</h3>
-        <p>Adaptive, endless practice — one challenge flows straight into the next, gets harder when you're cruising, and explains more the moment you stumble.</p></div>
+        <p id="ctaSub">Adaptive, endless practice — one challenge flows straight into the next.</p></div>
       <button class="btn purple" id="dashFlow">▶ Enter Flow</button>
     </div>
     <div class="grid g3">

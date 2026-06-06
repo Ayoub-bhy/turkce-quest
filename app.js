@@ -511,7 +511,7 @@ function openChest(reason){
   if(r<0.4){const amt=20+Math.floor(Math.random()*5)*10;S.xp+=amt;ensureWeek();S.week.xp+=amt;const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+amt;msg='+'+amt+' bonus XP ⚡';}
   else if(r<0.7){S.freezes=Math.min(5,(S.freezes||0)+1);msg='+1 Streak Freeze ❄️';}
   else{S.boostUntil=Date.now()+15*60*1000;msg='2× XP for 15 minutes! 🚀';}
-  save();renderHeader();celebrate();buzz([20,30,20,30,60]);toast('🎁 '+reason+' — '+msg);}
+  save();renderHeader();celebrate();buzz([20,30,20,30,60]);snd('chest');toast('🎁 '+reason+' — '+msg);}
 
 /* SRS (SM-2 lite) */
 function card(id){return S.cards[id]||(S.cards[id]={ease:2.5,interval:0,reps:0,due:todayStr(),learned:false});}
@@ -528,6 +528,26 @@ function gradeCard(id,q){const c=card(id);c.reps++;
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2400);}
 function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+/* 🎵 Feedback sounds — tiny WebAudio tones, no assets, mutable */
+let SND={on:localStorage.getItem('tq_snd')!=='0',ctx:null};
+function sndCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!SND.ctx)SND.ctx=new AC();return SND.ctx;}
+function tone(ctx,f,t0,d,type,g0){const o=ctx.createOscillator(),g=ctx.createGain();o.type=type||'sine';o.frequency.value=f;
+  g.gain.setValueAtTime(g0||.12,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+d);}
+function snd(kind){try{
+  if(!SND.on)return;const ctx=sndCtx();if(!ctx)return;const t=ctx.currentTime;
+  if(kind==='ok'){tone(ctx,880,t,.12);tone(ctx,1318.5,t+.08,.18);}
+  else if(kind==='no'){tone(ctx,180,t,.2,'square',.05);}
+  else if(kind==='chest'){[523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(ctx,f,t+i*.09,.22));}
+  else if(kind==='quest'){tone(ctx,659.25,t,.15);tone(ctx,880,t+.12,.25);}
+}catch(e){}}
+function toggleSnd(){SND.on=!SND.on;localStorage.setItem('tq_snd',SND.on?'1':'0');
+  $('#sndChip').textContent=SND.on?'🔊':'🔇';toast(SND.on?'🔊 Sounds on':'🔇 Sounds off');if(SND.on)snd('ok');}
+/* ✨ Floating XP gain */
+function xpPop(n){
+  try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+  const s=document.createElement('div');s.className='xppop';s.textContent='+'+n+' XP';
+  document.body.appendChild(s);setTimeout(()=>s.remove(),900);
+}
 function celebrate(){ /* Duolingo-style confetti — clear positive feedback */
   try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
   const c=document.createElement('div');c.className='confetti';
@@ -574,6 +594,18 @@ function renderDash(){
   $('#helloName').textContent='Merhaba'+(nm?', '+nm:'')+'! 👋';
   const subs=['Az az, her gün — başarı böyle gelir.','Bugün 5 dakika yeter. Hadi!','Tekrar etmek, hatırlamaktır. Devam!'];
   $('#helloSub').textContent=subs[new Date().getDate()%subs.length];
+  /* one-glance status: quest pill + personalised CTA */
+  ensureQuest();
+  const qd=(S.quest.newWords>=5?1:0)+(S.quest.reviews>=10?1:0)+(S.quest.lesson?1:0)+(S.quest.listen?1:0);
+  $('#helloQuest').textContent=qd>=4?'🎯 Quest complete ✓':'🎯 Quest '+qd+'/4';
+  const dueN=dueCards().length;
+  $('#ctaSub').textContent=(dueN?dueN+' cards due for review · ':'')+'quest '+qd+'/4 · adapts to you · ~5 min';
+  /* first-time onboarding — disappears automatically after first XP */
+  $('#fsWrap').innerHTML=S.xp===0?`<div class="firststeps">
+    <div><h3>🐣 Hoş geldin! Start in 3 tiny steps</h3>
+    <p>1️⃣ Tap <b>Start learning</b> · 2️⃣ learn your first 5 words (we say them out loud) · 3️⃣ open your first 🎁 reward chest. That’s it — the app handles the rest.</p></div>
+    <button class="btn green" id="fsStart">▶ Start learning</button></div>`:'';
+  if(S.xp===0)$('#fsStart').onclick=startFlow;
   $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–B1 track 🎉';
   /* 📅 ETA to next level — based on your average pace over the last 7 days */
   let sum7=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);sum7+=S.xpLog[d.toISOString().slice(0,10)]||0;}
@@ -637,7 +669,7 @@ function renderQuest(){
     <div><div class="qtitle">${g.title}</div><div class="qmeta">${g.meta}</div></div>
     <div class="qright">${g.xp}</div></div>`).join('');
   $('#questStatus').textContent=done+' / 4 done';
-  if(done===4&&!S.quest.claimed){S.quest.claimed=true;S.questsDone++;addXp(50);checkBadges();toast('🎯 Quest complete! +50 XP');save();setTimeout(()=>openChest('Daily quest'),1200);}
+  if(done===4&&!S.quest.claimed){S.quest.claimed=true;S.questsDone++;addXp(50);checkBadges();snd('quest');toast('🎯 Quest complete! +50 XP');save();setTimeout(()=>openChest('Daily quest'),1200);}
   const checked=S.lastActive===todayStr();
   $('#checkinBtn').disabled=checked;
   $('#checkinMsg').textContent=checked?('✓ Checked in. Streak: '+S.streak+' days 🔥'):'You haven’t logged today yet.';
@@ -709,7 +741,7 @@ function nextQuiz(){
     <div class="choices">${shuffle(opts).map(o=>`<div class="choice">${o}</div>`).join('')}</div></div>`;
   $('.speak').onclick=()=>speak(v.tr);
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
-    if(ch.textContent===v.en){buzz(12);ch.classList.add('correct');flow.qScore++;}else{buzz(60);ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
+    if(ch.textContent===v.en){buzz(12);snd('ok');ch.classList.add('correct');flow.qScore++;}else{buzz(60);snd('no');ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
     setTimeout(()=>{if(flow){flow.qIdx++;nextQuiz();}},800);});
 }
 
@@ -778,7 +810,7 @@ function dlgQuiz(d,qi,score){
     <div class="flash"><div class="cat">${d.title}</div><div class="tr" style="font-size:22px">${q.q}</div></div>
     <div class="choices">${shuffle(q.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
-    const ok=ch.dataset.val===q.a;buzz(ok?12:60);
+    const ok=ch.dataset.val===q.a;buzz(ok?12:60);snd(ok?'ok':'no');
     if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===q.a)c.classList.add('correct');});}
     setTimeout(()=>dlgQuiz(d,qi+1,score+(ok?1:0)),900);});
 }
@@ -812,7 +844,7 @@ function listenCard(){
     <div class="choices">${shuffle(opts).map(o=>`<div class="choice">${o}</div>`).join('')}</div></div>`;
   $('#play').onclick=()=>speak(v.tr);speak(v.tr);
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
-    const ok=ch.textContent===v.en;if(ok){ch.classList.add('correct');flow.score++;addXp(6,'Listening');}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
+    const ok=ch.textContent===v.en;snd(ok?'ok':'no');if(ok){ch.classList.add('correct');flow.score++;addXp(6,'Listening');}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
     S.listen++;S.quest.listen=true;checkBadges();save();setTimeout(()=>{if(flow){flow.n++;listenCard();}},900);});
 }
 
@@ -886,8 +918,23 @@ function renderFlowHome(){
   $('#goFlow').onclick=startFlow;
 }
 function startFlow(){F={combo:0,best:0,xp:0,n:0,recent:[]};switchView('flow');flowNext();}
-function endFlow(){const sx=F.xp,msg='Session: +'+F.xp+' XP · best combo '+F.best+'🔥';F=null;renderFlowHome();renderHeader();renderDash();toast(msg);
-  if(sx>=60&&Math.random()<0.35)setTimeout(()=>openChest('Great session'),1400);}
+function endFlow(){
+  const sx=F.xp,best=F.best,nn=F.n;F=null;
+  $('#flowHud').innerHTML='';
+  $('#flowStage').innerHTML=`<div class="flash" style="max-width:480px"><div class="tr">${sx>=100?'🏆':'🎉'}</div>
+    <h2 style="margin:8px 0">Session complete!</h2>
+    <p class="muted" style="font-size:14px;line-height:1.8">⚡ <b style="color:var(--green)">+${sx} XP</b> earned<br>
+    🔥 best combo <b>${best}</b> · 🃏 <b>${Math.max(0,nn-1)}</b> challenges faced</p></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn purple" id="flowAgain">▶ Keep flowing</button>
+      <button class="btn ghost" id="flowDone">Dashboard</button>
+    </div>`;
+  $('#flowAgain').onclick=startFlow;
+  $('#flowDone').onclick=()=>switchView('dash');
+  renderHeader();renderDash();
+  if(sx>=100)celebrate();
+  if(sx>=60&&Math.random()<0.35)setTimeout(()=>openChest('Great session'),1200);
+}
 function updateFlowHud(){if(!F)return;const mom=Math.min(100,F.combo*12);
   $('#flowHud').innerHTML=`<div class="hud combo">🔥 ${F.combo}</div><div class="hud sxp">+${F.xp} XP</div>
     <div class="hud diff">🎚️ ${DIFF_LABEL[curDiff()]}</div>
@@ -989,8 +1036,8 @@ function chSpeak(item){
 }
 function flowAnswer(ok,item){
   const c=card(item.id);
-  if(ok){buzz(12);F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
-  else{buzz(60);F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
+  if(ok){buzz(12);snd('ok');F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;xpPop(gain);addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
+  else{buzz(60);snd('no');F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
   S.quest.reviews++;F.recent.push(ok?1:0);if(F.recent.length>6)F.recent.shift();
   adaptDiff();checkBadges();save();updateFlowHud();
   if(ok){window.__flowKey=null;setTimeout(flowNext,650);}else showExplain(item);
@@ -1019,6 +1066,9 @@ function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('acti
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
 $('#kpiBadges').onclick=()=>switchView('badges');
+$('#helloQuest').onclick=()=>switchView('quest');
+$('#sndChip').onclick=toggleSnd;
+$('#sndChip').textContent=SND.on?'🔊':'🔇';
 document.addEventListener('keydown',e=>{if(!document.getElementById('flow').classList.contains('active'))return;if(window.__flowKey)window.__flowKey(e);});
 $('#checkinBtn').onclick=()=>{markActive();checkBadges();save();renderHeader();renderQuest();renderDash();toast('✓ Checked in! 🔥 '+S.streak);};
 $('#resetBtn').onclick=()=>{if(confirm('Erase all progress? This also clears your cloud save.')){localStorage.removeItem(KEY);S=blank();skipMergeOnce=true;save();renderAll();switchView('dash');}};

@@ -73,6 +73,11 @@ global.matchMedia = () => ({ matches: false });
 global.confirm = () => true;
 global.alert = () => {};
 global.SpeechSynthesisUtterance = function (t) { this.text = t; };
+global.AudioContext = class {
+  constructor() { this.currentTime = 0; this.destination = {}; }
+  createOscillator() { return { type: '', frequency: { value: 0 }, connect() {}, start() {}, stop() {} }; }
+  createGain() { return { gain: { setValueAtTime() {}, exponentialRampToValueAtTime() {} }, connect() {} }; }
+};
 global.speechSynthesis = { cancel() {}, speak() {}, getVoices: () => [{ lang: 'tr-TR' }], onvoiceschanged: null };
 global.Chart = class { constructor(ctx, cfg) { this.data = cfg.data; } update() {} destroy() {} };
 
@@ -128,7 +133,8 @@ flowMax,curDiff,renderFlowHome,startFlow,endFlow,updateFlowHud,flowNext,teachThe
 bindChoices,chMC,chListen,chType,chSpeak,flowAnswer,adaptDiff,showExplain,
 badgeStats,checkBadges,switchView,
 getS:()=>S,setS:v=>{S=v;},getF:()=>F,setF:v=>{F=v;},getKEY:()=>KEY,
-getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;}};`;
+getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;},
+snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -707,6 +713,57 @@ test('flowNext "Harika" end-state when every word is mastered', () => {
   A.flowNext();                                       // → celebration end-state branch
   A.VOCAB.push(...saved);
   assert.equal(A.VOCAB.length, saved.length, 'vocab restored');
+});
+test('sound engine: all cues, mute toggle, missing-AudioContext fallback', () => {
+  A._SND().on = true; A._SND().ctx = null;
+  A.snd('ok'); A.snd('no'); A.snd('chest'); A.snd('quest'); A.snd('ok'); // second call reuses ctx
+  A.toggleSnd(); assert.equal(A._SND().on, false);
+  A.snd('ok');                                   // muted early-return
+  A.toggleSnd(); assert.equal(A._SND().on, true); // back on + confirmation ding
+  const AC = global.AudioContext;
+  global.AudioContext = undefined; A._SND().ctx = null;
+  A.snd('ok');                                   // no AudioContext → graceful null
+  assert.equal(A.sndCtx(), null);
+  global.AudioContext = AC;
+});
+test('xpPop floats and respects reduced motion', () => {
+  A.xpPop(8);
+  const mm = global.matchMedia;
+  global.matchMedia = () => ({ matches: true });
+  A.xpPop(8);                                    // reduced-motion early return
+  global.matchMedia = mm;
+});
+test('onboarding card shows at 0 XP, starts flow, then disappears', async () => {
+  const S = freshS();
+  S.xp = 0;
+  A.renderDash();
+  assert.ok(q('#fsWrap').innerHTML.includes('Hoş geldin'), 'first-steps visible');
+  q('#fsStart').click();                         // big friendly start button
+  S.xp = 50;
+  A.renderDash();
+  assert.equal(q('#fsWrap').innerHTML, '', 'gone after first XP');
+  assert.ok(q('#helloQuest').textContent.includes('Quest'), 'quest pill rendered');
+  q('#helloQuest').onclick && q('#helloQuest').onclick();
+  q('#sndChip').onclick && q('#sndChip').onclick(); q('#sndChip').onclick && q('#sndChip').onclick();
+  S.quest = { date: today(), newWords: 5, reviews: 10, lesson: true, listen: true, claimed: true };
+  A.renderDash();                                // quest-complete pill branch
+  assert.ok(q('#helloQuest').textContent.includes('✓'));
+  await sleep(20);
+});
+test('endFlow shows summary with celebration and chest', async () => {
+  freshS();
+  const realRandom = Math.random;
+  Math.random = () => 0.1;                       // guarantee chest branch
+  A.setF({ combo: 4, best: 6, xp: 120, n: 15, recent: [] });
+  A.endFlow();
+  assert.equal(A.getF(), null);
+  q('#flowDone').click();                        // back to dashboard
+  A.setF({ combo: 1, best: 1, xp: 10, n: 2, recent: [] });
+  Math.random = () => 0.9;                       // small session → no chest
+  A.endFlow();
+  q('#flowAgain').click();                       // keep flowing
+  Math.random = realRandom;
+  await sleep(30);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;
