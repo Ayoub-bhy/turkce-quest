@@ -135,7 +135,8 @@ badgeStats,checkBadges,switchView,
 getS:()=>S,setS:v=>{S=v;},getF:()=>F,setF:v=>{F=v;},getKEY:()=>KEY,
 getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;},
 snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND,
-READING,startWrite,writeCard,readList,readView,readQuiz};`;
+READING,startWrite,writeCard,readList,readView,readQuiz,
+SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -370,7 +371,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -843,6 +844,127 @@ test('merge keeps read map and writes/reads counters', () => {
   assert.ok(m.read.R1 && m.read.R2);
   assert.equal(m.writes, 9);
   assert.equal(m.reads, 7);
+});
+test('suffix data integrity: parts join to real words, notes exist', () => {
+  assert.ok(A.SUFFIX.length >= 15);
+  for (const s of A.SUFFIX) {
+    assert.ok(s.en && s.note, s.en);
+    assert.ok(s.parts.length >= 2 && s.parts.length <= 4);
+    assert.ok(s.parts.join('').length >= 3);
+  }
+});
+test('suffix lab: correct build, wrong order, clear, finish, stale guard', async () => {
+  freshS();
+  A.startSuffix();
+  const s = A.getFlow().cur;
+  // build in correct order via stable fake tiles
+  let tiles = qa('#tileRow .choice');
+  tiles.forEach(t => { t.dataset = {}; t.classList.remove('correct'); });
+  s.parts.forEach((p, i) => { tiles[i].dataset.t = p; tiles[i].click(); });
+  q('#sufCheck').click();
+  await sleep(15);
+  const S = A.getS();
+  assert.ok(S.skills.Grammar >= 10, 'Grammar XP credited');
+  assert.equal(S.suffixN, 1);
+  // wrong order on next card
+  const s2 = A.getFlow().cur;
+  tiles = qa('#tileRow .choice');
+  tiles.forEach(t => { t.dataset = {}; t.classList.remove('correct'); });
+  tiles[0].dataset.t = s2.parts[s2.parts.length - 1]; tiles[0].click();   // reversed start
+  tiles[1].dataset.t = s2.parts[0]; tiles[1].click();
+  q('#sufClear').click();                                                  // clear works
+  tiles[0].click();                                                        // rebuild partial (wrong length)
+  q('#sufCheck').click();
+  await sleep(15);
+  assert.equal(S.suffixN, 2, 'attempt counted even when wrong');
+  A.setFlow({ mode: 'suffix', n: 99, total: 8, score: 6, pool: A.SUFFIX.slice() });
+  A.suffixCard();                                                          // finish screen
+  q('#again').click();
+  A.setFlow(null); A.suffixCard();                                         // stale guard
+});
+test('certNeeded gates labels until exams are passed', () => {
+  const S = freshS();
+  S.xp = 100; assert.equal(A.certNeeded(), null, 'A1 band needs nothing');
+  S.xp = 1200; assert.equal(A.certNeeded(), 'A1', 'A2 band needs A1 cert');
+  S.certs = { A1: true }; assert.equal(A.certNeeded(), null);
+  S.xp = 3400; assert.equal(A.certNeeded(), 'A2', 'B1 band needs A2 cert');
+  S.certs = { A1: true, A2: true }; assert.equal(A.certNeeded(), null);
+  assert.ok(A.examPool('A1').length >= 100);
+});
+test('checkpoint exam: question clicks, pass certifies, fail offers retry', async () => {
+  const S = freshS();
+  A.startExam('A1');
+  assert.equal(A.getFlow().qs.length, 10);
+  // answer one question correctly and one wrongly via clicks
+  let v = A.getFlow().qs[0];
+  let els = resetChoices();
+  els[0].dataset.val = v.en; els[0].click();          // qi 0 is TR→EN
+  await sleep(15);
+  v = A.getFlow().qs[1];
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[0].dataset.val = v.tr; els[1].click();
+  await sleep(15);
+  // force pass ending
+  const realRandom = Math.random; Math.random = () => 0.9;
+  A.setFlow({ mode: 'exam', lvl: 'A1', qi: 10, score: 9, qs: Array(10).fill(v) });
+  A.examQ();
+  assert.ok(S.certs.A1, 'certified');
+  assert.ok(S.badges.includes('cert1'), 'cert badge');
+  q('#backC').click();
+  // fail ending
+  A.setFlow({ mode: 'exam', lvl: 'A2', qi: 10, score: 5, qs: Array(10).fill(v) });
+  A.examQ();
+  assert.ok(!S.certs.A2);
+  q('#backC').click();
+  A.setFlow({ mode: 'exam', lvl: 'A2', qi: 10, score: 5, qs: Array(10).fill(v) });
+  A.examQ(); q('#retryC').click();                    // retry restarts exam
+  Math.random = realRandom;
+  A.setFlow(null); A.examQ();                          // stale guard
+  await sleep(20);
+});
+test('placement test unlocks the right tier of the tree', async () => {
+  let S = freshS();
+  A.startPlacement();
+  assert.equal(A.getFlow().qs.length, 12);
+  const v = A.getFlow().qs[0];
+  let els = resetChoices();
+  els[0].dataset.val = v.en; els[0].click();           // one correct click (band 0)
+  await sleep(10);
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[1].click();        // one wrong click
+  await sleep(10);
+  const tiers = [[[4,4,4],21],[[4,4,0],15],[[4,0,0],8],[[1,0,0],0]];
+  for (const [bands, expect] of tiers) {
+    S = freshS();
+    A.setFlow({ mode: 'place', qi: 12, bands: bands.slice(), qs: Array(12).fill(v) });
+    A.placeQ();
+    assert.equal(Object.values(S.units).filter(u => u.complete).length, expect, 'tier ' + expect);
+  }
+  q('#goTree').click();
+  A.setFlow(null); A.placeQ();                          // stale guard
+});
+test('dashboard cert row: exam button, verified text, placement entry', async () => {
+  const S = freshS();
+  S.xp = 1200;                                          // A2 band, no cert
+  A.renderDash();
+  assert.ok(q('#certRow').innerHTML.includes('checkpoint exam'));
+  q('#certBtn').click();                                // launches exam
+  S.certs = { A1: true };
+  A.renderDash();
+  assert.ok(q('#certRow').innerHTML.includes('Verified'));
+  S.xp = 0; S.certs = {};
+  A.renderDash();
+  assert.ok(q('#fsWrap').innerHTML.includes('I know some Turkish'));
+  q('#fsPlace').click();                                // placement from onboarding
+  await sleep(20);
+});
+test('merge keeps suffix count and certs union', () => {
+  const a = A.blank(), b = A.blank();
+  a.suffixN = 12; b.suffixN = 30;
+  a.certs = { A1: true }; b.certs = { A2: true };
+  const m = A.mergeStates(a, b);
+  assert.equal(m.suffixN, 30);
+  assert.ok(m.certs.A1 && m.certs.A2);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;

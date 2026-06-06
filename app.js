@@ -12,7 +12,7 @@ const VOCAB = [
 {id:'g9',tr:'Hayır',en:'No',cat:'Greetings',skill:'Speaking',ex:'Hayır, teşekkürler.'},
 {id:'g10',tr:'Görüşürüz',en:'See you',cat:'Greetings',skill:'Speaking',ex:'Hadi, görüşürüz!'},
 {id:'g11',tr:'Hoşça kal',en:'Goodbye (to one leaving)',cat:'Greetings',skill:'Speaking',ex:'Hoşça kal, kendine iyi bak.'},
-{id:'g12',tr:'Güle güle',en:'Goodbye (to one staying)',cat:'Greetings',skill:'Speaking',ex:'Güle güle, yine bekleriz.'},
+{id:'g12',tr:'Güle güle',en:'Goodbye (to one staying)',cat:'Greetings',skill:'Speaking',ex:'Güle güle, görüşürüz.'},
 
 /* A1 — U2 Introductions */
 {id:'i1',tr:'Ben',en:'I',cat:'Pronouns',skill:'Grammar',ex:'Ben öğrenciyim.'},
@@ -408,6 +408,8 @@ const BADGES=[
 {id:'b1done',ico:'🎓',name:'B1 Yolcusu',desc:'All 29 units done',test:s=>s.unitsDone>=29},
 {id:'write25',ico:'✍️',name:'Kalem Ustası',desc:'25 writing reps',test:s=>s.writes>=25},
 {id:'read6',ico:'📖',name:'Kitap Kurdu',desc:'All 6 readings',test:s=>s.readDone>=6},
+{id:'suffix25',ico:'🧩',name:'Ek Ustası',desc:'25 suffix builds',test:s=>s.suffixN>=25},
+{id:'cert1',ico:'📜',name:'Sertifikalı',desc:'Pass a checkpoint exam',test:s=>s.certsN>=1},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -456,6 +458,29 @@ const DIALOGUES=[
     {q:'What about tomorrow?',opts:['Snow','Sun','Rain','Wind'],a:'Rain'}]},
 ];
 
+/* ===== 🧩 Suffix Lab — assemble Turkish words from pieces (the REAL skill) ===== */
+const SUFFIX=[
+{en:'I am a student',parts:['öğrenci','yim'],note:'“to be”: e/i vowels take -(y)im'},
+{en:'I am a doctor',parts:['doktor','um'],note:'“to be”: o/u vowels take -um'},
+{en:'I am Turkish',parts:['Türk','üm'],note:'“to be”: ö/ü vowels take -üm'},
+{en:'at home',parts:['ev','de'],note:'locative -de/-da = at/in/on'},
+{en:'at school',parts:['okul','da'],note:'a/ı vowels take -da'},
+{en:'in the kitchen',parts:['mutfak','ta'],note:'after voiceless k → -ta'},
+{en:'to school',parts:['okul','a'],note:'dative -e/-a = “to”'},
+{en:'to the house',parts:['ev','e'],note:'dative after e/i → -e'},
+{en:'my mother',parts:['anne','m'],note:'possessive after vowel → just -m'},
+{en:'my house',parts:['ev','im'],note:'possessive after consonant → -im'},
+{en:'the houses',parts:['ev','ler'],note:'plural after e/i → -ler'},
+{en:'the books',parts:['kitap','lar'],note:'plural after a/ı → -lar'},
+{en:'I am going',parts:['gid','iyor','um'],note:'git → gid (t softens) + -iyor + -um'},
+{en:'I am drinking',parts:['iç','iyor','um'],note:'present continuous -iyor + person'},
+{en:'you are coming',parts:['gel','iyor','sun'],note:'“you” ending is -sun'},
+{en:'I came',parts:['gel','di','m'],note:'past -di + -m (I)'},
+{en:'I went',parts:['git','ti','m'],note:'after voiceless t → -ti'},
+{en:'I can do it',parts:['yap','abil','irim'],note:'ability -abil(ir)'},
+];
+const SUFFIX_POOL=['de','da','te','ta','e','a','ler','lar','im','ım','um','üm','iyor','ıyor','di','dı','ti','sun','sen','m','yim'];
+
 /* ===== Reading corner — A1 micro-stories with comprehension checks ===== */
 const READING=[
 {id:'R1',ico:'🏠',title:'Ali’nin Evi',txt:'Ali’nin evi küçük ama çok güzel. Evde iki oda var. Mutfak temiz ve aydınlık.',
@@ -496,7 +521,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -603,7 +628,14 @@ function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name
 function renderDash(){
   const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
   const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
-  $('#cefrSub').textContent='Level '+cur.name;$('#cefrPct').textContent=pct+'%';
+  /* honest CEFR: labels above A1 stay “unverified” until the checkpoint exam is passed */
+  const need=certNeeded();
+  $('#cefrSub').textContent='Level '+cur.name+(need?' · '+need+' unverified':'');
+  $('#certRow').innerHTML=need
+    ?`<button class="btn ghost" id="certBtn" style="margin-top:12px;padding:9px 14px;font-size:13px">📜 Take the ${need} checkpoint exam</button>`
+    :((S.certs&&Object.keys(S.certs).length)?`<div class="sub" style="margin-top:8px;color:var(--green)">📜 Verified: ${Object.keys(S.certs).join(' ✓ · ')} ✓</div>`:'');
+  if(need)$('#certBtn').onclick=()=>startExam(need);
+  $('#cefrPct').textContent=pct+'%';
   $('#cefrLevel').textContent=cur.name;
   $('#cefrXpFrac').textContent=S.xp+' / '+(nxt?hi:S.xp)+' XP';
   $('#ringTo').textContent=nxt?('to '+nxt.name):'max level';
@@ -622,8 +654,9 @@ function renderDash(){
   $('#fsWrap').innerHTML=S.xp===0?`<div class="firststeps">
     <div><h3>🐣 Hoş geldin! Start in 3 tiny steps</h3>
     <p>1️⃣ Tap <b>Start learning</b> · 2️⃣ learn your first 5 words (we say them out loud) · 3️⃣ open your first 🎁 reward chest. That’s it — the app handles the rest.</p></div>
-    <button class="btn green" id="fsStart">▶ Start learning</button></div>`:'';
-  if(S.xp===0)$('#fsStart').onclick=startFlow;
+    <div class="row"><button class="btn green" id="fsStart">▶ Start learning</button>
+    <button class="btn ghost" id="fsPlace">🧭 I know some Turkish</button></div></div>`:'';
+  if(S.xp===0){$('#fsStart').onclick=startFlow;$('#fsPlace').onclick=startPlacement;}
   $('#cefrNext').textContent=nxt?(hi-S.xp)+' XP to '+nxt.name:'Top of the A1–B1 track 🎉';
   /* 📅 ETA to next level — based on your average pace over the last 7 days */
   let sum7=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);sum7+=S.xpLog[d.toISOString().slice(0,10)]||0;}
@@ -774,6 +807,7 @@ function renderPracticeHome(){
     <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
     <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
     <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
+    <div class="mode" id="mSuffix"><div class="mi">🧩</div><h4>Suffix Lab</h4><p>Build words from pieces</p><div class="cnt" style="color:var(--purple)">${S.suffixN||0}</div></div>
     <div class="mode" id="mRead"><div class="mi">📖</div><h4>Reading</h4><p>Micro-stories + question</p><div class="cnt" style="color:var(--gold)">${readDone}/${READING.length}</div></div>
     <div class="mode" id="mWrite"><div class="mi">✍️</div><h4>Writing</h4><p>Type it in Turkish</p><div class="cnt" style="color:var(--accent2)">${S.writes||0}</div></div>
     <div class="mode" id="mListen"><div class="mi">👂</div><h4>Listening</h4><p>Hear it, pick the meaning</p><div class="cnt" style="color:var(--blue)">${known}</div></div>
@@ -783,11 +817,113 @@ function renderPracticeHome(){
   $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
   $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
   $('#mDlg').onclick=()=>dlgList();
+  $('#mSuffix').onclick=()=>startSuffix();
   $('#mRead').onclick=()=>readList();
   $('#mWrite').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startWrite();};
   $('#mListen').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startListen();};
   $('#mSpeak').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startSpeak();};
 }
+/* 🧩 Suffix Lab — tap tiles to assemble agglutinated words */
+function startSuffix(){flow={mode:'suffix',n:0,score:0,total:8,pool:shuffle(SUFFIX.slice())};suffixCard();}
+function suffixCard(){
+  if(!flow||!flow.pool)return;
+  if(flow.n>=flow.total){$('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🧩</div><h2>Suffix Lab done</h2><p class="muted">${flow.score}/${flow.total} built correctly · skill: Grammar</p></div><button class="btn" id="again">Back to practice</button></div>`;$('#again').onclick=renderPracticeHome;return;}
+  const s=flow.pool[flow.n%flow.pool.length];
+  let tiles=s.parts.slice();
+  if(tiles.length<4){const d=shuffle(SUFFIX_POOL.filter(x=>!s.parts.includes(x)))[0];tiles.push(d);}
+  tiles=shuffle(tiles);
+  flow.cur=s;flow.built=[];
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🧩 ${flow.n+1} / ${flow.total} · tap the pieces in order</div>
+    <div class="flash"><div class="cat">Build it in Turkish</div><div class="tr" style="font-size:22px">${s.en}</div>
+    <div class="en" id="builtRow" style="opacity:1;min-height:32px;letter-spacing:1px">…</div></div>
+    <div class="choices" id="tileRow" style="grid-template-columns:repeat(auto-fit,minmax(86px,1fr));max-width:420px">${tiles.map(t=>`<div class="choice" data-t="${esc(t)}" style="justify-content:center;font-size:18px">${t}</div>`).join('')}</div>
+    <div class="row" style="justify-content:center"><button class="btn ghost" id="sufClear">↺ Clear</button><button class="btn" id="sufCheck">Check</button></div></div>`;
+  const upd=()=>{$('#builtRow').textContent=flow.built.length?flow.built.join(' + '):'…';};upd();
+  $$('#tileRow .choice').forEach(el=>el.onclick=()=>{if(el.dataset.done)return;el.dataset.done=1;el.classList.add('correct');flow.built.push(el.dataset.t);upd();});
+  $('#sufClear').onclick=()=>{flow.built=[];$$('#tileRow .choice').forEach(el=>{el.dataset.done='';el.classList.remove('correct');});upd();};
+  $('#sufCheck').onclick=()=>{
+    const ok=flow.built.length===s.parts.length&&flow.built.every((t,i)=>t===s.parts[i]);
+    buzz(ok?12:60);snd(ok?'ok':'no');
+    S.suffixN=(S.suffixN||0)+1;
+    if(ok){flow.score++;addXp(10,'Grammar');xpPop(10);toast('🧩 '+s.parts.join('')+' ✓ — '+s.note);}
+    else toast('✏️ '+s.parts.join(' + ')+' = '+s.parts.join('')+' · '+s.note);
+    checkBadges();save();
+    setTimeout(()=>{if(flow){flow.n++;suffixCard();}},1500);
+  };
+}
+
+/* 📜 Checkpoint exams — CEFR labels must be EARNED (8/10 to certify) */
+function certNeeded(){
+  const n=levelInfo().cur.name;
+  if(n.startsWith('A2')&&!(S.certs&&S.certs.A1))return 'A1';
+  if(n.startsWith('B1')&&!(S.certs&&S.certs.A2))return 'A2';
+  return null;
+}
+function examPool(lvl){return UNITS.filter(u=>u.lvl===lvl).flatMap(u=>u.ids).map(id=>VOCAB.find(v=>v.id===id));}
+function startExam(lvl){switchView('practice');flow={mode:'exam',lvl,qi:0,score:0,qs:shuffle(examPool(lvl)).slice(0,10)};examQ();}
+function examQ(){
+  if(!flow||!flow.qs)return;
+  if(flow.qi>=flow.qs.length){
+    const pass=flow.score>=8,lvl=flow.lvl,sc=flow.score;
+    if(pass){
+      if(!S.certs)S.certs={};S.certs[lvl]=true;
+      addXp(60,'Grammar');checkBadges();save();celebrate();snd('quest');
+      $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">📜</div><h2>${lvl} Certified!</h2><p class="muted">${sc}/10 — your ${lvl} level is now verified. +60 XP</p></div><button class="btn" id="backC">Back to dashboard</button></div>`;
+      $('#backC').onclick=()=>switchView('dash');
+      setTimeout(()=>openChest('Checkpoint passed'),1100);
+    }else{
+      $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">📚</div><h2>Not yet — ${sc}/10</h2><p class="muted">You need 8/10. Drill your 🩹 weak words and 🧩 suffixes, then come back.</p></div>
+        <div class="row" style="justify-content:center"><button class="btn" id="retryC">Try again</button><button class="btn ghost" id="backC">Practice first</button></div></div>`;
+      $('#retryC').onclick=()=>startExam(lvl);
+      $('#backC').onclick=renderPracticeHome;
+    }
+    return;
+  }
+  const v=flow.qs[flow.qi];const dir=flow.qi%2===0;
+  const field=dir?'en':'tr';const prompt=dir?v.tr:v.en;const correct=v[field];
+  const opts=mcChoices(v,field);
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">📜 ${flow.lvl} exam · ${flow.qi+1} / ${flow.qs.length}</div>
+    <div class="flash"><div class="cat">${dir?'Choose the meaning':'Choose the Turkish'}</div><div class="tr" style="font-size:28px">${prompt}</div></div>
+    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===correct;buzz(ok?12:60);snd(ok?'ok':'no');
+    if(ok){ch.classList.add('correct');flow.score++;}
+    else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===correct)c.classList.add('correct');});}
+    setTimeout(()=>{if(flow){flow.qi++;examQ();}},800);});
+}
+
+/* 🧭 Placement test — skip ahead honestly if you already know Turkish */
+function startPlacement(){
+  switchView('practice');
+  const early=UNITS.slice(0,4).flatMap(u=>u.ids),late=UNITS.slice(8,15).flatMap(u=>u.ids),
+        a2=UNITS.filter(u=>u.lvl==='A2').flatMap(u=>u.ids);
+  const pick=(ids,n)=>shuffle(ids.slice()).slice(0,n).map(id=>VOCAB.find(v=>v.id===id));
+  flow={mode:'place',qi:0,bands:[0,0,0],qs:[...pick(early,4),...pick(late,4),...pick(a2,4)]};
+  placeQ();
+}
+function placeQ(){
+  if(!flow||!flow.qs)return;
+  if(flow.qi>=12){
+    const e=flow.bands[0],l=flow.bands[1],a=flow.bands[2];
+    let upto=0,msg='Starting from the beginning — the perfect place to grow solid roots. 🌱';
+    if(e>=3&&l>=3&&a>=3){upto=21;msg='Güçlüsün! A1 and A2 unlocked — you start at B1. 🎓';}
+    else if(e>=3&&l>=3){upto=15;msg='Çok iyi! A1 unlocked — you start at A2. 🚀';}
+    else if(e>=3){upto=8;msg='İyi bir temel! The first 8 units are unlocked. 👍';}
+    if(upto){UNITS.slice(0,upto).forEach(u=>{S.units[u.id]={complete:true,lessonDone:true};});checkBadges();save();}
+    $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🧭</div><h2>Placement result</h2><p class="muted" style="line-height:1.8">${msg}</p></div><button class="btn" id="goTree">Open the skill tree →</button></div>`;
+    $('#goTree').onclick=()=>switchView('learn');
+    return;
+  }
+  const v=flow.qs[flow.qi];const opts=mcChoices(v,'en');
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🧭 Placement · ${flow.qi+1} / 12</div>
+    <div class="flash"><div class="cat">What does it mean? (it’s fine not to know!)</div><div class="tr" style="font-size:28px">${v.tr}</div></div>
+    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===v.en;if(ok){ch.classList.add('correct');flow.bands[Math.floor(flow.qi/4)]++;}
+    else ch.classList.add('wrong');
+    setTimeout(()=>{if(flow){flow.qi++;placeQ();}},600);});
+}
+
 /* ✍️ Writing drill — recall + spelling, credits the Writing skill */
 function startWrite(){flow={mode:'write',n:0,score:0,total:8,pool:shuffle(learnedCards())};writeCard();}
 function writeCard(){
@@ -970,6 +1106,7 @@ function speakCard(){
 function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:learnedCards().length,reviews:S.reviews,quiz:S.quiz,questsDone:S.questsDone,listen:S.listen,speak:S.speak,
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
+  suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1184,7 +1321,9 @@ function mergeStates(a,b){
   const m=blank(),t=todayStr();
   ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil','writes','reads']
     .forEach(k=>m[k]=Math.max(a[k]||0,b[k]||0));
+  m.suffixN=Math.max(a.suffixN||0,b.suffixN||0);
   m.read=Object.assign({},a.read||{},b.read||{});
+  m.certs=Object.assign({},a.certs||{},b.certs||{});
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});
