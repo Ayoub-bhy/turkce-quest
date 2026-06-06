@@ -1059,7 +1059,7 @@ $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
 document.addEventListener('keydown',e=>{if(!document.getElementById('flow').classList.contains('active'))return;if(window.__flowKey)window.__flowKey(e);});
 $('#checkinBtn').onclick=()=>{markActive();checkBadges();save();renderHeader();renderQuest();renderDash();toast('✓ Checked in! 🔥 '+S.streak);};
-$('#resetBtn').onclick=()=>{if(confirm('Erase all progress? This also clears your cloud save.')){localStorage.removeItem(KEY);S=blank();save();renderAll();switchView('dash');}};
+$('#resetBtn').onclick=()=>{if(confirm('Erase all progress? This also clears your cloud save.')){localStorage.removeItem(KEY);S=blank();skipMergeOnce=true;save();renderAll();switchView('dash');}};
 
 function renderAll(){renderHeader();renderDash();renderQuest();renderUnits();renderBadges();}
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=()=>{};
@@ -1101,11 +1101,17 @@ function mergeStates(a,b){
   m.badges=[...new Set([...(a.badges||[]),...(b.badges||[])])];
   return m;
 }
+let skipMergeOnce=false;
 function pushCloud(force){
   if(!auth||!auth.currentUser)return;
   clearTimeout(pushTimer);
   pushTimer=setTimeout(async()=>{try{
-    const payload=JSON.stringify(S);if(!force&&payload===lastPushed)return;
+    let payload=JSON.stringify(S);if(!force&&payload===lastPushed)return;
+    if(!skipMergeOnce){ // merge with cloud first so devices never overwrite each other
+      const cloud=await pullCloud();
+      if(cloud){const m=mergeStates(cloud,S);const mp=JSON.stringify(m);
+        if(mp!==payload){S=m;localStorage.setItem(KEY,mp);payload=mp;renderAll();}}
+    }else skipMergeOnce=false;
     await db.collection('users').doc(auth.currentUser.uid).set({
       state:payload,xp:S.xp||0,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
       name:auth.currentUser.displayName||'',email:auth.currentUser.email||''});
@@ -1139,6 +1145,7 @@ if(typeof firebase!=='undefined'){
       if(guest)localStorage.removeItem(KEY_BASE);
       localStorage.setItem(KEY,JSON.stringify(S));pushCloud(true);
       $('#userChip').style.display='';
+      $('#userChip').title=user.email||'';
       $('#uName').textContent=(user.displayName||user.email||'me').split(' ')[0];
       const av=$('#uAvatar');if(user.photoURL){av.src=user.photoURL;av.style.display='';}else av.style.display='none';
       hideAuth();bootApp();
@@ -1152,7 +1159,17 @@ if(typeof firebase!=='undefined'){
   $('#syncChip').onclick=async()=>{if(!auth.currentUser){toast('Sign in to sync');return;}
     setSync('syncing…');const cloud=await pullCloud();S=mergeStates(cloud,S)||S;
     localStorage.setItem(KEY,JSON.stringify(S));renderAll();pushCloud(true);toast('☁️ Synced');};
-  window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')pushCloud(true);});
+  window.addEventListener('visibilitychange',async()=>{
+    if(document.visibilityState==='hidden'){pushCloud(true);return;}
+    /* auto-pull whenever the app regains focus — keeps devices converged */
+    if(document.visibilityState==='visible'&&auth.currentUser){
+      setSync('syncing…');
+      const cloud=await pullCloud();
+      if(cloud){const m=mergeStates(cloud,S);
+        if(JSON.stringify(m)!==JSON.stringify(S)){S=m;localStorage.setItem(KEY,JSON.stringify(S));renderAll();toast('☁️ Updated from your other device');}}
+      setSync('synced ✓');
+    }
+  });
 }else{
   bootGuest();
 }
