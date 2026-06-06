@@ -1,5 +1,5 @@
 /* Türkçe Quest — service worker (offline app shell, v2: accounts + cloud sync) */
-const CACHE = 'turkce-quest-v4';
+const CACHE = 'turkce-quest-v5';
 const ASSETS = [
   './',
   './index.html',

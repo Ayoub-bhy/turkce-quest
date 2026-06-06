@@ -173,6 +173,30 @@
   .dlgtr{font-size:15px;font-weight:600} .dlgen{font-size:12px;color:var(--muted);margin-top:2px}
   .weekbar{height:12px;background:var(--panel2);border-radius:999px;overflow:hidden;margin-top:12px;position:relative}
   .weekbar>div{height:100%;background:linear-gradient(90deg,var(--gold),var(--accent2));border-radius:999px;transition:width .6s}
+  /* UX: micro-interactions, thumb-zone nav, touch targets, a11y */
+  nav.tabs button{display:flex;align-items:center;justify-content:center;gap:6px}
+  nav.tabs button .ico{font-size:16px;line-height:1}
+  button:focus-visible,.choice:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+  .choice{min-height:50px;display:flex;align-items:center}
+  .choice.correct{animation:pop .3s ease}
+  @keyframes pop{50%{transform:scale(1.05)}}
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:300;overflow:hidden}
+  .confetti i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;opacity:.95;animation:cfall linear forwards}
+  @keyframes cfall{to{transform:translateY(106vh) rotate(540deg);opacity:.5}}
+  @media(max-width:700px){
+    .wrap{padding:14px 12px 96px}
+    .brand p{display:none}
+    .brand h1{font-size:17px}
+    .crest{width:38px;height:38px;font-size:20px}
+    .chip{padding:6px 10px;font-size:12px}
+    nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:90;margin:0;border-radius:0;border:0;border-top:1px solid var(--line);
+      background:rgba(23,26,35,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+      padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+    nav.tabs button{flex-direction:column;gap:2px;font-size:10px;padding:6px 2px;min-width:0;min-height:48px}
+    nav.tabs button .ico{font-size:21px}
+    nav.tabs button[data-v="badges"]{display:none}
+  }
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -210,12 +234,12 @@
   </header>
 
   <nav class="tabs">
-    <button class="active" data-v="dash">📊 Dashboard</button>
-    <button data-v="flow">🚀 Flow</button>
-    <button data-v="quest">🎯 Daily Quest</button>
-    <button data-v="learn">📚 Learn</button>
-    <button data-v="practice">🧠 Practice</button>
-    <button data-v="badges">🏆 Achievements</button>
+    <button class="active" data-v="dash" aria-label="Dashboard"><span class="ico">📊</span><span class="lbl">Dashboard</span></button>
+    <button data-v="flow" aria-label="Flow mode"><span class="ico">🚀</span><span class="lbl">Flow</span></button>
+    <button data-v="quest" aria-label="Daily quest"><span class="ico">🎯</span><span class="lbl">Quest</span></button>
+    <button data-v="learn" aria-label="Learn"><span class="ico">📚</span><span class="lbl">Learn</span></button>
+    <button data-v="practice" aria-label="Practice"><span class="ico">🧠</span><span class="lbl">Practice</span></button>
+    <button data-v="badges" aria-label="Achievements"><span class="ico">🏆</span><span class="lbl">Awards</span></button>
   </nav>
 
   <!-- DASHBOARD -->
@@ -280,7 +304,7 @@
         <div class="kpi"><span>Lessons completed</span><b id="kLessons">0</b></div>
         <div class="kpi"><span>Cards reviewed</span><b id="kReviews">0</b></div>
         <div class="kpi"><span>Listening / Speaking reps</span><b id="kLS">0 / 0</b></div>
-        <div class="kpi"><span>Badges unlocked</span><b id="kBadges">0 / 12</b></div>
+        <div class="kpi" id="kpiBadges" style="cursor:pointer" title="Open achievements"><span>🏆 Badges & culture deck <span class="muted" style="font-size:11px">· tap to view</span></span><b id="kBadges">0 / 12</b></div>
       </div>
     </div>
     <p class="center" style="margin-top:24px"><a class="reset" id="resetBtn">reset all progress</a></p>
@@ -767,7 +791,7 @@ function openChest(reason){
   if(r<0.4){const amt=20+Math.floor(Math.random()*5)*10;S.xp+=amt;ensureWeek();S.week.xp+=amt;const t=todayStr();S.xpLog[t]=(S.xpLog[t]||0)+amt;msg='+'+amt+' bonus XP ⚡';}
   else if(r<0.7){S.freezes=Math.min(5,(S.freezes||0)+1);msg='+1 Streak Freeze ❄️';}
   else{S.boostUntil=Date.now()+15*60*1000;msg='2× XP for 15 minutes! 🚀';}
-  save();renderHeader();toast('🎁 '+reason+' — '+msg);}
+  save();renderHeader();celebrate();buzz([20,30,20,30,60]);toast('🎁 '+reason+' — '+msg);}
 
 /* SRS (SM-2 lite) */
 function card(id){return S.cards[id]||(S.cards[id]={ease:2.5,interval:0,reps:0,due:todayStr(),learned:false});}
@@ -783,6 +807,17 @@ function gradeCard(id,q){const c=card(id);c.reps++;
 /* ===================== HELPERS ===================== */
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2400);}
+function buzz(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+function celebrate(){ /* Duolingo-style confetti — clear positive feedback */
+  try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+  const c=document.createElement('div');c.className='confetti';
+  const cols=['#e30a17','#f6c34a','#36c98b','#4aa8ff','#a987ff','#ffffff'];
+  for(let i=0;i<36;i++){const s=document.createElement('i');
+    s.style.left=(Math.random()*100)+'vw';s.style.background=cols[i%cols.length];
+    s.style.animationDelay=(Math.random()*0.4)+'s';s.style.animationDuration=(1.4+Math.random())+'s';
+    c.appendChild(s);}
+  document.body.appendChild(c);setTimeout(()=>c.remove(),3400);
+}
 function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='tr-TR';u.rate=.9;const vs=speechSynthesis.getVoices().filter(v=>v.lang&&v.lang.toLowerCase().startsWith('tr'));if(vs[0])u.voice=vs[0];speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
 function shuffle(a){return a.slice().sort(()=>Math.random()-0.5);}
 function norm(s){return (s||'').toLocaleLowerCase('tr-TR').replace(/[.,!?¡¿'"’]/g,'').trim();}
@@ -936,7 +971,7 @@ function nextQuiz(){
     <div class="choices">${shuffle(opts).map(o=>`<div class="choice">${o}</div>`).join('')}</div></div>`;
   $('.speak').onclick=()=>speak(v.tr);
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
-    if(ch.textContent===v.en){ch.classList.add('correct');flow.qScore++;}else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
+    if(ch.textContent===v.en){buzz(12);ch.classList.add('correct');flow.qScore++;}else{buzz(60);ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.textContent===v.en)c.classList.add('correct');});}
     setTimeout(()=>{flow.qIdx++;nextQuiz();},800);});
 }
 
@@ -1005,7 +1040,7 @@ function dlgQuiz(d,qi,score){
     <div class="flash"><div class="cat">${d.title}</div><div class="tr" style="font-size:22px">${q.q}</div></div>
     <div class="choices">${shuffle(q.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
-    const ok=ch.dataset.val===q.a;
+    const ok=ch.dataset.val===q.a;buzz(ok?12:60);
     if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===q.a)c.classList.add('correct');});}
     setTimeout(()=>dlgQuiz(d,qi+1,score+(ok?1:0)),900);});
 }
@@ -1214,8 +1249,8 @@ function chSpeak(item){
 }
 function flowAnswer(ok,item){
   const c=card(item.id);
-  if(ok){F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
-  else{F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
+  if(ok){buzz(12);F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;addXp(gain,item.skill);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);}
+  else{buzz(60);F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
   S.quest.reviews++;F.recent.push(ok?1:0);if(F.recent.length>6)F.recent.shift();
   adaptDiff();checkBadges();save();updateFlowHud();
   if(ok){window.__flowKey=null;setTimeout(flowNext,650);}else showExplain(item);
@@ -1243,6 +1278,7 @@ function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('acti
   if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='badges')renderBadges();}
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
+$('#kpiBadges').onclick=()=>switchView('badges');
 document.addEventListener('keydown',e=>{if(!document.getElementById('flow').classList.contains('active'))return;if(window.__flowKey)window.__flowKey(e);});
 $('#checkinBtn').onclick=()=>{markActive();checkBadges();save();renderHeader();renderQuest();renderDash();toast('✓ Checked in! 🔥 '+S.streak);};
 $('#resetBtn').onclick=()=>{if(confirm('Erase all progress? This also clears your cloud save.')){localStorage.removeItem(KEY);S=blank();skipMergeOnce=true;save();renderAll();switchView('dash');}};
