@@ -203,6 +203,7 @@
     nav.tabs button{flex-direction:column;gap:2px;font-size:10px;padding:6px 2px;min-width:0;min-height:48px}
     nav.tabs button .ico{font-size:21px}
     nav.tabs button[data-v="badges"]{display:none}
+    nav.tabs button[data-v="exams"]{display:none}
   }
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   /* Lovable design port: greeting, progress ring, trophy markers */
@@ -296,6 +297,7 @@
     <button data-v="quest" aria-label="Daily quest"><span class="ico">🎯</span><span class="lbl">Quest</span></button>
     <button data-v="learn" aria-label="Learn"><span class="ico">📚</span><span class="lbl">Learn</span></button>
     <button data-v="practice" aria-label="Practice"><span class="ico">🧠</span><span class="lbl">Practice</span></button>
+    <button data-v="exams" aria-label="Master exams"><span class="ico">🎓</span><span class="lbl">Exams</span></button>
     <button data-v="badges" aria-label="Achievements"><span class="ico">🏆</span><span class="lbl">Awards</span></button>
   </nav>
 
@@ -382,6 +384,7 @@
         <div class="kpi"><span>Cards reviewed</span><b id="kReviews">0</b></div>
         <div class="kpi"><span>Listening / Speaking reps</span><b id="kLS">0 / 0</b></div>
         <div class="kpi" id="kpiBadges" style="cursor:pointer" title="Open achievements"><span>🏆 Badges & culture deck <span class="muted" style="font-size:11px">· tap to view</span></span><b id="kBadges">0 / 12</b></div>
+        <div class="kpi" id="kpiExams" style="cursor:pointer" title="Master exam hall"><span>🎓 Master exams <span class="muted" style="font-size:11px">· find your true level</span></span><b id="kExams">—</b></div>
       </div>
     </div>
     <p class="center" style="margin-top:24px"><a class="reset" id="resetBtn">reset all progress</a></p>
@@ -429,6 +432,16 @@
       <h3>🧠 Practice</h3>
       <div class="sub" id="practiceSub">Pick a drill. Reviews resurface words right before you'd forget them (SM-2).</div>
       <div id="practiceStage"></div>
+    </div>
+  </section>
+
+  <!-- MASTER EXAMS -->
+  <section class="view" id="exams">
+    <div class="card">
+      <h3>🎓 Seviye Sınavları — The Master’s Exam Hall</h3>
+      <div class="sub" id="lexSub"></div>
+      <div class="units" id="lexList"></div>
+      <div id="lexStage"></div>
     </div>
   </section>
 

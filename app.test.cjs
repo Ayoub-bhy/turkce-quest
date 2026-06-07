@@ -136,7 +136,8 @@ getS:()=>S,setS:v=>{S=v;},getF:()=>F,setF:v=>{F=v;},getKEY:()=>KEY,
 getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;},
 snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND,
 READING,startWrite,writeCard,readList,readView,readQuiz,
-SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ};`;
+SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ,
+LEXAMS,lexBest,renderExams,startLexam,lexQ};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -371,7 +372,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -965,6 +966,82 @@ test('merge keeps suffix count and certs union', () => {
   const m = A.mergeStates(a, b);
   assert.equal(m.suffixN, 30);
   assert.ok(m.certs.A1 && m.certs.A2);
+});
+test('master exams: 10 exams × 10 questions, answers valid, difficulty ladder labelled', () => {
+  assert.equal(A.LEXAMS.length, 10);
+  const ids = new Set();
+  for (const e of A.LEXAMS) {
+    assert.ok(e.name && e.cefr && e.ico && e.desc, e.id);
+    assert.ok(!ids.has(e.id)); ids.add(e.id);
+    assert.equal(e.qs.length, 10, e.id + ' has 10 questions');
+    for (const qq of e.qs) {
+      assert.equal(qq.opts.length, 4, e.id);
+      assert.ok(qq.opts.includes(qq.a), e.id + ': ' + qq.q);
+      assert.equal(new Set(qq.opts).size, 4, e.id + ' unique options');
+    }
+  }
+  assert.equal(A.LEXAMS[0].cefr, 'A0');
+  assert.equal(A.LEXAMS[9].cefr, 'C2');
+});
+test('lexBest reflects highest exam passed with 8/10', () => {
+  const S = freshS();
+  assert.equal(A.lexBest(), 0);
+  S.lexams = { E1: 10, E2: 8, E3: 7 };
+  assert.equal(A.lexBest(), 2, 'E3 at 7/10 does not count');
+  S.lexams.E10 = 9;
+  assert.equal(A.lexBest(), 10, 'rank is the HIGHEST passed');
+});
+test('master exam run: clicks, harsh fail, pass with reward, wolf ending', async () => {
+  const S = freshS();
+  A.renderExams();
+  assert.ok(q('#lexSub').textContent.includes('Hocan bekliyor'));
+  A.startLexam(A.LEXAMS[0]);
+  const qq = A.getFlow().ex.qs[0];
+  let els = resetChoices();
+  els[0].dataset.val = qq.a; els[0].click();                    // correct click
+  await sleep(15);
+  const q2 = A.getFlow().ex.qs[1];
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[0].dataset.val = q2.a; els[1].click(); // wrong click
+  await sleep(15);
+  // harsh fail ending
+  A.setFlow({ mode: 'lex', ex: A.LEXAMS[0], qi: 10, score: 5 });
+  A.lexQ();
+  assert.equal(S.lexams.E1, 5, 'best score recorded');
+  assert.ok(!q('#lexStage').innerHTML.includes('geçtin'));
+  q('#lexRetry').click();                                       // retry restarts
+  // pass ending with first-time reward
+  const realRandom = Math.random; Math.random = () => 0.9;
+  A.setFlow({ mode: 'lex', ex: A.LEXAMS[0], qi: 10, score: 9 });
+  const xp = S.xp;
+  A.lexQ();
+  assert.equal(S.lexams.E1, 9);
+  assert.ok(S.xp >= xp + 40, 'first-pass XP');
+  q('#lexBack').click();
+  // re-pass gives no double XP
+  const xp2 = S.xp;
+  A.setFlow({ mode: 'lex', ex: A.LEXAMS[0], qi: 10, score: 10 });
+  A.lexQ();
+  assert.equal(S.xp, xp2, 'no farming the hoca');
+  // E5 pass triggers chest; E10 pass shows wolf line + badges
+  A.setFlow({ mode: 'lex', ex: A.LEXAMS[4], qi: 10, score: 8 });
+  A.lexQ();
+  A.setFlow({ mode: 'lex', ex: A.LEXAMS[9], qi: 10, score: 8 });
+  A.lexQ();
+  assert.ok(q('#lexStage').innerHTML.includes('Usta sensin'));
+  assert.ok(S.badges.includes('lex5') && S.badges.includes('lex10'));
+  Math.random = realRandom;
+  A.renderExams();
+  assert.ok(q('#lexSub').textContent.includes('Zirvedesin'));
+  q('#kpiExams').onclick && q('#kpiExams').onclick();           // dashboard entry
+  A.setFlow(null); A.lexQ();                                    // stale guard
+  await sleep(30);
+});
+test('merge keeps best exam scores per exam', () => {
+  const a = A.blank(), b = A.blank();
+  a.lexams = { E1: 9, E2: 6 }; b.lexams = { E2: 8, E3: 10 };
+  const m = A.mergeStates(a, b);
+  assert.deepEqual(m.lexams, { E1: 9, E2: 8, E3: 10 });
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;

@@ -410,6 +410,8 @@ const BADGES=[
 {id:'read6',ico:'📖',name:'Kitap Kurdu',desc:'All 6 readings',test:s=>s.readDone>=6},
 {id:'suffix25',ico:'🧩',name:'Ek Ustası',desc:'25 suffix builds',test:s=>s.suffixN>=25},
 {id:'cert1',ico:'📜',name:'Sertifikalı',desc:'Pass a checkpoint exam',test:s=>s.certsN>=1},
+{id:'lex5',ico:'⛰️',name:'Dağcı',desc:'Pass master exam 5',test:s=>s.lexBest>=5},
+{id:'lex10',ico:'🐺',name:'Bozkurt',desc:'Pass the wolf exam (E10)',test:s=>s.lexBest>=10},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -456,6 +458,120 @@ const DIALOGUES=[
   ['Murat','Evet, yarın yağmur yağacak.','Yes, it will rain tomorrow.']],
  q:[{q:'How is the weather today?',opts:['Rainy','Sunny and warm','Cold','Windy'],a:'Sunny and warm'},
     {q:'What about tomorrow?',opts:['Snow','Sun','Rain','Wind'],a:'Rain'}]},
+];
+
+/* ===== 🎓 Master Exam Hall — 10 exams, A0 → C2. The hoca shows no mercy: 8/10. ===== */
+const LEXAMS=[
+{id:'E1',name:'İlk Adım',cefr:'A0',ico:'🌱',desc:'Absolute basics — can you say hello?',qs:[
+ {q:'“Merhaba” means…',opts:['Hello','Goodbye','Please','Sorry'],a:'Hello'},
+ {q:'“Teşekkür ederim” means…',opts:['Excuse me','Thank you','Good night','Welcome'],a:'Thank you'},
+ {q:'“Su” is…',opts:['Bread','Milk','Water','Tea'],a:'Water'},
+ {q:'“Evet” means…',opts:['No','Yes','Maybe','Never'],a:'Yes'},
+ {q:'The morning greeting is…',opts:['İyi geceler','Günaydın','Hoşça kal','Güle güle'],a:'Günaydın'},
+ {q:'“Bir, iki, üç” = …',opts:['One, two, three','Two, four, six','First, last, next','Big, small, fast'],a:'One, two, three'},
+ {q:'“Ekmek” is…',opts:['Cheese','Egg','Bread','Apple'],a:'Bread'},
+ {q:'“Nasılsın?” asks…',opts:['Where are you?','How are you?','Who are you?','What time is it?'],a:'How are you?'},
+ {q:'“Anne” is…',opts:['Father','Sister','Mother','Aunt'],a:'Mother'},
+ {q:'The person LEAVING says…',opts:['Güle güle','Hoşça kal','Buyurun','Efendim'],a:'Hoşça kal'}]},
+{id:'E2',name:'Temel',cefr:'A1',ico:'🍃',desc:'Core survival Turkish',qs:[
+ {q:'Ben öğretmen___ (I am a teacher)',opts:['-im','-sin','-iz','-ler'],a:'-im'},
+ {q:'Plural of “kitap”:',opts:['kitapler','kitaplar','kitapın','kitaplı'],a:'kitaplar'},
+ {q:'“Nerelisin?” asks about your…',opts:['age','job','origin','name'],a:'origin'},
+ {q:'Çay ___ (I am drinking tea)',opts:['içiyorum','yiyorum','gidiyorum','istiyorsun'],a:'içiyorum'},
+ {q:'“Okula gidiyorum” = …',opts:['I came from school','I am going to school','I like school','School is far'],a:'I am going to school'},
+ {q:'Opposite of “büyük”:',opts:['uzun','yeni','küçük','güzel'],a:'küçük'},
+ {q:'“Saat kaç?” = …',opts:['How much is it?','What time is it?','How old are you?','Which day is it?'],a:'What time is it?'},
+ {q:'Correct form: two breads =',opts:['iki ekmekler','ikiler ekmek','iki ekmek','ekmek iki'],a:'iki ekmek'},
+ {q:'“Param yok” means…',opts:['I have money','I have no money','Money is here','Expensive'],a:'I have no money'},
+ {q:'“Hava çok güzel” = …',opts:['The food is great','The weather is very nice','The house is big','It is very cold'],a:'The weather is very nice'}]},
+{id:'E3',name:'Gelişen',cefr:'A1+',ico:'🌿',desc:'Cases and the present tense — harmony is law',qs:[
+ {q:'“okul” + locative = …',opts:['okulde','okulda','okulte','okulla'],a:'okulda'},
+ {q:'“kitap” + locative = … (watch the consonant!)',opts:['kitapda','kitapta','kitabda','kitapde'],a:'kitapta'},
+ {q:'“ev” + dative (to the house) = …',opts:['evde','eve','evi','evden'],a:'eve'},
+ {q:'Dün sinemaya ___ (gitmek, ben)',opts:['gittim','gidiyorum','giderim','gitmiş'],a:'gittim'},
+ {q:'“Elmayı yedim” — the -yı shows the apple is…',opts:['any apple','a specific apple','many apples','a small apple'],a:'a specific apple'},
+ {q:'“Annemin arabası” = …',opts:['my mother and the car','my mother’s car','the car’s mother','to my mother by car'],a:'my mother’s car'},
+ {q:'Negative: “I am not coming” =',opts:['gelmiyorum','gelmedim','gelmem','gelmeyeceğim'],a:'gelmiyorum'},
+ {q:'Question form: “Are you coming?” =',opts:['Geliyorsun mu?','Geliyor musun?','Mi geliyorsun?','Geliyorsun değil?'],a:'Geliyor musun?'},
+ {q:'“benden” means…',opts:['to me','with me','from me','for me'],a:'from me'},
+ {q:'“Kardeşim yok” = …',opts:['My sibling is away','I have no sibling','My sibling is young','I want a sibling'],a:'I have no sibling'}]},
+{id:'E4',name:'Yolcu',cefr:'A2',ico:'🌳',desc:'Past, future, comparisons — the traveller’s kit',qs:[
+ {q:'Yarın ___ (gelmek, ben — future)',opts:['geldim','geliyorum','geleceğim','gelirim'],a:'geleceğim'},
+ {q:'“Yağmur yağarsa pikniğe gitmeyiz” = …',opts:['When it rained we left','If it rains we won’t go','Because it rains we go','It never rains'],a:'If it rains we won’t go'},
+ {q:'“daha hızlı” = …',opts:['fastest','faster','very fast','too fast'],a:'faster'},
+ {q:'“the most beautiful” =',opts:['çok güzel','daha güzel','en güzel','güzelce'],a:'en güzel'},
+ {q:'Polite request: “Would you open the window?” =',opts:['Pencereyi aç!','Pencereyi açar mısınız?','Pencere açık mı?','Pencereyi açtım mı?'],a:'Pencereyi açar mısınız?'},
+ {q:'“Çalışırken müzik dinlerim” — “-ken” means…',opts:['after','before','while','because'],a:'while'},
+ {q:'“birinci” = …',opts:['once','first','one by one','single'],a:'first'},
+ {q:'“Hiç İstanbul’a gittin mi?” asks about…',opts:['a plan','an experience','a wish','a habit'],a:'an experience'},
+ {q:'“Senin kadar hızlı değilim” = …',opts:['I am faster than you','I am not as fast as you','You are not fast','We are equally slow'],a:'I am not as fast as you'},
+ {q:'“alışveriş yapmak” = …',opts:['to cook','to shop','to travel','to work'],a:'to shop'}]},
+{id:'E5',name:'Orta',cefr:'B1−',ico:'⛰️',desc:'Hearsay, necessity, regret — the mountain begins',qs:[
+ {q:'“Kapı açık kalmış” — the -mış implies…',opts:['I saw it happen','evidently / I found out later','it will happen','I hope it happens'],a:'evidently / I found out later'},
+ {q:'“Yüzemiyorum” = …',opts:['I am not swimming','I cannot swim','I will not swim','I never swam'],a:'I cannot swim'},
+ {q:'“Gitmem gerekiyor” = …',opts:['I want to go','I have to go','I refuse to go','Let me go'],a:'I have to go'},
+ {q:'“Yatmadan önce” = …',opts:['after sleeping','before going to bed','while in bed','instead of sleeping'],a:'before going to bed'},
+ {q:'“Yedikten sonra” = …',opts:['before eating','without eating','after eating','while eating'],a:'after eating'},
+ {q:'“Ali yarın gelecekmiş” = …',opts:['Ali came yesterday','Apparently Ali will come tomorrow','Ali must come','I saw Ali come'],a:'Apparently Ali will come tomorrow'},
+ {q:'“Keşke gelseydin” expresses…',opts:['an order','a regret','a plan','a fear'],a:'a regret'},
+ {q:'“Ne çay ne kahve istiyorum” = …',opts:['both tea and coffee','either tea or coffee','neither tea nor coffee','only tea'],a:'neither tea nor coffee'},
+ {q:'“Bu ev 1950’de yapıldı” — yapıldı is…',opts:['active','passive','causative','reflexive'],a:'passive'},
+ {q:'“üşenmek” means…',opts:['to freeze','to be too lazy to bother','to hurry','to be surprised'],a:'to be too lazy to bother'}]},
+{id:'E6',name:'Sağlam',cefr:'B1',ico:'🏔️',desc:'Subordination — where most learners stall',qs:[
+ {q:'“Geldiğini biliyorum” = …',opts:['I know that you came','You know I came','I came knowingly','We came together'],a:'I know that you came'},
+ {q:'“Elimden geldiği kadar” = …',opts:['out of my hands','as much as I can','from hand to hand','at first hand'],a:'as much as I can'},
+ {q:'“yaptırmak” means…',opts:['to do quickly','to have something done','to do again','to undo'],a:'to have something done'},
+ {q:'“Yağmura rağmen geldi” = …',opts:['because of the rain','despite the rain','before the rain','if it rains'],a:'despite the rain'},
+ {q:'“sanki” = …',opts:['certainly','as if','finally','because'],a:'as if'},
+ {q:'“Nerede oturduğunu sordu” = …',opts:['He asked where she lives','He sat where she asked','She asked him to sit','He asked her to stay'],a:'He asked where she lives'},
+ {q:'“Koşarak geldi” = …',opts:['he came in order to run','he came (by) running','he ran after coming','he came instead of running'],a:'he came (by) running'},
+ {q:'“ya bugün ya da yarın” = …',opts:['neither today nor tomorrow','both today and tomorrow','either today or tomorrow','from today to tomorrow'],a:'either today or tomorrow'},
+ {q:'You say “Kolay gelsin” to someone who is…',opts:['eating','working','sleeping','leaving'],a:'working'},
+ {q:'“Çocuk bile anladı” — “bile” = …',opts:['only','even','almost','again'],a:'even'}]},
+{id:'E7',name:'İleri',cefr:'B2',ico:'🦅',desc:'Idioms and fine structure — the eagle’s air',qs:[
+ {q:'“Uyuyormuş gibi yapıyor” = …',opts:['he is sleeping deeply','he is pretending to sleep','he just woke up','he wants to sleep'],a:'he is pretending to sleep'},
+ {q:'“görüşmek” differs from “görmek” because it is…',opts:['passive','reciprocal (each other)','causative','negative'],a:'reciprocal (each other)'},
+ {q:'“Gelince haber ver” = …',opts:['let me know when you arrive','give news before coming','don’t come without news','he arrived with news'],a:'let me know when you arrive'},
+ {q:'“yapılabilir” = …',opts:['it was done','it can be done','it must be done','it is being done'],a:'it can be done'},
+ {q:'“Etekleri zil çalıyor” means she is…',opts:['very angry','overjoyed','in a hurry','wearing a costume'],a:'overjoyed'},
+ {q:'“üstesinden gelmek” = …',opts:['to come from above','to overcome','to surrender','to climb'],a:'to overcome'},
+ {q:'Active, attentive hearing is…',opts:['duymak','işitmek','dinlemek','seslenmek'],a:'dinlemek'},
+ {q:'“Geç kaldığı için özür diledi” — “-DIğI için” = …',opts:['although','because','as soon as','unless'],a:'because'},
+ {q:'“göz kulak olmak” = …',opts:['to gossip','to keep an eye on','to eavesdrop','to ignore'],a:'to keep an eye on'},
+ {q:'The formal verb for politely requesting is…',opts:['rica etmek','emretmek','bağırmak','dilemek'],a:'rica etmek'}]},
+{id:'E8',name:'Çok İleri',cefr:'C1',ico:'🔥',desc:'Nuance, litotes, rhetoric — feel the fire',qs:[
+ {q:'“Pireyi deve yapmak” = …',opts:['to work very hard','to make a mountain out of a molehill','to be very patient','to act quickly'],a:'to make a mountain out of a molehill'},
+ {q:'“âdeta” = …',opts:['rarely','virtually / as if','suddenly','openly'],a:'virtually / as if'},
+ {q:'“Ölürcesine korktu” — “-cesine” = …',opts:['because he died','as if dying','after dying','instead of dying'],a:'as if dying'},
+ {q:'“nitekim” = …',opts:['however','indeed / as a matter of fact','otherwise','meanwhile'],a:'indeed / as a matter of fact'},
+ {q:'“tabir caizse” = …',opts:['strictly speaking','so to speak','in writing','word for word'],a:'so to speak'},
+ {q:'“Yok değil” actually means…',opts:['there is none','there is, actually','it is forbidden','it disappeared'],a:'there is, actually'},
+ {q:'“gönül koymak” = …',opts:['to fall in love','to be quietly hurt by someone','to encourage','to promise'],a:'to be quietly hurt by someone'},
+ {q:'“Damlaya damlaya göl olur” teaches…',opts:['haste makes waste','small steady gains accumulate','still waters run deep','don’t cry over spilt milk'],a:'small steady gains accumulate'},
+ {q:'“kaçınılmaz” = …',opts:['avoidable','inevitable','invisible','unforgivable'],a:'inevitable'},
+ {q:'“Görmüşçesine anlattı” = …',opts:['he told it as if he had seen it','he saw it while telling','he told it after seeing','he refused to tell'],a:'he told it as if he had seen it'}]},
+{id:'E9',name:'Usta',cefr:'C1+',ico:'🎩',desc:'The master’s chamber — poetry, aorist soul, old words',qs:[
+ {q:'Yunus Emre: “Bilmeyen ne bilsin bizi, ___ selam olsun”',opts:['gelenlere','bilenlere','sevenlere','görenlere'],a:'bilenlere'},
+ {q:'“Elinden geleni ardına koymamak” = …',opts:['to be generous','to do everything in one’s power (often against someone)','to forget quickly','to hold back politely'],a:'to do everything in one’s power (often against someone)'},
+ {q:'“Ağzından bal damlıyor” = …',opts:['he is hungry','he speaks sweetly','he lies often','he is silent'],a:'he speaks sweetly'},
+ {q:'Someone answers “Bakarız.” — the aorist here signals…',opts:['a firm promise','a noncommittal “we’ll see”','a past habit','an order'],a:'a noncommittal “we’ll see”'},
+ {q:'“müsamaha” = …',opts:['punishment','tolerance / indulgence','curiosity','negotiation'],a:'tolerance / indulgence'},
+ {q:'“Söylenip duruyor” = …',opts:['he said it once','he keeps on grumbling','he stopped talking','he speaks formally'],a:'he keeps on grumbling'},
+ {q:'“gözden düşmek” = …',opts:['to cry','to fall from favor','to faint','to look down'],a:'to fall from favor'},
+ {q:'“binaenaleyh” (old Ottoman register) = …',opts:['nevertheless','consequently','allegedly','formerly'],a:'consequently'},
+ {q:'“Dile kolay!” is said about something…',opts:['easy to pronounce','immense — easier said than done','secret','funny'],a:'immense — easier said than done'},
+ {q:'“kulak misafiri olmak” = …',opts:['to host a guest','to overhear','to listen to music','to go deaf'],a:'to overhear'}]},
+{id:'E10',name:'Süper Güçlü',cefr:'C2',ico:'🐺',desc:'The wolf’s exam. Few pass. Fewer deserve to.',qs:[
+ {q:'“müteşekkir” = …',opts:['suspicious','grateful','exhausted','famous'],a:'grateful'},
+ {q:'“Ha babam de babam çalıştık” conveys…',opts:['working with one’s father','relentless, strenuous effort','working reluctantly','quick easy work'],a:'relentless, strenuous effort'},
+ {q:'“İğneyle kuyu kazmak” = …',opts:['a pointless argument','an extremely laborious task','a medical procedure','a quick fix'],a:'an extremely laborious task'},
+ {q:'“nev-i şahsına münhasır” = …',opts:['old-fashioned','one of a kind','selfish','aristocratic'],a:'one of a kind'},
+ {q:'“akıl tutulması” = …',opts:['a brilliant idea','a lapse of reason','a memory game','an eclipse'],a:'a lapse of reason'},
+ {q:'“O saatte gelmezdim” (not “gelmiyordum”) implies…',opts:['I was not coming at that moment','I wouldn’t have come / I never used to come','I cannot come','I forgot to come'],a:'I wouldn’t have come / I never used to come'},
+ {q:'“velhasıl” = …',opts:['in short','at last','by chance','in vain'],a:'in short'},
+ {q:'“kifayetsiz” = …',opts:['priceless','insufficient / inadequate','careless','harmless'],a:'insufficient / inadequate'},
+ {q:'“Üstüne tüy dikti” = …',opts:['he decorated it','he topped it all off (made it even worse)','he fixed it neatly','he celebrated it'],a:'he topped it all off (made it even worse)'},
+ {q:'“Değil mi ki sevdik, ayrılık yoktur” — “değil mi ki” here means…',opts:['isn’t it?','seeing that / since','unless','as though'],a:'seeing that / since'}]},
 ];
 
 /* ===== 🧩 Suffix Lab — assemble Turkish words from pieces (the REAL skill) ===== */
@@ -521,7 +637,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -673,6 +789,7 @@ function renderDash(){
   $('#kUnits').textContent=Object.values(S.units).filter(u=>u.complete).length;
   $('#kLessons').textContent=S.lessons;$('#kReviews').textContent=S.reviews;
   $('#kLS').textContent=S.listen+' / '+S.speak;$('#kBadges').textContent=S.badges.length+' / '+BADGES.length;
+  const lb=lexBest();$('#kExams').textContent=lb?(LEXAMS[lb-1].ico+' '+LEXAMS[lb-1].cefr):'—';
   renderWeek();renderHeat();renderCharts();
 }
 const WEEK_TIERS=[{xp:300,t:'🥉 Bronze'},{xp:700,t:'🥈 Silver'},{xp:1500,t:'🏆 Gold'}];
@@ -924,6 +1041,51 @@ function placeQ(){
     setTimeout(()=>{if(flow){flow.qi++;placeQ();}},600);});
 }
 
+/* 🎓 Master Exam Hall engine — separate from the roadmap; rank = highest exam passed */
+function lexBest(){let best=0;LEXAMS.forEach((e,i)=>{if(((S.lexams||{})[e.id]||0)>=8)best=i+1;});return best;}
+function renderExams(){
+  const b=lexBest();
+  $('#lexSub').textContent=b
+    ?('Gerçek seviyen: '+LEXAMS[b-1].ico+' '+LEXAMS[b-1].name+' ('+LEXAMS[b-1].cefr+')'+(b===10?' — Zirvedesin, kurt.':' — Bir üst sınav seni bekliyor. Rahatına alışma.'))
+    :'Hocan bekliyor. Sıralı girmene gerek yok — ama geçme notu 8/10 ve hoca taviz vermez.';
+  $('#lexList').innerHTML=LEXAMS.map((e,i)=>{const sc=(S.lexams||{})[e.id];const passed=(sc||0)>=8;
+    return `<div class="unit ${passed?'complete':''}" data-e="${e.id}">
+      <div class="unum">${passed?'✓':e.ico}</div>
+      <div class="uinfo"><h4>${i+1}. ${e.name} · ${e.cefr}</h4><p>${e.desc} · ${sc!=null?('best '+sc+'/10'):'not attempted'}</p></div></div>`;}).join('');
+  $$('#lexList .unit').forEach(el=>el.onclick=()=>startLexam(LEXAMS.find(e=>e.id===el.dataset.e)));
+}
+function startLexam(e){flow={mode:'lex',ex:e,qi:0,score:0};$('#lexList').innerHTML='';lexQ();}
+function lexQ(){
+  if(!flow||!flow.ex)return;
+  const e=flow.ex;
+  if(flow.qi>=e.qs.length){
+    const sc=flow.score,passed=sc>=8,first=passed&&!(((S.lexams||{})[e.id]||0)>=8);
+    if(!S.lexams)S.lexams={};
+    S.lexams[e.id]=Math.max(S.lexams[e.id]||0,sc);
+    if(first){addXp(40,'Grammar');checkBadges();if(e.id==='E5'||e.id==='E10')setTimeout(()=>openChest('Hocanın hediyesi'),1100);}
+    save();
+    const msg=passed
+      ?(e.id==='E10'?'Artık benden öğrenecek bir şeyin kalmadı. Usta sensin. 🐺':'Fena değil: '+sc+'/10. Ama gurur duyma — bir üst sınav seni bekliyor.')
+      :'Yetersiz: '+sc+'/10. Bu seviye senin değil… henüz. Git çalış, sonra karşıma çık.';
+    $('#lexStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">${passed?'🎓':'🪵'}</div>
+      <h2>${passed?e.name+' — geçtin':'Kaldın'}</h2><p class="muted" style="line-height:1.8">${msg}${first?'<br>+40 XP':''}</p></div>
+      <div class="row" style="justify-content:center"><button class="btn" id="lexBack">Sınav salonu</button>${passed?'':'<button class="btn ghost" id="lexRetry">Tekrar dene</button>'}</div></div>`;
+    if(passed){celebrate();snd('quest');}
+    $('#lexBack').onclick=()=>{flow=null;$('#lexStage').innerHTML='';renderExams();};
+    if(!passed)$('#lexRetry').onclick=()=>startLexam(e);
+    return;
+  }
+  const qq=e.qs[flow.qi];
+  $('#lexStage').innerHTML=`<div class="stage"><div class="pill">${e.ico} ${e.name} · ${flow.qi+1} / ${e.qs.length} · geçme notu 8/10</div>
+    <div class="flash" style="max-width:560px"><div class="cat">Hoca soruyor</div><div class="tr" style="font-size:20px;line-height:1.55">${qq.q}</div></div>
+    <div class="choices" style="max-width:560px">${shuffle(qq.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===qq.a;buzz(ok?12:60);snd(ok?'ok':'no');
+    if(ok){ch.classList.add('correct');flow.score++;}
+    else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===qq.a)c.classList.add('correct');});}
+    setTimeout(()=>{if(flow){flow.qi++;lexQ();}},850);});
+}
+
 /* ✍️ Writing drill — recall + spelling, credits the Writing skill */
 function startWrite(){flow={mode:'write',n:0,score:0,total:8,pool:shuffle(learnedCards())};writeCard();}
 function writeCard(){
@@ -1106,7 +1268,7 @@ function speakCard(){
 function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:learnedCards().length,reviews:S.reviews,quiz:S.quiz,questsDone:S.questsDone,listen:S.listen,speak:S.speak,
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
-  suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,
+  suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,lexBest:lexBest(),
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1289,10 +1451,11 @@ function showExplain(item){
 
 /* ===================== NAV ===================== */
 function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('active',s.id===v));
-  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='badges')renderBadges();}
+  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
 $('#kpiBadges').onclick=()=>switchView('badges');
+$('#kpiExams').onclick=()=>switchView('exams');
 $('#helloQuest').onclick=()=>switchView('quest');
 $('#sndChip').onclick=toggleSnd;
 $('#sndChip').textContent=SND.on?'🔊':'🔇';
@@ -1324,6 +1487,9 @@ function mergeStates(a,b){
   m.suffixN=Math.max(a.suffixN||0,b.suffixN||0);
   m.read=Object.assign({},a.read||{},b.read||{});
   m.certs=Object.assign({},a.certs||{},b.certs||{});
+  m.lexams={};
+  new Set([...Object.keys(a.lexams||{}),...Object.keys(b.lexams||{})])
+    .forEach(k=>m.lexams[k]=Math.max((a.lexams||{})[k]||0,(b.lexams||{})[k]||0));
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});
