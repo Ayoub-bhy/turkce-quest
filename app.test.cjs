@@ -138,7 +138,8 @@ snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND,
 READING,startWrite,writeCard,readList,readView,readQuiz,
 SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ,
 LEXAMS,lexBest,renderExams,startLexam,lexQ,
-startBlitz,blitzQ,blitzAnswer,blitzTick,endBlitz,blitzHud,comboBoost,shake};`;
+startBlitz,blitzQ,blitzAnswer,blitzTick,endBlitz,blitzHud,comboBoost,shake,
+renderJourney,startMatch,matchTap,renderMatch,startSent,sentCard,sentTap,sentPool,hocaSay,CITIES};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -1126,6 +1127,103 @@ test('merge keeps blitz best and plays', () => {
 test('snd break cue and boosted ok play without error', () => {
   A._SND().on = true; A._SND().ctx = null;
   A.snd('break'); A.snd('ok', 1.5);
+});
+test('journey map renders road, cities, states, and click routing', () => {
+  const S = freshS();
+  S.units.U1 = { complete: true };            // one done → next becomes current
+  A.renderJourney();
+  const svg = q('#journey').innerHTML;
+  assert.ok(svg.includes('jroad'), 'road drawn');
+  assert.ok(svg.includes('İstanbul') && svg.includes('Köy'), 'cities labelled');
+  assert.ok(svg.includes('jdone') && svg.includes('jcur') && svg.includes('jlock'), 'all three states');
+  assert.ok(svg.includes('Buradasın'), 'you-are-here marker');
+  const nodes = qa('#journey .jn');
+  nodes[0].dataset.j = '1'; nodes[0].onclick();  // unlocked → startUnit
+  nodes[1].dataset.j = '28'; nodes[1].onclick(); // locked → stern toast
+  A.renderUnits();                                // journey renders with tree
+});
+test('match pairs: select, deselect, wrong pair, full clear, replay', async () => {
+  const S = freshS();
+  A.startMatch();                                 // <6 learned → fallback pool
+  const f = A.getFlow();
+  assert.equal(f.pairs.length, 6);
+  assert.equal(f.tiles.length, 12);
+  const ti = (id, k) => f.tiles.findIndex(t => t.id === id && t.k === k);
+  const [p0, p1] = f.pairs;
+  A.matchTap(ti(p0.id, 'tr'));                    // select
+  A.matchTap(ti(p0.id, 'tr'));                    // same tile → deselect
+  A.matchTap(ti(p0.id, 'tr'));                    // reselect
+  A.matchTap(ti(p1.id, 'en'));                    // wrong pair
+  assert.equal(A.getFlow().matched.length, 0);
+  for (const p of f.pairs) { A.matchTap(ti(p.id, 'tr')); A.matchTap(ti(p.id, 'en')); }
+  assert.equal(A.getFlow(), null, 'round complete');
+  assert.equal(S.matchN, 6);
+  q('#mAgain').click();                           // replay
+  A.matchTap(A.getFlow().tiles.findIndex(t => t.k === 'tr')); // select then already-matched guard
+  A.getFlow().matched.push(A.getFlow().tiles[0].id);
+  A.matchTap(0);
+  A.setFlow(null); A.matchTap(0); A.renderMatch(); // stale guards
+  q('#mBack') && A.renderPracticeHome();
+  await sleep(20);
+});
+test('sentence builder: correct build, wrong order, finish, replay', async () => {
+  const S = freshS();
+  assert.ok(A.sentPool().length >= 20, 'plenty of 4+ word sentences');
+  A.startSent();
+  let f = A.getFlow();
+  // build correctly: tap tiles in target order
+  for (const w of f.target.slice()) {
+    const i = f.tiles.findIndex((t, idx) => t.w === w && !f.used.includes(idx));
+    A.sentTap(i);
+  }
+  await sleep(15);
+  assert.equal(A.getFlow().score, 1, 'correct sentence scored');
+  assert.ok(S.skills.Writing >= 9, 'Writing credited');
+  // wrong order: tap reversed
+  f = A.getFlow();
+  const rev = f.target.slice().reverse();
+  if (f.target.join(' ') !== rev.join(' ')) {
+    for (const w of rev) {
+      const i = f.tiles.findIndex((t, idx) => t.w === w && !f.used.includes(idx));
+      A.sentTap(i);
+    }
+    await sleep(15);
+  }
+  A.sentTap(999);                                 // bad index guard
+  q('#sHear').click();
+  A.setFlow({ mode: 'sent', n: 99, total: 5, score: 3, pool: A.sentPool().slice(0, 5) });
+  A.sentCard();                                   // summary
+  q('#sAgain').click();                           // replay
+  A.setFlow(null); A.sentCard(); A.sentTap(0);    // stale guards
+  assert.ok(S.sentN >= 1);
+  await sleep(20);
+});
+test('hoca speaks to the actual state, sternly', () => {
+  const S = freshS();
+  S.xp = 0;
+  assert.ok(A.hocaSay().includes('Yeni misin'));
+  S.xp = 500;
+  A.VOCAB.slice(0, 12).forEach(v => S.cards[v.id] = { learned: true, reps: 2, interval: 0, due: today(), ease: 2.5, miss: 0 });
+  assert.ok(A.hocaSay().includes('kart'), 'nags about due cards');
+  A.VOCAB.slice(0, 12).forEach(v => S.cards[v.id].due = '2999-01-01');
+  A.VOCAB.slice(0, 3).forEach(v => S.cards[v.id].miss = 5);
+  assert.ok(A.hocaSay().includes('Zayıf'), 'nags about weak words');
+  A.VOCAB.slice(0, 3).forEach(v => S.cards[v.id].miss = 0);
+  S.lastActive = '2000-01-01';
+  assert.ok(A.hocaSay().includes('çalışmadın'), 'scolds inactivity');
+  S.lastActive = today();
+  S.quest = { date: today(), claimed: true };
+  assert.ok(A.hocaSay().includes('görev'), 'grudging praise');
+  S.quest.claimed = false;
+  assert.ok(A.hocaSay().length > 10, 'daily proverb fallback');
+  A.renderDash();                                  // hoca line lands on dashboard
+});
+test('merge keeps match and sentence counters', () => {
+  const a = A.blank(), b = A.blank();
+  a.matchN = 30; b.matchN = 12; b.sentN = 9;
+  const m = A.mergeStates(a, b);
+  assert.equal(m.matchN, 30);
+  assert.equal(m.sentN, 9);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;

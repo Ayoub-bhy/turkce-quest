@@ -231,6 +231,20 @@
   /* 💥 blitz juice */
   body.shaking{animation:shakebody .45s ease}
   @keyframes shakebody{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(3px)}30%,70%{transform:translateX(-5px)}40%,60%{transform:translateX(5px)}50%{transform:translateX(-3px)}}
+  /* 🗺️ journey map */
+  .jwrap{overflow-x:auto;margin-bottom:16px;background:var(--panel2);border:1px solid var(--line);border-radius:14px}
+  .jroad{fill:none;stroke:var(--line);stroke-width:5;stroke-linecap:round;stroke-dasharray:1 12}
+  .jn{cursor:pointer;stroke:var(--bg);stroke-width:3}
+  .jdone{fill:var(--green)} .jlock{fill:#2a2f3e}
+  .jcur{fill:var(--accent);animation:jpulse 1.5s ease-in-out infinite}
+  @keyframes jpulse{50%{opacity:.5}}
+  .jcity{fill:var(--gold);font-size:12px;font-weight:800}
+  .jyou{fill:var(--accent2);font-size:11px;font-weight:700}
+  /* 🎩 hoca's corner */
+  .hocabox{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,rgba(246,195,74,.09),transparent 60%),var(--panel);
+    border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:12px;padding:12px 15px;margin-bottom:16px;
+    font-size:13.5px;line-height:1.65;font-style:italic}
+  .msel{border-color:var(--blue)!important;background:rgba(74,168,255,.12)!important}
   /* 🎨 Artist pass — typography, light & warmth */
   body{background:
     radial-gradient(1200px 600px at 80% -10%,rgba(227,10,23,.14),transparent),
@@ -309,6 +323,7 @@
     <div class="hello"><h2 id="helloName">Merhaba! 👋</h2><p class="muted" id="helloSub"></p>
       <span class="pill" id="helloQuest" style="cursor:pointer;margin-top:8px;display:inline-block">🎯 Quest 0/4</span></div>
     <div id="fsWrap"></div>
+    <div class="hocabox"><span style="font-size:24px">🎩</span><span><b style="color:var(--gold)">Hoca:</b> <span id="hocaLine"></span></span></div>
     <div class="flowcta">
       <div><h3>🚀 Continue your roadmap</h3>
         <p id="ctaSub">Adaptive, endless practice — one challenge flows straight into the next.</p></div>
@@ -423,8 +438,9 @@
   <!-- LEARN -->
   <section class="view" id="learn">
     <div class="card">
-      <h3>📚 Skill Tree — Yedi İklim A1 & A2</h3>
-      <div class="sub">Finish a unit to unlock the next. Each gives a lesson, vocab cards & a quiz.</div>
+      <h3>🗺️ Yolculuğun — Your Journey Across Turkey</h3>
+      <div class="sub">From the village to İstanbul — each stop is a unit. Tap a stop on the road or in the list below.</div>
+      <div class="jwrap" id="journey"></div>
       <div class="units" id="units"></div>
     </div>
   </section>

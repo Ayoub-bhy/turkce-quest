@@ -639,7 +639,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0},matchN:0,sentN:0
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -772,6 +772,7 @@ function renderDash(){
   $('#helloName').textContent='Merhaba'+(nm?', '+nm:'')+'! 👋';
   const subs=['Az az, her gün — başarı böyle gelir.','Bugün 5 dakika yeter. Hadi!','Tekrar etmek, hatırlamaktır. Devam!'];
   $('#helloSub').textContent=subs[new Date().getDate()%subs.length];
+  $('#hocaLine').textContent=hocaSay();
   /* one-glance status: quest pill + personalised CTA */
   ensureQuest();
   const qd=(S.quest.newWords>=5?1:0)+(S.quest.reviews>=10?1:0)+(S.quest.lesson?1:0)+(S.quest.listen?1:0);
@@ -871,6 +872,29 @@ function renderUnits(){
     if(unlocked)el.onclick=()=>startUnit(u);
     wrap.appendChild(el);
   });
+  renderJourney();
+}
+
+/* 🗺️ Journey map — the tree becomes a road across Turkey */
+const CITIES={0:'🏡 Köy',7:'🌊 Bursa',14:'🏛️ Ankara',20:'🎈 Kapadokya',28:'🕌 İstanbul'};
+function renderJourney(){
+  let pts=[],nodes='';
+  UNITS.forEach((u,i)=>{
+    const x=36+i*46,y=76+Math.round(Math.sin(i*0.85)*32);
+    pts.push(x+','+y);
+    const done=S.units[u.id]&&S.units[u.id].complete;
+    const cur=unitUnlocked(i)&&!done;
+    nodes+=`<circle class="jn ${done?'jdone':cur?'jcur':'jlock'}" data-j="${i}" cx="${x}" cy="${y}" r="${cur?13:10}"><title>${u.title}</title></circle>`;
+    if(CITIES[i])nodes+=`<text class="jcity" x="${x}" y="${y-22}" text-anchor="middle">${CITIES[i]}</text>`;
+    if(cur)nodes+=`<text class="jyou" x="${x}" y="${y+34}" text-anchor="middle">📍 Buradasın</text>`;
+  });
+  const W=36+29*46;
+  $('#journey').innerHTML=`<svg viewBox="0 0 ${W} 148" style="min-width:${W}px;height:148px;display:block">
+    <polyline points="${pts.join(' ')}" class="jroad"/>${nodes}</svg>`;
+  $$('#journey .jn').forEach(el=>el.onclick=()=>{
+    const i=+el.dataset.j;
+    if(unitUnlocked(i))startUnit(UNITS[i]);
+    else toast('🔒 Önce önceki durakları geç — the road is walked in order');});
 }
 
 /* Unit flow: lesson -> learn -> quiz */
@@ -938,6 +962,8 @@ function renderPracticeHome(){
     <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
     <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
     <div class="mode" id="mSuffix"><div class="mi">🧩</div><h4>Suffix Lab</h4><p>Build words from pieces</p><div class="cnt" style="color:var(--purple)">${S.suffixN||0}</div></div>
+    <div class="mode" id="mSent"><div class="mi">🧱</div><h4>Sentences</h4><p>Build them word by word</p><div class="cnt" style="color:var(--green)">${S.sentN||0}</div></div>
+    <div class="mode" id="mMatch"><div class="mi">🔗</div><h4>Match Pairs</h4><p>Turkish ↔ meaning</p><div class="cnt" style="color:var(--blue)">${S.matchN||0}</div></div>
     <div class="mode" id="mRead"><div class="mi">📖</div><h4>Reading</h4><p>Micro-stories + question</p><div class="cnt" style="color:var(--gold)">${readDone}/${READING.length}</div></div>
     <div class="mode" id="mWrite"><div class="mi">✍️</div><h4>Writing</h4><p>Type it in Turkish</p><div class="cnt" style="color:var(--accent2)">${S.writes||0}</div></div>
     <div class="mode" id="mListen"><div class="mi">👂</div><h4>Listening</h4><p>Hear it, pick the meaning</p><div class="cnt" style="color:var(--blue)">${known}</div></div>
@@ -949,6 +975,8 @@ function renderPracticeHome(){
   $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
   $('#mDlg').onclick=()=>dlgList();
   $('#mSuffix').onclick=()=>startSuffix();
+  $('#mSent').onclick=()=>startSent();
+  $('#mMatch').onclick=()=>startMatch();
   $('#mRead').onclick=()=>readList();
   $('#mWrite').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startWrite();};
   $('#mListen').onclick=()=>{if(known<4){toast('Learn 4+ words first');return;}startListen();};
@@ -1053,6 +1081,92 @@ function placeQ(){
     const ok=ch.dataset.val===v.en;if(ok){ch.classList.add('correct');flow.bands[Math.floor(flow.qi/4)]++;}
     else ch.classList.add('wrong');
     setTimeout(()=>{if(flow){flow.qi++;placeQ();}},600);});
+}
+
+/* 🔗 Match Pairs — tap a Turkish word, tap its meaning. A new verb: connect. */
+function startMatch(){
+  const learned=learnedCards();
+  const src=learned.length>=6?learned:VOCAB.slice(0,12);
+  flow={mode:'match',pairs:shuffle(src.slice()).slice(0,6),matched:[],sel:null,tries:0};
+  flow.tiles=shuffle(flow.pairs.flatMap(v=>[{id:v.id,t:v.tr,k:'tr'},{id:v.id,t:v.en,k:'en'}]));
+  renderMatch();
+}
+function renderMatch(){
+  if(!flow||flow.mode!=='match')return;
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🔗 Match the pairs · ${flow.matched.length} / 6</div>
+    <div class="choices" style="grid-template-columns:repeat(auto-fit,minmax(120px,1fr));max-width:560px">
+    ${flow.tiles.map((t,i)=>{
+      const done=flow.matched.includes(t.id);
+      const seld=flow.sel&&flow.sel.id===t.id&&flow.sel.k===t.k;
+      return `<div class="choice ${done?'correct':''} ${seld?'msel':''}" data-i="${i}" style="justify-content:center;font-size:14px;${done?'opacity:.45;pointer-events:none':''}">${t.t}</div>`;
+    }).join('')}</div></div>`;
+  $$('#practiceStage .choice').forEach(el=>el.onclick=()=>{if(el.dataset.i!=null)matchTap(+el.dataset.i);});
+}
+function matchTap(i){
+  if(!flow||flow.mode!=='match')return;
+  const t=flow.tiles[i];if(!t||flow.matched.includes(t.id))return;
+  if(!flow.sel){flow.sel={id:t.id,k:t.k};renderMatch();return;}
+  if(flow.sel.id===t.id&&flow.sel.k===t.k){flow.sel=null;renderMatch();return;} // tap again = deselect
+  flow.tries++;
+  if(flow.sel.id===t.id&&flow.sel.k!==t.k){
+    flow.matched.push(t.id);flow.sel=null;
+    S.matchN=(S.matchN||0)+1;buzz(12);snd('ok',comboBoost(flow.matched.length));addXp(4,'Vocabulary');xpPop(4,flow.matched.length);
+    if(flow.matched.length>=6){
+      save();
+      $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🔗</div><h2>All matched!</h2><p class="muted">6 pairs · ${flow.tries} attempts · +24 XP</p></div>
+        <div class="row" style="justify-content:center"><button class="btn purple" id="mAgain">🔗 Again</button><button class="btn ghost" id="mBack">Back</button></div></div>`;
+      $('#mAgain').onclick=startMatch;$('#mBack').onclick=renderPracticeHome;flow=null;return;
+    }
+    renderMatch();
+  }else{buzz(40);snd('no');flow.sel=null;renderMatch();}
+}
+
+/* 🧱 Sentence Builder — assemble real sentences word by word. Word order is a skill. */
+function sentPool(){return VOCAB.filter(v=>v.ex.split(' ').length>=4);}
+function startSent(){flow={mode:'sent',n:0,score:0,total:5,pool:shuffle(sentPool()).slice(0,20)};sentCard();}
+function sentCard(){
+  if(!flow||flow.mode!=='sent')return;
+  if(flow.n>=flow.total){
+    $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">🧱</div><h2>Builder done</h2><p class="muted">${flow.score}/${flow.total} sentences · skill: Writing</p></div>
+      <div class="row" style="justify-content:center"><button class="btn purple" id="sAgain">🧱 Again</button><button class="btn ghost" id="sBack">Back</button></div></div>`;
+    $('#sAgain').onclick=startSent;$('#sBack').onclick=renderPracticeHome;flow=null;return;
+  }
+  const v=flow.pool[flow.n%flow.pool.length];
+  flow.cur=v;flow.target=v.ex.split(' ');flow.built=[];flow.used=[];
+  flow.tiles=shuffle(flow.target.map((w,i)=>({w,i})));
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🧱 ${flow.n+1} / ${flow.total} · tap the words in order</div>
+    <div class="flash"><div class="cat">${v.tr} — ${v.en}</div>
+    <div class="en" id="sBuilt" style="opacity:1;min-height:30px;font-size:18px">…</div></div>
+    <div class="choices" id="sTiles" style="grid-template-columns:repeat(auto-fit,minmax(96px,1fr));max-width:520px">
+    ${flow.tiles.map((t,i)=>`<div class="choice" data-i="${i}" style="justify-content:center;font-size:15px">${t.w}</div>`).join('')}</div>
+    <button class="btn ghost" id="sHear">🔊 Hear it</button></div>`;
+  $('#sHear').onclick=()=>speak(v.ex);
+  $$('#sTiles .choice').forEach(el=>el.onclick=()=>{if(el.dataset.i!=null)sentTap(+el.dataset.i);});
+}
+function sentTap(i){
+  if(!flow||flow.mode!=='sent'||!flow.tiles[i]||flow.used.includes(i))return;
+  flow.used.push(i);flow.built.push(flow.tiles[i].w);
+  const el=$('#sBuilt');if(el)el.textContent=flow.built.join(' ');
+  buzz(8);
+  if(flow.built.length<flow.target.length)return;
+  const ok=flow.built.join(' ')===flow.target.join(' ');
+  S.sentN=(S.sentN||0)+1;
+  if(ok){flow.score++;snd('ok',comboBoost(flow.score));addXp(9,'Writing');xpPop(9,flow.score);speak(flow.cur.ex);}
+  else{snd('no');shake();toast('✏️ '+flow.cur.ex);}
+  checkBadges();save();
+  setTimeout(()=>{if(flow){flow.n++;sentCard();}},ok?900:1600);
+}
+
+/* 🎩 The Hoca — your stern companion, watching from the dashboard */
+function hocaSay(){
+  const due=dueCards().length,weak=weakCards().length;
+  if(S.xp===0)return 'Yeni misin? Güzel. Tembellik etme — ilk beş kelime seni bekliyor.';
+  if(due>=10)return due+' kart tekrar bekliyor. Tekrar etmeyen, unutur. Kural benim değil, beynin kuralı.';
+  if(weak>=3)return 'Zayıf kelimelerin birikti. 🩹 Onlardan kaçma — karşına ben çıkarırım sonra.';
+  if(S.lastActive!==todayStr())return 'Bugün daha hiç çalışmadın. Dil, bekleyeni değil çalışanı sever.';
+  if(S.quest&&S.quest.claimed)return 'Bugünkü görev tamam. Fena değil… ama yarın yine geleceğim.';
+  const p=['Damlaya damlaya göl olur. Devam.','Az az, her gün. Kural budur.','Kelime hazinen kılıcındır — her gün bile.','Yolun uzun, ama yürüyene kısalır.'];
+  return p[new Date().getDate()%p.length];
 }
 
 /* ⚡ BLITZ — 60 seconds, 3 hearts, multiplier ×1–×5. Finally, something to LOSE. */
@@ -1574,7 +1688,7 @@ function bootGuest(){KEY=KEY_BASE;S=load();localStorage.setItem('tq_mode','guest
 function mergeStates(a,b){
   if(!a)return b;if(!b)return a;
   const m=blank(),t=todayStr();
-  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil','writes','reads']
+  ['xp','bestStreak','streak','freezes','diff','lessons','reviews','quiz','questsDone','listen','speak','chests','cultureN','boostUntil','writes','reads','matchN','sentN']
     .forEach(k=>m[k]=Math.max(a[k]||0,b[k]||0));
   m.suffixN=Math.max(a.suffixN||0,b.suffixN||0);
   m.read=Object.assign({},a.read||{},b.read||{});
