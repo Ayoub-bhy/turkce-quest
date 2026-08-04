@@ -412,6 +412,8 @@ const BADGES=[
 {id:'cert1',ico:'📜',name:'Sertifikalı',desc:'Pass a checkpoint exam',test:s=>s.certsN>=1},
 {id:'lex5',ico:'⛰️',name:'Dağcı',desc:'Pass master exam 5',test:s=>s.lexBest>=5},
 {id:'lex10',ico:'🐺',name:'Bozkurt',desc:'Pass the wolf exam (E10)',test:s=>s.lexBest>=10},
+{id:'blitz500',ico:'⚡',name:'Şimşek',desc:'Blitz score 500+',test:s=>s.blitzBest>=500},
+{id:'blitz1500',ico:'🌩️',name:'Fırtına',desc:'Blitz score 1500+',test:s=>s.blitzBest>=1500},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -637,7 +639,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -692,19 +694,29 @@ let SND={on:localStorage.getItem('tq_snd')!=='0',ctx:null};
 function sndCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;if(!SND.ctx)SND.ctx=new AC();return SND.ctx;}
 function tone(ctx,f,t0,d,type,g0){const o=ctx.createOscillator(),g=ctx.createGain();o.type=type||'sine';o.frequency.value=f;
   g.gain.setValueAtTime(g0||.12,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+d);}
-function snd(kind){try{
-  if(!SND.on)return;const ctx=sndCtx();if(!ctx)return;const t=ctx.currentTime;
-  if(kind==='ok'){tone(ctx,880,t,.12);tone(ctx,1318.5,t+.08,.18);}
+function snd(kind,boost){try{
+  if(!SND.on)return;const ctx=sndCtx();if(!ctx)return;const t=ctx.currentTime;const b=boost||1;
+  if(kind==='ok'){tone(ctx,880*b,t,.12);tone(ctx,1318.5*b,t+.08,.18);}
   else if(kind==='no'){tone(ctx,180,t,.2,'square',.05);}
   else if(kind==='chest'){[523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(ctx,f,t+i*.09,.22));}
   else if(kind==='quest'){tone(ctx,659.25,t,.15);tone(ctx,880,t+.12,.25);}
+  else if(kind==='break'){tone(ctx,440,t,.12,'square',.06);tone(ctx,220,t+.1,.3,'square',.07);}
 }catch(e){}}
+/* 🎚️ combo → pitch: correct answers literally rise as you heat up */
+function comboBoost(c){return 1+Math.min(c||0,12)*0.045;}
+/* 💥 screen shake on painful moments */
+function shake(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
+  try{document.body.classList.remove('shaking');void document.body.offsetWidth;
+    document.body.classList.add('shaking');setTimeout(()=>document.body.classList.remove('shaking'),450);}catch(e){}}
 function toggleSnd(){SND.on=!SND.on;localStorage.setItem('tq_snd',SND.on?'1':'0');
   $('#sndChip').textContent=SND.on?'🔊':'🔇';toast(SND.on?'🔊 Sounds on':'🔇 Sounds off');if(SND.on)snd('ok');}
 /* ✨ Floating XP gain */
-function xpPop(n){
+function xpPop(n,combo){
   try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;}catch(e){}
   const s=document.createElement('div');s.className='xppop';s.textContent='+'+n+' XP';
+  const c=Math.min(combo||0,12);
+  s.style.fontSize=(20+c*1.6)+'px';                     // pops GROW as the streak grows
+  if(c>=9)s.style.color='var(--gold)';else if(c>=5)s.style.color='var(--accent2)';
   document.body.appendChild(s);setTimeout(()=>s.remove(),900);
 }
 function celebrate(){ /* Duolingo-style confetti — clear positive feedback */
@@ -921,6 +933,7 @@ function renderPracticeHome(){
   const dlgDone=Object.values(S.dlg||{}).filter(Boolean).length;
   const readDone=Object.values(S.read||{}).filter(Boolean).length;
   $('#practiceStage').innerHTML=`<div class="modehub">
+    <div class="mode" id="mBlitz" style="border-color:var(--gold)"><div class="mi">⚡</div><h4>Blitz</h4><p>60s · 3 hearts · multipliers</p><div class="cnt" style="color:var(--gold)">${(S.blitz&&S.blitz.best)||0}</div></div>
     <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
     <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
     <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
@@ -931,6 +944,7 @@ function renderPracticeHome(){
     <div class="mode" id="mSpeak"><div class="mi">🎤</div><h4>Speaking</h4><p>Say it back out loud</p><div class="cnt" style="color:var(--purple)">${known}</div></div>
   </div>
   <p class="muted center" style="margin-top:16px">${known<4?'Learn at least 4 words in the Learn tab to unlock the drills.':'Drills draw from your '+known+' learned words.'}</p>`;
+  $('#mBlitz').onclick=()=>startBlitz();
   $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
   $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
   $('#mDlg').onclick=()=>dlgList();
@@ -1039,6 +1053,81 @@ function placeQ(){
     const ok=ch.dataset.val===v.en;if(ok){ch.classList.add('correct');flow.bands[Math.floor(flow.qi/4)]++;}
     else ch.classList.add('wrong');
     setTimeout(()=>{if(flow){flow.qi++;placeQ();}},600);});
+}
+
+/* ⚡ BLITZ — 60 seconds, 3 hearts, multiplier ×1–×5. Finally, something to LOSE. */
+let blitzTimer=null;
+function startBlitz(){
+  const learned=learnedCards();
+  const pool=learned.length>=8?learned:VOCAB.slice(0,30);
+  flow={mode:'blitz',score:0,combo:0,mult:1,hearts:3,time:60,n:0,pool:shuffle(pool.slice())};
+  clearInterval(blitzTimer);
+  blitzTimer=setInterval(blitzTick,1000);
+  blitzQ();
+}
+function blitzTick(){
+  if(!flow||flow.mode!=='blitz'){clearInterval(blitzTimer);return;}
+  flow.time--;
+  const el=$('#bTime');if(el){el.textContent=flow.time+'s';if(flow.time<=10)el.style.color='var(--accent2)';}
+  if(flow.time<=0)endBlitz();
+}
+function blitzHud(){
+  return `<div class="row" style="justify-content:center;gap:10px;flex-wrap:wrap">
+    <span class="pill" style="color:var(--accent2)">${'❤️'.repeat(flow.hearts)}${'🖤'.repeat(3-flow.hearts)}</span>
+    <span class="pill" id="bTime" style="font-weight:800">${flow.time}s</span>
+    <span class="pill" style="color:var(--gold)">⚡ ${flow.score}</span>
+    <span class="pill" style="color:${flow.mult>=4?'var(--gold)':flow.mult>=2?'var(--accent2)':'var(--muted)'};font-weight:800">×${flow.mult}</span>
+  </div>`;
+}
+function blitzQ(){
+  if(!flow||flow.mode!=='blitz')return;
+  const v=flow.pool[flow.n%flow.pool.length];flow.cur=v;flow.n++;
+  const opts=mcChoices(v,'en');
+  $('#practiceStage').innerHTML=`<div class="stage">${blitzHud()}
+    <div class="flash" style="padding:26px"><div class="cat">⚡ Quick! What does it mean?</div><div class="tr" style="font-size:30px">${v.tr}</div></div>
+    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===v.en;
+    if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===v.en)c.classList.add('correct');});}
+    blitzAnswer(ok);});
+  window.__flowKey=e=>{if(e.key>='1'&&e.key<='4'){const el=$$('.choice')[+e.key-1];if(el)el.click();}};
+}
+function blitzAnswer(ok){
+  if(!flow||flow.mode!=='blitz')return;
+  if(ok){
+    flow.combo++;flow.mult=Math.min(5,1+Math.floor(flow.combo/3));
+    const pts=10*flow.mult;flow.score+=pts;
+    flow.time=Math.min(60,flow.time+1);                     // +1s per kill — stay alive by being good
+    buzz(12);snd('ok',comboBoost(flow.combo));xpPop(pts,flow.combo);
+    setTimeout(()=>blitzQ(),350);                           // FAST — no dawdling in blitz
+  }else{
+    const lost=flow.combo;flow.hearts--;flow.combo=0;flow.mult=1;
+    buzz([50,40,80]);shake();
+    if(lost>=6){snd('break');toast('💔 ×'+(1+Math.floor(lost/3))+' multiplier GONE');}else snd('no');
+    if(flow.hearts<=0){endBlitz();return;}
+    setTimeout(()=>blitzQ(),650);
+  }
+}
+function endBlitz(){
+  clearInterval(blitzTimer);
+  if(!flow||flow.mode!=='blitz')return;
+  const sc=flow.score,died=flow.hearts<=0;flow=null;window.__flowKey=null;
+  if(!S.blitz)S.blitz={best:0,plays:0};
+  const isBest=sc>(S.blitz.best||0);
+  S.blitz.best=Math.max(S.blitz.best||0,sc);S.blitz.plays=(S.blitz.plays||0)+1;
+  const gain=Math.min(80,Math.round(sc/12));
+  if(gain>0)addXp(gain,'Vocabulary');
+  checkBadges();save();
+  if(isBest&&sc>0)celebrate();
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">${died?'💀':'⏱️'}</div>
+    <h2>${died?'Out of hearts!':'Time!'}</h2>
+    <p class="muted" style="line-height:1.9;font-size:14px">⚡ Score: <b style="color:var(--gold)">${sc}</b>${isBest&&sc>0?' — <b style="color:var(--green)">NEW BEST!</b>':' · best '+(S.blitz.best||0)}<br>+${gain} XP</p></div>
+    <div class="row" style="justify-content:center">
+      <button class="btn purple" id="bAgain">⚡ Again!</button>
+      <button class="btn ghost" id="bBack">Back</button>
+    </div></div>`;
+  $('#bAgain').onclick=startBlitz;
+  $('#bBack').onclick=renderPracticeHome;
 }
 
 /* 🎓 Master Exam Hall engine — separate from the roadmap; rank = highest exam passed */
@@ -1269,6 +1358,7 @@ function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:lea
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
   suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,lexBest:lexBest(),
+  blitzBest:(S.blitz&&S.blitz.best)||0,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1424,9 +1514,10 @@ function chSpeak(item){
 function flowAnswer(ok,item){
   const c=card(item.id);
   const mod=({3:'Listening',4:'Writing',5:'Speaking'})[F.chType]||item.skill; // credit the exercised skill
-  if(ok){buzz(12);snd('ok');F.combo++;F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;xpPop(gain);addXp(gain,mod);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);
+  if(ok){buzz(12);F.combo++;snd('ok',comboBoost(F.combo));F.best=Math.max(F.best,F.combo);const gain=4+Math.min(F.combo,8);F.xp+=gain;xpPop(gain,F.combo);addXp(gain,mod);gradeCard(item.id,F.combo>3?3:2);c.miss=Math.max(0,(c.miss||0)-1);
     if(F.chType===4)S.writes=(S.writes||0)+1;}
-  else{buzz(60);snd('no');F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);}
+  else{buzz([50,40,80]);const lost=F.combo;F.combo=0;c.miss=(c.miss||0)+1;gradeCard(item.id,0);
+    if(lost>=5){snd('break');shake();toast('💔 COMBO LOST — '+lost+'🔥 gone');}else snd('no');}
   S.quest.reviews++;F.recent.push(ok?1:0);if(F.recent.length>6)F.recent.shift();
   adaptDiff();checkBadges();save();updateFlowHud();
   if(ok){window.__flowKey=null;setTimeout(flowNext,650);}else showExplain(item);
@@ -1451,6 +1542,7 @@ function showExplain(item){
 
 /* ===================== NAV ===================== */
 function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('active',s.id===v));
+  if(flow&&flow.mode==='blitz'&&v!=='practice'){clearInterval(blitzTimer);flow=null;} // leaving blitz forfeits the run
   if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
@@ -1490,6 +1582,8 @@ function mergeStates(a,b){
   m.lexams={};
   new Set([...Object.keys(a.lexams||{}),...Object.keys(b.lexams||{})])
     .forEach(k=>m.lexams[k]=Math.max((a.lexams||{})[k]||0,(b.lexams||{})[k]||0));
+  m.blitz={best:Math.max((a.blitz||{}).best||0,(b.blitz||{}).best||0),
+           plays:Math.max((a.blitz||{}).plays||0,(b.blitz||{}).plays||0)};
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});

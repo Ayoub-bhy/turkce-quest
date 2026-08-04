@@ -137,7 +137,8 @@ getFlow:()=>flow,setFlow:v=>{flow=v;},_setLastPull:v=>{lastPullAt=v;},
 snd,toggleSnd,xpPop,sndCtx,tone,_SND:()=>SND,
 READING,startWrite,writeCard,readList,readView,readQuiz,
 SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ,
-LEXAMS,lexBest,renderExams,startLexam,lexQ};`;
+LEXAMS,lexBest,renderExams,startLexam,lexQ,
+startBlitz,blitzQ,blitzAnswer,blitzTick,endBlitz,blitzHud,comboBoost,shake};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -372,7 +373,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10, blitzBest: 9999 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -1042,6 +1043,89 @@ test('merge keeps best exam scores per exam', () => {
   a.lexams = { E1: 9, E2: 6 }; b.lexams = { E2: 8, E3: 10 };
   const m = A.mergeStates(a, b);
   assert.deepEqual(m.lexams, { E1: 9, E2: 8, E3: 10 });
+});
+test('comboBoost rises with combo and caps; shake respects reduced motion', () => {
+  assert.equal(A.comboBoost(0), 1);
+  assert.ok(A.comboBoost(5) > A.comboBoost(2));
+  assert.equal(A.comboBoost(12), A.comboBoost(50), 'capped at 12');
+  A.shake();
+  const mm = global.matchMedia;
+  global.matchMedia = () => ({ matches: true });
+  A.shake();                                             // reduced-motion early return
+  global.matchMedia = mm;
+});
+test('xpPop scales font and color with combo tiers', () => {
+  A.xpPop(10, 0); A.xpPop(10, 6); A.xpPop(10, 12);       // muted → accent → gold branches
+});
+test('blitz: full run — correct scoring, multiplier, wrong answers, death', async () => {
+  const S = freshS();
+  A.startBlitz();                                        // small vocab → A1 fallback pool
+  const f0 = A.getFlow();
+  assert.equal(f0.mode, 'blitz');
+  assert.equal(f0.hearts, 3);
+  assert.equal(f0.time, 60);
+  // 3 correct → multiplier ×2, score 10+10+20=40, time refunds capped
+  A.blitzAnswer(true); A.blitzAnswer(true); A.blitzAnswer(true);
+  assert.equal(A.getFlow().mult, 2);
+  assert.equal(A.getFlow().score, 40);
+  // build a big combo then break it → COMBO LOST branch
+  for (let i = 0; i < 4; i++) A.blitzAnswer(true);
+  assert.ok(A.getFlow().mult >= 3);
+  A.blitzAnswer(false);
+  assert.equal(A.getFlow().combo, 0);
+  assert.equal(A.getFlow().mult, 1);
+  assert.equal(A.getFlow().hearts, 2);
+  // die: two more wrongs → endBlitz via hearts
+  A.blitzAnswer(false); A.blitzAnswer(false);
+  assert.equal(A.getFlow(), null, 'run ended');
+  assert.ok(S.blitz.best > 0, 'best recorded');
+  assert.equal(S.blitz.plays, 1);
+  q('#bAgain').click();                                  // instant replay
+  assert.equal(A.getFlow().mode, 'blitz');
+  A.endBlitz();                                          // zero-score end (no celebrate)
+  q('#bBack').click();
+  await sleep(30);
+});
+test('blitz: timer ticks down and ends the run at zero', () => {
+  freshS();
+  A.startBlitz();
+  A.getFlow().time = 2;
+  A.blitzTick();                                         // 2 → 1 (low-time color branch)
+  assert.equal(A.getFlow().time, 1);
+  A.blitzTick();                                         // 1 → 0 → time-up ending
+  assert.equal(A.getFlow(), null);
+  A.blitzTick();                                         // stale guard after end
+  A.blitzQ(); A.blitzAnswer(true); A.endBlitz();         // all stale guards
+});
+test('blitz: clicks work and leaving practice forfeits the run', async () => {
+  const S = freshS();
+  A.VOCAB.slice(0, 10).forEach(v => S.cards[v.id] = { learned: true, reps: 1, interval: 1, due: '2999-01-01', ease: 2.5 });
+  A.startBlitz();                                        // learned pool branch
+  const v = A.getFlow().cur;
+  let els = resetChoices();
+  els[0].dataset.val = v.en; els[0].click();             // correct click
+  await sleep(15);
+  const v2 = A.getFlow().cur;
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[0].dataset.val = v2.en; els[1].click();  // wrong click + highlight
+  await sleep(15);
+  A.switchView('dash');                                  // leaving forfeits
+  assert.equal(A.getFlow(), null);
+  A.renderPracticeHome();
+  q('#mBlitz').onclick && q('#mBlitz').onclick();        // hub entry
+  A.endBlitz();
+  await sleep(20);
+});
+test('merge keeps blitz best and plays', () => {
+  const a = A.blank(), b = A.blank();
+  a.blitz = { best: 900, plays: 3 }; b.blitz = { best: 400, plays: 7 };
+  const m = A.mergeStates(a, b);
+  assert.equal(m.blitz.best, 900);
+  assert.equal(m.blitz.plays, 7);
+});
+test('snd break cue and boosted ok play without error', () => {
+  A._SND().on = true; A._SND().ctx = null;
+  A.snd('break'); A.snd('ok', 1.5);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;
