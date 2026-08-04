@@ -73,6 +73,12 @@ global.matchMedia = () => ({ matches: false });
 global.confirm = () => true;
 global.alert = () => {};
 global.SpeechSynthesisUtterance = function (t) { this.text = t; };
+global.__notifs = [];
+global.Notification = class {
+  constructor(title, opts) { global.__notifs.push({ title, opts }); }
+  static requestPermission() { return Promise.resolve(global.Notification.permission = 'granted'); }
+};
+global.Notification.permission = 'default';
 global.AudioContext = class {
   constructor() { this.currentTime = 0; this.destination = {}; }
   createOscillator() { return { type: '', frequency: { value: 0 }, connect() {}, start() {}, stop() {} }; }
@@ -140,7 +146,8 @@ SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement
 LEXAMS,lexBest,renderExams,startLexam,lexQ,
 startBlitz,blitzQ,blitzAnswer,blitzTick,endBlitz,blitzHud,comboBoost,shake,
 renderJourney,startMatch,matchTap,renderMatch,startSent,sentCard,sentTap,sentPool,hocaSay,CITIES,
-GLESSONS,renderSchool,openGLesson,glQuiz};`;
+GLESSONS,renderSchool,openGLesson,glQuiz,
+PLAN28,planDay,renderPlanCard,renderPlan,openPlanDay,markPlanDone,runPlanAct,actLabel,notifOK,askNotif,fireNotif,checkNotif};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -375,7 +382,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10, blitzBest: 9999, glDone: 14 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10, blitzBest: 9999, glDone: 14, planDone: 28 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -1292,6 +1299,123 @@ test('merge unions mastered lessons', () => {
   a.gl = { G1: true, G2: true }; b.gl = { G2: true, G9: true };
   const m = A.mergeStates(a, b);
   assert.deepEqual(Object.keys(m.gl).sort(), ['G1', 'G2', 'G9']);
+});
+test('PLAN28: 28 days, 4 weeks of 7, resolvable actions, real content', () => {
+  assert.equal(A.PLAN28.length, 28);
+  for (let w = 1; w <= 4; w++) assert.equal(A.PLAN28.filter(p => p.w === w).length, 7, 'week ' + w);
+  for (const p of A.PLAN28) {
+    assert.ok(p.t && p.bk && p.wb && p.goal, p.t);
+    assert.ok(p.acts.length >= 1);
+    for (const c of p.acts) {
+      const lbl = A.actLabel(c);
+      assert.ok(lbl && lbl !== c, 'action resolves: ' + c);
+    }
+  }
+  assert.ok(A.PLAN28[6].acts.includes('E1'), 'week 1 ends in exam E1');
+  assert.ok(A.PLAN28[27].acts.includes('CP'), 'day 28 is the checkpoint');
+});
+test('planDay: not started, day 1, clamped at 28', () => {
+  const S = freshS();
+  assert.equal(A.planDay(), 0);
+  S.planStart = today();
+  assert.equal(A.planDay(), 1);
+  const d = new Date(); d.setDate(d.getDate() - 40);
+  S.planStart = d.toISOString().slice(0, 10);
+  assert.equal(A.planDay(), 28, 'clamped');
+});
+test('plan card: start button, task chips, day-complete, full-plan link', async () => {
+  const S = freshS();
+  A.renderPlanCard();
+  assert.ok(q('#planCard').innerHTML.includes('Start Day 1'));
+  q('#planStartBtn').click();
+  assert.equal(S.planStart, today());
+  A.renderPlanCard();
+  assert.ok(q('#planCard').innerHTML.includes('Gün 1/28'));
+  const xp = S.xp;
+  q('#planDoneBtn').click();                      // marks day 1
+  assert.ok(S.plan[1]);
+  assert.ok(S.xp >= xp + 15);
+  A.markPlanDone(1);                              // idempotent — no double XP
+  assert.equal(Object.keys(S.plan).length, 1);
+  A.renderPlanCard();
+  q('#planDoneBtn').click();                      // now links to full plan view
+  await sleep(20);
+});
+test('plan view: weeks render, day opens, chips launch, badge at 28', () => {
+  const S = freshS();
+  S.planStart = today();
+  A.renderPlan();
+  assert.ok(q('#planSub').textContent.includes('Gün 1'));
+  const el = qa('#planList .unit')[0];
+  el.dataset.p = '7'; el.onclick();               // open exam day 7
+  assert.ok(q('#planStage').innerHTML.includes('Başarı çizgisi'));
+  q('#pdone').click();                            // complete day 7
+  assert.ok(S.plan[7]);
+  A.openPlanDay(7); q('#pback').click();          // completed state + back
+  for (let n = 1; n <= 28; n++) S.plan[n] = true;
+  A.checkBadges();
+  assert.ok(S.badges.includes('plan28'), 'Dört Hafta badge');
+  A.renderPlan();
+  A.renderPlanCard();                             // done=28 render
+});
+test('runPlanAct routes every action type', async () => {
+  let S = freshS();
+  A.VOCAB.slice(0, 14).forEach(v => S.cards[v.id] = { learned: true, reps: 2, interval: 9, due: '2999-01-01', ease: 2.5, miss: 5 });
+  for (const c of ['FL', 'BL', 'SL', 'SB', 'MP', 'SP', 'WW', 'CD', 'CP', 'U1', 'G1', 'D1', 'R1', 'E1']) {
+    A.runPlanAct(c);
+    A.setF(null); A.setFlow(null); A.endBlitz();
+  }
+  S = freshS();                                    // no weak words branch + locked unit branch
+  A.runPlanAct('WW');
+  A.runPlanAct('U22');
+  await sleep(30);
+});
+test('notifications: permission flow, morning & evening fire once, guards', async () => {
+  const S = freshS();
+  S.planStart = today();
+  // no support branch
+  const N = global.Notification;
+  global.Notification = undefined;
+  A.askNotif();
+  global.Notification = N;
+  // denied branch
+  N.permission = 'default';
+  const realReq = N.requestPermission;
+  N.requestPermission = () => Promise.resolve(N.permission = 'denied');
+  A.askNotif(); await sleep(10);
+  assert.ok(!A.notifOK());
+  A.checkNotif(new Date('2026-06-07T08:30:00'));   // early return without permission
+  // granted flow
+  N.requestPermission = realReq;
+  A.askNotif(); await sleep(10);
+  assert.ok(A.notifOK());
+  lsStore.delete('tq_n8'); lsStore.delete('tq_n20');
+  global.__notifs.length = 0;
+  A.checkNotif(new Date('2026-06-07T08:30:00'));   // morning fires
+  assert.equal(global.__notifs.length, 1);
+  assert.ok(global.__notifs[0].title.includes('Günaydın'));
+  A.checkNotif(new Date('2026-06-07T09:00:00'));   // dedupe — same day
+  assert.equal(global.__notifs.length, 1);
+  A.checkNotif(new Date('2026-06-07T20:05:00'));   // evening fires
+  assert.equal(global.__notifs.length, 2);
+  assert.ok(global.__notifs[1].title.includes('Akşam'));
+  A.checkNotif(new Date('2026-06-07T14:00:00'));   // afternoon — nothing
+  assert.equal(global.__notifs.length, 2);
+  A.fireNotif('t', 'b');                            // direct call
+  N.permission = 'default';
+  A.fireNotif('t', 'b');                            // silent without permission
+  N.permission = 'granted';
+  // service-worker showNotification path + fallbacks
+  let swShown = 0;
+  global.navigator.serviceWorker = { ready: Promise.resolve({ showNotification: () => swShown++ }) };
+  A.fireNotif('sw', 'b'); await sleep(10);
+  assert.equal(swShown, 1, 'SW notification used when available');
+  global.navigator.serviceWorker = { ready: Promise.resolve({}) };
+  A.fireNotif('sw2', 'b'); await sleep(10);         // no showNotification → new Notification
+  global.navigator.serviceWorker = { ready: Promise.reject(new Error('x')) };
+  A.fireNotif('sw3', 'b'); await sleep(10);         // rejected → catch fallback
+  delete global.navigator.serviceWorker;
+  assert.equal(A.actLabel('ZZZ'), 'ZZZ', 'unknown action code falls through');
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;

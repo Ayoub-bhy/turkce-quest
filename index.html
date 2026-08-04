@@ -204,7 +204,9 @@
     nav.tabs button .ico{font-size:21px}
     nav.tabs button[data-v="badges"]{display:none}
     nav.tabs button[data-v="exams"]{display:none}
+    nav.tabs button[data-v="plan"]{display:none}
   }
+  .pchip{padding:7px 11px!important;font-size:12px!important;border-radius:9px!important}
   @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
   /* Lovable design port: greeting, progress ring, trophy markers */
   .hello{margin:2px 0 16px}
@@ -307,6 +309,7 @@
       <div class="chip lvl">🎖️ <span><b id="cLevel">A1.1</b></span></div>
       <div class="chip xp">⚡ <b id="cXp">0</b> XP</div>
       <div class="chip streak">🔥 <b id="cStreak">0</b> gün</div>
+      <div class="chip" id="ntfChip" style="cursor:pointer" title="Enable 08:00 & 20:00 reminders">🔕</div>
       <div class="chip" id="sndChip" style="cursor:pointer" title="Toggle sounds">🔊</div>
       <div class="chip sync" id="syncChip" style="display:none" title="Tap to sync now">☁️ <b id="syncTxt">…</b></div>
       <div class="chip user" id="userChip" style="display:none">
@@ -322,6 +325,7 @@
     <button data-v="quest" aria-label="Daily quest"><span class="ico">🎯</span><span class="lbl">Quest</span></button>
     <button data-v="learn" aria-label="Learn"><span class="ico">📚</span><span class="lbl">Learn</span></button>
     <button data-v="practice" aria-label="Practice"><span class="ico">🧠</span><span class="lbl">Practice</span></button>
+    <button data-v="plan" aria-label="28-day plan"><span class="ico">📅</span><span class="lbl">Plan</span></button>
     <button data-v="exams" aria-label="Master exams"><span class="ico">🎓</span><span class="lbl">Exams</span></button>
     <button data-v="badges" aria-label="Achievements"><span class="ico">🏆</span><span class="lbl">Awards</span></button>
   </nav>
@@ -332,6 +336,7 @@
       <span class="pill" id="helloQuest" style="cursor:pointer;margin-top:8px;display:inline-block">🎯 Quest 0/4</span></div>
     <div id="fsWrap"></div>
     <div class="hocabox"><span style="font-size:24px">🎩</span><span><b style="color:var(--gold)">Hoca:</b> <span id="hocaLine"></span></span></div>
+    <div id="planCard"></div>
     <div class="flowcta">
       <div><h3>🚀 Continue your roadmap</h3>
         <p id="ctaSub">Adaptive, endless practice — one challenge flows straight into the next.</p></div>
@@ -465,6 +470,16 @@
       <h3>🧠 Practice</h3>
       <div class="sub" id="practiceSub">Pick a drill. Reviews resurface words right before you'd forget them (SM-2).</div>
       <div id="practiceStage"></div>
+    </div>
+  </section>
+
+  <!-- 28-DAY PLAN -->
+  <section class="view" id="plan">
+    <div class="card">
+      <h3>📅 28 Günde A1 — The Official Path</h3>
+      <div class="sub" id="planSub"></div>
+      <div class="units" id="planList"></div>
+      <div id="planStage"></div>
     </div>
   </section>
 

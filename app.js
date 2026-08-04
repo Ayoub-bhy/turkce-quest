@@ -415,6 +415,7 @@ const BADGES=[
 {id:'blitz500',ico:'⚡',name:'Şimşek',desc:'Blitz score 500+',test:s=>s.blitzBest>=500},
 {id:'blitz1500',ico:'🌩️',name:'Fırtına',desc:'Blitz score 1500+',test:s=>s.blitzBest>=1500},
 {id:'okul',ico:'🏫',name:'Dil Okulu',desc:'All 14 grammar lessons',test:s=>s.glDone>=14},
+{id:'plan28',ico:'📅',name:'Dört Hafta',desc:'Finish the 28-day A1 plan',test:s=>s.planDone>=28},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -799,7 +800,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0},matchN:0,sentN:0,gl:{}
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0},matchN:0,sentN:0,gl:{},plan:{},planStart:null
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -933,6 +934,7 @@ function renderDash(){
   const subs=['Az az, her gün — başarı böyle gelir.','Bugün 5 dakika yeter. Hadi!','Tekrar etmek, hatırlamaktır. Devam!'];
   $('#helloSub').textContent=subs[new Date().getDate()%subs.length];
   $('#hocaLine').textContent=hocaSay();
+  renderPlanCard();
   /* one-glance status: quest pill + personalised CTA */
   ensureQuest();
   const qd=(S.quest.newWords>=5?1:0)+(S.quest.reviews>=10?1:0)+(S.quest.lesson?1:0)+(S.quest.listen?1:0);
@@ -1033,6 +1035,159 @@ function renderUnits(){
     wrap.appendChild(el);
   });
   renderJourney();
+}
+
+/* 📅 The 28-Day A1 Plan — the official Yedi İklim path, interactive */
+const PLAN28=[
+{w:1,t:'Merhaba! İlk adım',bk:'Ders K. Ü1A Merhaba',wb:'ÇK s.6–9',acts:['U1','U2','G1'],goal:'Say aloud: “Merhaba, ben … Memnun oldum.”'},
+{w:1,t:'Nerelisiniz?',bk:'Ü1B Nerelisiniz?',wb:'ÇK s.10–12',acts:['G6','D2','FL'],goal:'Answer “Nerelisiniz?” + 3 country names'},
+{w:1,t:'Sayılar & çokluk',bk:'Ü1C Selamlaşma',wb:'ÇK s.13–15',acts:['U3','G2','SL'],goal:'Count 1–20 · “iki kitap” rule perfect'},
+{w:1,t:'Ünite 1 tekrar',bk:'Ü1 tekrar',wb:'ÇK s.16–17',acts:['BL','MP','FL'],goal:'Workbook Ü1 finished · bu/şu/o instant'},
+{w:1,t:'Ailem ve ben',bk:'Ü2A Ailem ve Ben',wb:'ÇK s.18–21',acts:['U4','G3'],goal:'Present 4 family members: “Bu annem…”'},
+{w:1,t:'Evim & renkler',bk:'Ü2B Evim',wb:'ÇK s.22–25',acts:['U5','U12','G4','R1'],goal:'5 sentences with -DE var: “Evde iki oda var”'},
+{w:1,t:'Şimdiki zaman + SINAV',bk:'Ü2C Adresim + tekrar',wb:'ÇK s.26–29',acts:['G7','SB','E1'],goal:'PASS E1 (8/10) · “Türkçe öğreniyorum”'},
+{w:2,t:'Saat kaçta?',bk:'Ü3A Saat Kaçta?',wb:'ÇK s.30–33',acts:['U9','G14'],goal:'Tell 5 clock times aloud'},
+{w:2,t:'Kaç lira?',bk:'Ü3B Ne Kadar? Kaç Lira?',wb:'ÇK s.34–37',acts:['U6','D3','R3'],goal:'Role-play buying 3 items with prices'},
+{w:2,t:'Dün ne yaptın? (-DI)',bk:'Ü3C Nerede? Ne Zaman?',wb:'ÇK s.38–39',acts:['G9','SL'],goal:'Yesterday in 5 sentences: “Dün markete gittim…”'},
+{w:2,t:'“ile” + tekrar',bk:'Ü3 tekrar',wb:'ÇK s.40–41',acts:['BL','FL'],goal:'“Okula otobüsle gidiyorum” + days fluent'},
+{w:2,t:'Bizim sokağımız',bk:'Ü4A Bizim Sokağımız',wb:'ÇK s.42–45',acts:['U13','D4'],goal:'Give directions: “sağa dön, düz git”'},
+{w:2,t:'-DAn -A kadar',bk:'Ü4B Ne? Nerede?',wb:'ÇK s.46–49',acts:['U14','G5'],goal:'5 sentences: “Evden okula kadar yürüyorum”'},
+{w:2,t:'Gelecek zaman + SINAV',bk:'Ü4C Haftalık Plan',wb:'ÇK s.50–53',acts:['G11','SB','E2'],goal:'PASS E2 · next week in -AcAk'},
+{w:3,t:'Meslekler (-CI!)',bk:'Ü5A Meslekleri Tanıyalım',wb:'ÇK s.54–57',acts:['U19','G13'],goal:'8 professions from -CI + “Ne iş yapıyorsunuz?”'},
+{w:3,t:'Geniş zaman',bk:'Ü5B Ne Olmak İstiyorsun?',wb:'ÇK s.58–61',acts:['G8','SP'],goal:'“Her gün kahve içerim ama çay içmem”'},
+{w:3,t:'Hobiler & vücut',bk:'Ü5C Hobilerim',wb:'ÇK s.62–63',acts:['U11','D5'],goal:'3 hobbies + “Başım ağrıyor” sentences'},
+{w:3,t:'Ad tamlamaları',bk:'Ü5 tekrar (tamlamalar!)',wb:'ÇK s.64–65',acts:['SL','BL'],goal:'10 compounds: “okul çantası, Ali’nin evi”'},
+{w:3,t:'Yolculuk nereye?',bk:'Ü6A Yolculuk Nereye?',wb:'ÇK s.66–69',acts:['U21','R2'],goal:'Book a ticket aloud + “Kaçıncı peron?”'},
+{w:3,t:'Trafikte (-DAki)',bk:'Ü6B Trafikte',wb:'ÇK s.70–73',acts:['U14','SB'],goal:'5 sentences with -ki/-DAki: “duraktaki adam”'},
+{w:3,t:'Hava durumu + SINAV',bk:'Ü6C Bugün Hava Nasıl?',wb:'ÇK s.74–77',acts:['U10','D6','R4','E3'],goal:'PASS E3 · 4-season weather report'},
+{w:4,t:'Telefon',bk:'Ü7A Telefon',wb:'ÇK s.78–81',acts:['SP','FL'],goal:'Phone script aloud: “Alo! … görüşmek üzere”'},
+{w:4,t:'Karşılaştırma',bk:'Ü7B Bilgisayar ve İnternet',wb:'ÇK s.82–85',acts:['G12','FL'],goal:'“Tren otobüsten daha hızlı. En hızlı uçak.”'},
+{w:4,t:'Bence… / -DEn beri',bk:'Ü7C Yüz Yüze',wb:'ÇK s.86–89',acts:['MP','BL'],goal:'“İki aydır Türkçe öğreniyorum”'},
+{w:4,t:'Hafta sonu (-mIş bonus)',bk:'Ü8A Hafta Sonu',wb:'ÇK s.90–93',acts:['G10','R5'],goal:'Last weekend in -DI, 8 sentences'},
+{w:4,t:'Tatil & bayram',bk:'Ü8B–C Yaz Tatili · Bayram',wb:'ÇK s.94–99',acts:['CD','D1','D2','D6'],goal:'Holiday plan + “Bayramınız kutlu olsun!”'},
+{w:4,t:'GENEL TEKRAR',bk:'Tüm ⭐ sayfalar',wb:'ÇK s.100–101',acts:['E4','WW','FL'],goal:'PASS E4 · weak words = ZERO'},
+{w:4,t:'SINAV GÜNÜ PROVASI',bk:'Self-intro ×10 satır + form',wb:'Mock exam',acts:['CP','BL'],goal:'📜 A1 Checkpoint PASSED — go get the real one'},
+];
+function planDay(){if(!S.planStart)return 0;
+  const d=Math.floor((new Date(todayStr())-new Date(S.planStart))/86400000)+1;
+  return Math.max(1,Math.min(28,d));}
+const ACT_LABEL={FL:'🚀 Flow',BL:'⚡ Blitz',SL:'🧩 Suffix Lab',SB:'🧱 Sentences',MP:'🔗 Pairs',SP:'🎤 Speaking',WW:'🩹 Weak Words',CD:'🌹 Culture',CP:'📜 Checkpoint'};
+function actLabel(c){
+  if(ACT_LABEL[c])return ACT_LABEL[c];
+  if(c[0]==='U')return '📚 '+(UNITS.find(u=>u.id===c)||{title:c}).title.split('—')[0].trim();
+  if(c[0]==='G')return '🏫 '+(GLESSONS.find(g=>g.id===c)||{title:c}).title.split('—')[0].trim();
+  if(c[0]==='D')return '💬 '+(DIALOGUES.find(d=>d.id===c)||{title:c}).title.split('—')[0].trim();
+  if(c[0]==='R')return '📖 '+(READING.find(r=>r.id===c)||{title:c}).title;
+  if(c[0]==='E')return '🎓 Exam '+c;
+  return c;
+}
+function runPlanAct(c){
+  if(c==='FL'){startFlow();return;}
+  if(c==='BL'){switchView('practice');startBlitz();return;}
+  if(c==='SL'){switchView('practice');startSuffix();return;}
+  if(c==='SB'){switchView('practice');startSent();return;}
+  if(c==='MP'){switchView('practice');startMatch();return;}
+  if(c==='SP'){switchView('practice');startSpeak();return;}
+  if(c==='WW'){switchView('practice');if(weakCards().length)startWeak();else toast('🩹 Zayıf kelime yok — mükemmel!');return;}
+  if(c==='CD'){switchView('badges');return;}
+  if(c==='CP'){switchView('practice');startExam(certNeeded()||'A1');return;}
+  if(c[0]==='U'){const i=UNITS.findIndex(u=>u.id===c);switchView('learn');if(unitUnlocked(i))startUnit(UNITS[i]);else toast('🔒 Önce önceki durakları geç');return;}
+  if(c[0]==='G'){switchView('learn');openGLesson(GLESSONS.find(g=>g.id===c));return;}
+  if(c[0]==='D'){switchView('practice');playDialogue(DIALOGUES.find(d=>d.id===c));return;}
+  if(c[0]==='R'){switchView('practice');readView(READING.find(r=>r.id===c));return;}
+  if(c[0]==='E'){switchView('exams');startLexam(LEXAMS.find(e=>e.id===c));return;}
+}
+function actChips(p){return p.acts.map(c=>`<button class="btn ghost pchip" data-act="${c}">${actLabel(c)}</button>`).join('');}
+function bindActChips(){$$('.pchip').forEach(el=>el.onclick=()=>{if(el.dataset.act)runPlanAct(el.dataset.act);});}
+function markPlanDone(n){
+  if(!S.plan)S.plan={};
+  if(!S.plan[n]){S.plan[n]=true;addXp(15,'Reading');checkBadges();snd('quest');celebrate();toast('📅 Gün '+n+' tamam! +15 XP');}
+  save();renderPlan();renderDash();
+}
+function renderPlanCard(){
+  const el=$('#planCard');if(!el)return;
+  if(!S.planStart){
+    el.innerHTML=`<div class="firststeps"><div><h3>📅 The 28-Day A1 Plan</h3>
+      <p>The official Yedi İklim path — book pages + app drills, one day at a time, ending at the A1 exam. Start the clock when you're ready.</p></div>
+      <button class="btn green" id="planStartBtn">▶ Start Day 1</button></div>`;
+    $('#planStartBtn').onclick=()=>{S.planStart=todayStr();save();renderDash();toast('📅 Plan başladı — Gün 1!');};
+    return;
+  }
+  const d=planDay(),p=PLAN28[d-1],done=Object.keys(S.plan||{}).length;
+  el.innerHTML=`<div class="firststeps" style="border-color:var(--blue)"><div style="flex:1">
+    <h3>📅 Gün ${d}/28 — ${p.t} ${S.plan&&S.plan[d]?'✓':''}</h3>
+    <p><b>${p.bk}</b> · ${p.wb} · hedef: <i>${p.goal}</i></p>
+    <div class="row" style="margin-top:10px">${actChips(p)}</div></div>
+    <div style="text-align:center;min-width:120px">
+      <div class="big" style="font-size:24px;color:var(--gold)">${done}/28</div>
+      <button class="btn ${S.plan&&S.plan[d]?'ghost':'green'}" id="planDoneBtn" style="margin-top:8px;padding:9px 14px;font-size:13px">${S.plan&&S.plan[d]?'📅 Full plan':'✓ Günü bitir'}</button>
+    </div></div>`;
+  bindActChips();
+  $('#planDoneBtn').onclick=()=>{if(S.plan&&S.plan[d])switchView('plan');else markPlanDone(d);};
+}
+function renderPlan(){
+  const d=planDay(),done=Object.keys(S.plan||{}).length;
+  $('#planSub').textContent=S.planStart?('Başlangıç: '+S.planStart+' · bugün Gün '+d+' · '+done+'/28 tamam'):'Planı başlatmak için Dashboard’a git.';
+  let lastW=0;
+  $('#planList').innerHTML=PLAN28.map((p,i)=>{
+    const n=i+1,head=p.w!==lastW?`<div class="leveltag">HAFTA ${p.w}</div>`:'';lastW=p.w;
+    const isDone=S.plan&&S.plan[n],isToday=n===d&&S.planStart;
+    return head+`<div class="unit ${isDone?'complete':''}" data-p="${n}" style="${isToday?'border-color:var(--accent2)':''}">
+      <div class="unum">${isDone?'✓':isToday?'📍':n}</div>
+      <div class="uinfo"><h4>Gün ${n} — ${p.t}</h4><p>${p.bk} · ${p.wb}</p></div></div>`;
+  }).join('');
+  $$('#planList .unit').forEach(el=>el.onclick=()=>openPlanDay(+el.dataset.p));
+}
+function openPlanDay(n){
+  const p=PLAN28[n-1];
+  $('#planStage').innerHTML=`<div class="pill">📅 Hafta ${p.w} · Gün ${n}</div>
+    <div class="glesson"><h3 style="margin:0 0 8px">${p.t}</h3>
+    <p>📖 <b>${p.bk}</b><br>✍️ ${p.wb}</p>
+    <p>🎯 <b>Başarı çizgisi:</b> <i>${p.goal}</i></p>
+    <div class="row">${actChips(p)}</div></div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn ${S.plan&&S.plan[n]?'ghost':'green'}" id="pdone">${S.plan&&S.plan[n]?'✓ Tamamlandı':'✓ Günü bitir (+15 XP)'}</button>
+      <button class="btn ghost" id="pback">← Plan</button></div>`;
+  bindActChips();
+  $('#pdone').onclick=()=>markPlanDone(n);
+  $('#pback').onclick=()=>{$('#planStage').innerHTML='';renderPlan();};
+}
+
+/* 🔔 Local notifications — 08:00 & 20:00, web + installed app */
+function notifOK(){return typeof Notification!=='undefined'&&Notification.permission==='granted';}
+function askNotif(){
+  if(typeof Notification==='undefined'){toast('Bu tarayıcı bildirim desteklemiyor');return;}
+  Notification.requestPermission().then(p=>{
+    $('#ntfChip').textContent=p==='granted'?'🔔':'🔕';
+    toast(p==='granted'?'🔔 08:00 & 20:00 hatırlatıcılar açık':'Bildirim izni verilmedi');
+    if(p==='granted'){snd('ok');checkNotif();}
+  });
+}
+function fireNotif(title,body){
+  try{
+    if(!notifOK())return;
+    const opts={body,icon:'icon.svg',badge:'icon.svg',tag:'tq-'+title};
+    if(navigator.serviceWorker&&navigator.serviceWorker.ready){
+      navigator.serviceWorker.ready.then(r=>{
+        if(r&&r.showNotification)r.showNotification(title,opts);else new Notification(title,opts);
+      }).catch(()=>{try{new Notification(title,opts);}catch(e){}});
+    }else new Notification(title,opts);
+  }catch(e){}
+}
+function checkNotif(now){
+  now=now||new Date();
+  if(!notifOK())return;
+  const t=todayStr(),h=now.getHours();
+  const d=planDay();
+  const dayLine=d?('Gün '+d+': '+PLAN28[d-1].t):'Bugünkü görevin hazır';
+  if(h>=8&&h<12&&localStorage.getItem('tq_n8')!==t){
+    localStorage.setItem('tq_n8',t);
+    fireNotif('🌞 Günaydın! Türkçe zamanı',dayLine+' · 5 yeni kelime + tekrarlar seni bekliyor');
+  }
+  if(h>=20&&h<24&&localStorage.getItem('tq_n20')!==t){
+    localStorage.setItem('tq_n20',t);
+    fireNotif('🌙 Akşam kontrolü','Görev bitti mi? 🔥 '+S.streak+' gün — check-in yapmayı unutma');
+  }
 }
 
 /* 🏫 Dil Okulu engine — read the lesson, pass 2/3, earn your seat */
@@ -1680,7 +1835,7 @@ function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:lea
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
   suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,lexBest:lexBest(),
-  blitzBest:(S.blitz&&S.blitz.best)||0,glDone:Object.keys(S.gl||{}).length,
+  blitzBest:(S.blitz&&S.blitz.best)||0,glDone:Object.keys(S.gl||{}).length,planDone:Object.keys(S.plan||{}).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1865,7 +2020,7 @@ function showExplain(item){
 /* ===================== NAV ===================== */
 function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('active',s.id===v));
   if(flow&&flow.mode==='blitz'&&v!=='practice'){clearInterval(blitzTimer);flow=null;} // leaving blitz forfeits the run
-  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();$('#glStage').innerHTML='';renderSchool();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
+  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='plan'){flow=null;$('#planStage').innerHTML='';renderPlan();}if(v==='learn'){flow=null;renderUnits();$('#glStage').innerHTML='';renderSchool();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
 $('#kpiBadges').onclick=()=>switchView('badges');
@@ -1873,6 +2028,11 @@ $('#kpiExams').onclick=()=>switchView('exams');
 $('#helloQuest').onclick=()=>switchView('quest');
 $('#sndChip').onclick=toggleSnd;
 $('#sndChip').textContent=SND.on?'🔊':'🔇';
+$('#ntfChip').onclick=askNotif;
+$('#ntfChip').textContent=notifOK()?'🔔':'🔕';
+checkNotif();
+const __ntfIv=setInterval(()=>checkNotif(),60000);
+if(__ntfIv&&__ntfIv.unref)__ntfIv.unref();
 document.addEventListener('keydown',e=>{if(!document.getElementById('flow').classList.contains('active'))return;if(window.__flowKey)window.__flowKey(e);});
 $('#checkinBtn').onclick=()=>{markActive();checkBadges();save();renderHeader();renderQuest();renderDash();toast('✓ Checked in! 🔥 '+S.streak);};
 $('#resetBtn').onclick=()=>{if(confirm('Erase all progress? This also clears your cloud save.')){localStorage.removeItem(KEY);S=blank();skipMergeOnce=true;save();renderAll();switchView('dash');}};
@@ -1907,6 +2067,8 @@ function mergeStates(a,b){
   m.blitz={best:Math.max((a.blitz||{}).best||0,(b.blitz||{}).best||0),
            plays:Math.max((a.blitz||{}).plays||0,(b.blitz||{}).plays||0)};
   m.gl=Object.assign({},a.gl||{},b.gl||{});
+  m.plan=Object.assign({},a.plan||{},b.plan||{});
+  m.planStart=(a.planStart&&b.planStart)?(a.planStart<b.planStart?a.planStart:b.planStart):(a.planStart||b.planStart||null);
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});
