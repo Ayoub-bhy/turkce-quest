@@ -139,7 +139,8 @@ READING,startWrite,writeCard,readList,readView,readQuiz,
 SUFFIX,startSuffix,suffixCard,certNeeded,examPool,startExam,examQ,startPlacement,placeQ,
 LEXAMS,lexBest,renderExams,startLexam,lexQ,
 startBlitz,blitzQ,blitzAnswer,blitzTick,endBlitz,blitzHud,comboBoost,shake,
-renderJourney,startMatch,matchTap,renderMatch,startSent,sentCard,sentTap,sentPool,hocaSay,CITIES};`;
+renderJourney,startMatch,matchTap,renderMatch,startSent,sentCard,sentTap,sentPool,hocaSay,CITIES,
+GLESSONS,renderSchool,openGLesson,glQuiz};`;
 const utPath = path.join(__dirname, '.app.under-test.cjs');
 fs.writeFileSync(utPath, src + shim);
 const A = require(utPath);
@@ -374,7 +375,7 @@ test('renderQuest claims bonus when all goals met', async () => {
 });
 test('every badge can unlock and checkBadges records them + culture cards', () => {
   const S = freshS();
-  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10, blitzBest: 9999 };
+  const maxed = { lessons: 99, bestStreak: 999, known: 999, reviews: 999, quiz: 99, questsDone: 9, listen: 99, speak: 99, chests: 99, cultureN: 12, dlgDone: 6, unitsDone: 29, a1Done: 15, writes: 99, readDone: 6, suffixN: 99, certsN: 2, lexBest: 10, blitzBest: 9999, glDone: 14 };
   for (const b of A.BADGES) assert.ok(b.test(maxed), b.id + ' unlockable');
   S.xp = 450; // 3 culture cards
   S.lessons = 1; S.bestStreak = 7;
@@ -1224,6 +1225,73 @@ test('merge keeps match and sentence counters', () => {
   const m = A.mergeStates(a, b);
   assert.equal(m.matchN, 30);
   assert.equal(m.sentN, 9);
+});
+test('grammar school data: 14 lessons, 3 valid questions each, 3 categories', () => {
+  assert.equal(A.GLESSONS.length, 14);
+  const ids = new Set();
+  for (const g of A.GLESSONS) {
+    assert.ok(g.ico && g.title && g.body.length > 200, g.id + ' has real teaching content');
+    assert.ok(['Suffixes', 'Tenses', 'Vocabulary'].includes(g.cat), g.id);
+    assert.ok(!ids.has(g.id)); ids.add(g.id);
+    assert.equal(g.qs.length, 3, g.id);
+    for (const qq of g.qs) {
+      assert.equal(qq.opts.length, 4, g.id);
+      assert.ok(qq.opts.includes(qq.a), g.id + ': ' + qq.q);
+      assert.equal(new Set(qq.opts).size, 4, g.id + ' unique options');
+    }
+  }
+  assert.equal(A.GLESSONS.filter(g => g.cat === 'Suffixes').length, 6);
+  assert.equal(A.GLESSONS.filter(g => g.cat === 'Tenses').length, 6);
+  assert.equal(A.GLESSONS.filter(g => g.cat === 'Vocabulary').length, 2);
+  // pedagogy spot-checks: tables and warnings present
+  assert.ok(A.GLESSONS.every(g => g.body.includes('gtable') || g.body.includes('<p>')), 'structured content');
+  assert.ok(A.GLESSONS.some(g => g.body.includes('FıSTıKÇı')), 'Şahap mnemonic taught');
+});
+test('grammar school: list renders, lesson opens, quiz clicks work', async () => {
+  freshS();
+  A.renderSchool();
+  assert.ok(q('#glSub').textContent.includes('14 lessons'));
+  const el = qa('#glList .unit')[0];
+  el.dataset.g = 'G1'; el.onclick();                       // opens vowel harmony
+  assert.ok(q('#glStage').innerHTML.includes('master key'));
+  q('#glQuizBtn').click();                                  // into the quiz
+  const g = A.GLESSONS[0];
+  let els = resetChoices();
+  els[0].dataset.val = g.qs[0].a; els[0].click();           // correct
+  await sleep(15);
+  els = resetChoices();
+  els[1].dataset.val = 'WRONG'; els[0].dataset.val = g.qs[1].a; els[1].click(); // wrong + highlight
+  await sleep(15);
+  q('#glBackBtn') && A.openGLesson(g);                      // re-open path
+  q('#glBackBtn').click();                                  // back to list
+  await sleep(15);
+});
+test('grammar school: pass at 2/3 awards XP once; fail offers re-read', () => {
+  const S = freshS();
+  const g = A.GLESSONS[6];                                  // -iyor lesson
+  A.glQuiz(g, 3, 2);                                        // 2/3 → pass
+  assert.ok(S.gl.G7, 'lesson mastered');
+  assert.ok(S.skills.Grammar >= 20, 'Grammar XP for tense lesson');
+  const xp = S.xp;
+  A.glQuiz(g, 3, 3);                                        // repeat pass → no double XP
+  assert.equal(S.xp, xp, 'no farming the school');
+  q('#glDone2').click();
+  A.glQuiz(A.GLESSONS[12], 3, 3);                           // vocabulary lesson → Vocabulary XP
+  assert.ok(S.skills.Vocabulary >= 20);
+  A.glQuiz(A.GLESSONS[1], 3, 1);                            // 1/3 → fail
+  assert.ok(!S.gl.G2);
+  q('#glRe').click();                                       // re-read the lesson
+  assert.ok(q('#glStage').innerHTML.includes('-ler'));
+  // all 14 passed → badge
+  A.GLESSONS.forEach(x => { S.gl[x.id] = true; });
+  A.checkBadges();
+  assert.ok(S.badges.includes('okul'), 'Dil Okulu badge');
+});
+test('merge unions mastered lessons', () => {
+  const a = A.blank(), b = A.blank();
+  a.gl = { G1: true, G2: true }; b.gl = { G2: true, G9: true };
+  const m = A.mergeStates(a, b);
+  assert.deepEqual(Object.keys(m.gl).sort(), ['G1', 'G2', 'G9']);
 });
 test('boots straight to guest when Firebase is absent', () => {
   const savedFb = global.firebase;

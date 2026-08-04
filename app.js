@@ -414,6 +414,7 @@ const BADGES=[
 {id:'lex10',ico:'🐺',name:'Bozkurt',desc:'Pass the wolf exam (E10)',test:s=>s.lexBest>=10},
 {id:'blitz500',ico:'⚡',name:'Şimşek',desc:'Blitz score 500+',test:s=>s.blitzBest>=500},
 {id:'blitz1500',ico:'🌩️',name:'Fırtına',desc:'Blitz score 1500+',test:s=>s.blitzBest>=1500},
+{id:'okul',ico:'🏫',name:'Dil Okulu',desc:'All 14 grammar lessons',test:s=>s.glDone>=14},
 ];
 
 /* ===== Mini-dialogues — Yedi İklim communicative method: language in context ===== */
@@ -599,6 +600,165 @@ const SUFFIX=[
 ];
 const SUFFIX_POOL=['de','da','te','ta','e','a','ler','lar','im','ım','um','üm','iyor','ıyor','di','dı','ti','sun','sen','m','yim'];
 
+/* ===== 🏫 Dil Okulu — The Grammar School. 14 lessons by a teacher who loves this language. ===== */
+const GLESSONS=[
+{id:'G1',ico:'🎵',cat:'Suffixes',title:'Vowel Harmony — the master key',
+ body:`<p>Turkish suffixes <b>sing in tune</b> with the word they attach to. Learn this once and every suffix in the language becomes predictable.</p>
+<table class="gtable"><tr><th>Last vowel of word</th><th>2-way suffix uses</th><th>4-way suffix uses</th></tr>
+<tr><td><b>e, i</b> (front)</td><td>e → ev<b>de</b></td><td>i → ev<b>im</b></td></tr>
+<tr><td><b>ö, ü</b> (front round)</td><td>e → göz<b>de</b></td><td>ü → Türk<b>üm</b></td></tr>
+<tr><td><b>a, ı</b> (back)</td><td>a → okul<b>da</b></td><td>ı → kız<b>ım</b></td></tr>
+<tr><td><b>o, u</b> (back round)</td><td>a → yol<b>da</b></td><td>u → doktor<b>um</b></td></tr></table>
+<p>💡 <b>Memory trick:</b> the suffix vowel copies the <i>mouth position</i> of the last vowel. Say <i>evde</i> and <i>okulda</i> aloud — feel how each flows.</p>`,
+ qs:[{q:'“at school” = okul + …',opts:['okulde','okulda','okuldü','okuldo'],a:'okulda'},
+     {q:'“I am Turkish” = Türk + …',opts:['Türküm','Türkım','Türkum','Türkem'],a:'Türküm'},
+     {q:'Which vowels are FRONT vowels?',opts:['a, ı, o, u','e, i, ö, ü','a, e, i, o','only e and i'],a:'e, i, ö, ü'}]},
+{id:'G2',ico:'👥',cat:'Suffixes',title:'Plural -ler / -lar',
+ body:`<p>Two forms only, chosen by harmony: <b>-ler</b> after e/i/ö/ü, <b>-lar</b> after a/ı/o/u.</p>
+<table class="gtable"><tr><th>Singular</th><th>Plural</th></tr>
+<tr><td>ev (house)</td><td>ev<b>ler</b></td></tr><tr><td>göz (eye)</td><td>göz<b>ler</b></td></tr>
+<tr><td>kitap (book)</td><td>kitap<b>lar</b></td></tr><tr><td>okul (school)</td><td>okul<b>lar</b></td></tr></table>
+<p>⚠️ <b>The golden exception:</b> after a number, the noun stays SINGULAR — <b>iki kitap</b>, never <s>iki kitaplar</s>. The number already says "many"; Turkish hates saying things twice.</p>`,
+ qs:[{q:'Plural of “göz”:',opts:['gözlar','gözler','gözlür','gözlör'],a:'gözler'},
+     {q:'“three apples” =',opts:['üç elmalar','üç elma','elmalar üç','üçler elma'],a:'üç elma'},
+     {q:'Plural of “kadın” (woman):',opts:['kadınler','kadınlar','kadınlır','kadın'],a:'kadınlar'}]},
+{id:'G3',ico:'🤲',cat:'Suffixes',title:'Possessives — my, your, their',
+ body:`<p>Turkish marks the owner ON the noun. The pronoun (benim…) is optional emphasis.</p>
+<table class="gtable"><tr><th>Owner</th><th>ev (after consonant)</th><th>araba (after vowel)</th></tr>
+<tr><td>ben (my)</td><td>ev<b>im</b></td><td>araba<b>m</b></td></tr>
+<tr><td>sen (your)</td><td>ev<b>in</b></td><td>araba<b>n</b></td></tr>
+<tr><td>o (his/her)</td><td>ev<b>i</b></td><td>araba<b>sı</b></td></tr>
+<tr><td>biz (our)</td><td>ev<b>imiz</b></td><td>araba<b>mız</b></td></tr>
+<tr><td>siz (your pl.)</td><td>ev<b>iniz</b></td><td>araba<b>nız</b></td></tr>
+<tr><td>onlar (their)</td><td>ev<b>leri</b></td><td>araba<b>ları</b></td></tr></table>
+<p>💡 After a vowel, "his/her" inserts a buffer <b>s</b>: araba<b>s</b>ı. Turkish never lets two vowels collide.</p>`,
+ qs:[{q:'“my mother” (anne):',opts:['annem','anneim','annesi','annemiz'],a:'annem'},
+     {q:'“his car”:',opts:['arabaı','arabası','arabasın','arabam'],a:'arabası'},
+     {q:'“our house”:',opts:['evimiz','eviniz','evleri','evlerimiz'],a:'evimiz'}]},
+{id:'G4',ico:'🧭',cat:'Suffixes',title:'Cases I — at, to, from',
+ body:`<p>Three little suffixes replace a whole box of English prepositions:</p>
+<table class="gtable"><tr><th>Case</th><th>Meaning</th><th>ev</th><th>okul</th><th>kitap ⚠️</th></tr>
+<tr><td><b>-de/-da</b></td><td>at / in / on</td><td>ev<b>de</b></td><td>okul<b>da</b></td><td>kitap<b>ta</b></td></tr>
+<tr><td><b>-e/-a</b></td><td>to</td><td>ev<b>e</b></td><td>okul<b>a</b></td><td>kitab<b>a</b></td></tr>
+<tr><td><b>-den/-dan</b></td><td>from</td><td>ev<b>den</b></td><td>okul<b>dan</b></td><td>kitap<b>tan</b></td></tr></table>
+<p>⚠️ Two sound rules meet here: after the voiceless sounds <b>f s t k ç ş h p</b> (mnemonic: <i>“FıSTıKÇı ŞaHaP”</i> — Şahap the pistachio seller!), <b>d becomes t</b> → kitap<b>ta</b>. And before a vowel suffix, final <b>p→b, t→d, k→ğ</b> → kitab<b>a</b>.</p>`,
+ qs:[{q:'“in the book”:',opts:['kitapda','kitapta','kitabda','kitapte'],a:'kitapta'},
+     {q:'“to the house”:',opts:['evde','evden','eve','evi'],a:'eve'},
+     {q:'“from school”:',opts:['okuldan','okulden','okulda','okula'],a:'okuldan'}]},
+{id:'G5',ico:'🎯',cat:'Suffixes',title:'Cases II — the specific object & the owner',
+ body:`<p><b>Accusative -(y)ı/i/u/ü</b> marks a SPECIFIC object — it is Turkish's word "the":</p>
+<table class="gtable"><tr><td><b>Elma yedim</b></td><td>I ate (an) apple — any apple</td></tr>
+<tr><td><b>Elmayı yedim</b></td><td>I ate THE apple — that one we both know</td></tr></table>
+<p><b>Genitive -(n)in</b> marks the owner, and pairs with a possessive on the owned thing — Turkish says "the teacher-'s book-his":</p>
+<p style="text-align:center;font-size:16px"><b>öğretmen<span style="color:var(--gold)">in</span> kitab<span style="color:var(--accent2)">ı</span></b> — the teacher's book<br>
+<b>anne<span style="color:var(--gold)">min</span> araba<span style="color:var(--accent2)">sı</span></b> — my mother's car</p>`,
+ qs:[{q:'“I saw THE film” :',opts:['Film gördüm','Filmi gördüm','Filme gördüm','Filmde gördüm'],a:'Filmi gördüm'},
+     {q:'“Ali’s house”:',opts:['Ali evi','Alinin ev','Ali’nin evi','Ali’de ev'],a:'Ali’nin evi'},
+     {q:'“Elma yedim” means…',opts:['I ate the specific apple','I ate an apple (any)','I will eat apples','I like apples'],a:'I ate an apple (any)'}]},
+{id:'G6',ico:'🪞',cat:'Suffixes',title:'To be, not to be, and “mi?”',
+ body:`<p>Turkish has no verb "to be" in the present — the suffix does everything:</p>
+<table class="gtable"><tr><th>Person</th><th>+ yorgun (tired)</th></tr>
+<tr><td>ben</td><td>yorgun<b>um</b></td></tr><tr><td>sen</td><td>yorgun<b>sun</b></td></tr><tr><td>o</td><td>yorgun (bare!)</td></tr>
+<tr><td>biz</td><td>yorgun<b>uz</b></td></tr><tr><td>siz</td><td>yorgun<b>sunuz</b></td></tr><tr><td>onlar</td><td>yorgun<b>lar</b></td></tr></table>
+<p><b>Negation</b> uses the separate word <b>değil</b> + the same endings: <i>Yorgun değilim</i> — I'm not tired.<br>
+<b>Questions</b> use the floating particle <b>mı/mi/mu/mü</b> (written separately, harmonized): <i>Yorgun musun?</i> — Are you tired? <i>Öğretmen mi?</i> — Is he a teacher?</p>`,
+ qs:[{q:'“I am not ready (hazır)”:',opts:['Hazırım değil','Hazır değilim','Değil hazırım','Hazırmayım'],a:'Hazır değilim'},
+     {q:'“Are you a student?”:',opts:['Öğrenci misin?','Öğrencisin mi?','Mi öğrencisin?','Öğrenci sen?'],a:'Öğrenci misin?'},
+     {q:'“We are happy (mutlu)”:',opts:['mutluyuz','mutlusunuz','mutlular','mutluyum'],a:'mutluyuz'}]},
+{id:'G7',ico:'▶️',cat:'Tenses',title:'Şimdiki Zaman -iyor — happening NOW',
+ body:`<p>The workhorse tense: drop <b>-mek/-mak</b>, add <b>-iyor</b> + person. The i of -iyor harmonizes (ı/i/u/ü); the o never changes.</p>
+<table class="gtable"><tr><th></th><th>gitmek→</th><th>bakmak→</th></tr>
+<tr><td>ben</td><td>gid<b>iyorum</b></td><td>bak<b>ıyorum</b></td></tr>
+<tr><td>sen</td><td>gid<b>iyorsun</b></td><td>bak<b>ıyorsun</b></td></tr>
+<tr><td>o</td><td>gid<b>iyor</b></td><td>bak<b>ıyor</b></td></tr>
+<tr><td>biz</td><td>gid<b>iyoruz</b></td><td>bak<b>ıyoruz</b></td></tr>
+<tr><td>onlar</td><td>gid<b>iyorlar</b></td><td>bak<b>ıyorlar</b></td></tr></table>
+<p>⚠️ Notice <b>git→gid</b> (t softens between vowels). Verbs ending in a vowel drop it: <b>anla→anlıyor</b>, <b>ye→yiyor</b>.<br><b>Negative:</b> insert -m- : <i>gitmiyorum</i> — I'm not going.</p>`,
+ qs:[{q:'“I am coming” (gelmek):',opts:['geliyorum','gelirim','geldim','geleceğim'],a:'geliyorum'},
+     {q:'“she is looking” (bakmak):',opts:['bakiyor','bakıyor','bakuyor','bakar'],a:'bakıyor'},
+     {q:'“I am NOT going”:',opts:['gitmiyorum','gitmedim','gitmem','gidiyorum değil'],a:'gitmiyorum'}]},
+{id:'G8',ico:'🔁',cat:'Tenses',title:'Geniş Zaman -r — habits & truths',
+ body:`<p>The "wide tense" covers what is <i>generally</i> true: habits, promises, offers.</p>
+<table class="gtable"><tr><td><b>Her sabah çay içerim</b></td><td>I drink tea every morning (habit)</td></tr>
+<tr><td><b>Güneş doğudan doğar</b></td><td>The sun rises in the east (truth)</td></tr>
+<tr><td><b>Kapıyı açar mısın?</b></td><td>Would you open the door? (polite)</td></tr></table>
+<p>Form: verb stem + <b>-r / -ir / -er</b> + person: içer<b>im</b>, gider<b>sin</b>, yapar<b>ız</b>.</p>
+<p>⚠️ <b>The famous irregular negative:</b> -mem/-mezsin/-mez… <i>İçmem</i> — I don't drink (flat refusal!). And the legendary noncommittal <b>Bakarız</b> — "we'll see" — half of Turkish diplomacy lives in this tense.</p>`,
+ qs:[{q:'“I drink coffee every day” uses…',opts:['içiyorum','içerim','içtim','içeceğim'],a:'içerim'},
+     {q:'“I do NOT eat meat” (flat habit):',opts:['Et yemiyorum','Et yemem','Et yemedim','Et yok'],a:'Et yemem'},
+     {q:'“Bakarız” famously means…',opts:['We saw it','We will definitely look','Noncommittal “we’ll see”','Look at us'],a:'Noncommittal “we’ll see”'}]},
+{id:'G9',ico:'⏪',cat:'Tenses',title:'Geçmiş Zaman -di — the witnessed past',
+ body:`<p>For things you SAW happen: stem + <b>-di/-dı/-du/-dü</b> + person.</p>
+<table class="gtable"><tr><th></th><th>gelmek</th><th>bakmak</th><th>gitmek ⚠️</th></tr>
+<tr><td>ben</td><td>gel<b>dim</b></td><td>bak<b>tım</b></td><td>git<b>tim</b></td></tr>
+<tr><td>sen</td><td>gel<b>din</b></td><td>bak<b>tın</b></td><td>git<b>tin</b></td></tr>
+<tr><td>o</td><td>gel<b>di</b></td><td>bak<b>tı</b></td><td>git<b>ti</b></td></tr>
+<tr><td>biz</td><td>gel<b>dik</b></td><td>bak<b>tık</b></td><td>git<b>tik</b></td></tr></table>
+<p>⚠️ Remember Şahap the pistachio seller (<b>f s t k ç ş h p</b>)? After those sounds <b>d→t</b>: bak<b>tı</b>, git<b>ti</b>, konuş<b>tu</b>. Negative: -me- before the suffix: <i>gelmedim</i> — I didn't come.</p>`,
+ qs:[{q:'“I looked” (bakmak):',opts:['bakdım','baktım','bakıtım','baktim'],a:'baktım'},
+     {q:'“we went” (gitmek):',opts:['gitdik','gittik','gidik','gittiz'],a:'gittik'},
+     {q:'“I did not come”:',opts:['gelmedim','gelmemdi','değil geldim','gelmiyordum'],a:'gelmedim'}]},
+{id:'G10',ico:'🗣️',cat:'Tenses',title:'Rivayet -miş — the heard past',
+ body:`<p>Turkish grammatically separates what you <b>witnessed</b> (-di) from what you <b>heard about or infer</b> (-mış/-miş/-muş/-müş). English can't do this in one word — Turkish does it always.</p>
+<table class="gtable"><tr><td><b>Kaza oldu</b></td><td>There was an accident (I saw it)</td></tr>
+<tr><td><b>Kaza olmuş</b></td><td>Apparently there was an accident (someone told me)</td></tr>
+<tr><td><b>Uyumuşum!</b></td><td>I (apparently) fell asleep! (surprise at yourself)</td></tr>
+<tr><td><b>Çok güzelmiş</b></td><td>They say it's beautiful / turns out it's beautiful</td></tr></table>
+<p>💡 Nicknamed the <b>dedikodu</b> (gossip) tense — all rumors, fairy tales (<i>Bir varmış, bir yokmuş…</i> = once upon a time), and pleasant surprises live here.</p>`,
+ qs:[{q:'You heard Ali got sick. You say:',opts:['Ali hastalandı','Ali hastalanmış','Ali hastadır','Ali hastalanıyor'],a:'Ali hastalanmış'},
+     {q:'Fairy tales begin with…',opts:['Bir vardı, bir yoktu','Bir varmış, bir yokmuş','Bir var, bir yok','Vardı yokmuş'],a:'Bir varmış, bir yokmuş'},
+     {q:'-miş vs -di: -miş is for…',opts:['things you saw','future plans','hearsay & inference','polite requests'],a:'hearsay & inference'}]},
+{id:'G11',ico:'⏩',cat:'Tenses',title:'Gelecek Zaman -ecek — the future',
+ body:`<p>Stem + <b>-ecek/-acak</b> + person:</p>
+<table class="gtable"><tr><th></th><th>gelmek</th><th>yapmak</th></tr>
+<tr><td>ben</td><td>gel<b>eceğim</b> ⚠️</td><td>yap<b>acağım</b> ⚠️</td></tr>
+<tr><td>sen</td><td>gel<b>eceksin</b></td><td>yap<b>acaksın</b></td></tr>
+<tr><td>o</td><td>gel<b>ecek</b></td><td>yap<b>acak</b></td></tr>
+<tr><td>biz</td><td>gel<b>eceğiz</b></td><td>yap<b>acağız</b></td></tr></table>
+<p>⚠️ Before the vowel of "I/we", <b>k softens to ğ</b>: gelece<b>ğ</b>im (never <s>gelecekim</s>). In speech you'll hear <i>gelicem, yapıcam</i> — understand it, but write the full form.<br><b>Negative:</b> gel<b>me</b>yeceğim — note the buffer y.</p>`,
+ qs:[{q:'“I will do” (yapmak):',opts:['yapacakım','yapacağım','yapeceğim','yaparım'],a:'yapacağım'},
+     {q:'“she will come”:',opts:['gelecek','geleceğ','gelir','geliyor'],a:'gelecek'},
+     {q:'“I will NOT come”:',opts:['gelmeyeceğim','gelmeceğim','değil geleceğim','gelmem olacak'],a:'gelmeyeceğim'}]},
+{id:'G12',ico:'💪',cat:'Tenses',title:'-meli & -ebil — must and can',
+ body:`<p>Two suffixes that turn any verb into obligation or ability:</p>
+<table class="gtable"><tr><th>Suffix</th><th>Meaning</th><th>gitmek →</th></tr>
+<tr><td><b>-meli/-malı</b></td><td>must / should</td><td>git<b>meliyim</b> — I must go</td></tr>
+<tr><td><b>-(y)ebil/-abil</b></td><td>can / may</td><td>gid<b>ebilirim</b> — I can go</td></tr></table>
+<p>⚠️ <b>The negative of ability is its own creature</b> — not -ebil+me but <b>-eme/-ama</b>:<br>
+<i>gidemem</i> — I can't go (ever) · <i>gidemiyorum</i> — I can't go (right now)<br>
+<i>Yüzebilirim ama bugün yüzemem</i> — I can swim, but today I can't.</p>`,
+ qs:[{q:'“I must work” (çalışmak):',opts:['çalışmalıyım','çalışabilirim','çalışırım','çalışıyorum'],a:'çalışmalıyım'},
+     {q:'“Can you help?” =',opts:['Yardım edebilir misin?','Yardım etmeli misin?','Yardım eder?','Yardım edemezsin'],a:'Yardım edebilir misin?'},
+     {q:'“I cannot swim (at all)”:',opts:['yüzemem','yüzmebilirim','yüzmem','yüzemiyorum değil'],a:'yüzemem'}]},
+{id:'G13',ico:'🏭',cat:'Vocabulary',title:'The Word Factory — -ci, -lik, -li, -siz',
+ body:`<p>Four suffixes multiply your vocabulary. Learn one root, harvest five words:</p>
+<table class="gtable"><tr><th>Suffix</th><th>Makes</th><th>Examples</th></tr>
+<tr><td><b>-ci/-cı/-çi/-çı</b></td><td>person who deals in it</td><td>çay→çay<b>cı</b> (tea seller), iş→iş<b>çi</b> (worker)</td></tr>
+<tr><td><b>-lik/-lık</b></td><td>abstract noun / thing for</td><td>güzel→güzel<b>lik</b> (beauty), göz→göz<b>lük</b> (glasses)</td></tr>
+<tr><td><b>-li/-lı</b></td><td>with / having / from</td><td>şeker<b>li</b> (with sugar), İstanbul<b>lu</b> (Istanbulite)</td></tr>
+<tr><td><b>-siz/-sız</b></td><td>without</td><td>şeker<b>siz</b> (sugar-free), sabır<b>sız</b> (impatient)</td></tr></table>
+<p>💡 Watch the harmony AND Şahap's rule: iş→iş<b>ç</b>i (c hardens to ç after ş). One root — <i>süt</i> (milk) → süt<b>çü</b>, süt<b>lü</b>, süt<b>süz</b>. Three new words, free of charge.</p>`,
+ qs:[{q:'A “kapıcı” is…',opts:['a small door','a doorman/caretaker','with a door','doorless'],a:'a doorman/caretaker'},
+     {q:'“coffee WITHOUT sugar” = şeker… kahve',opts:['şekerli','şekersiz','şekerci','şekerlik'],a:'şekersiz'},
+     {q:'“çocukluk” means…',opts:['childish','with a child','childhood','babysitter'],a:'childhood'}]},
+{id:'G14',ico:'❓',cat:'Vocabulary',title:'The Question Toolkit',
+ body:`<p>Ten words unlock every conversation. Question words sit where the answer would sit — no word-order gymnastics:</p>
+<table class="gtable"><tr><th>Word</th><th>Asks</th><th>Example</th></tr>
+<tr><td><b>ne</b></td><td>what</td><td>Bu ne? — What's this?</td></tr>
+<tr><td><b>kim</b></td><td>who</td><td>O kim? — Who's that?</td></tr>
+<tr><td><b>nerede</b></td><td>where (at)</td><td>Neredesin? — Where are you?</td></tr>
+<tr><td><b>nereye / nereden</b></td><td>where to / from</td><td>Nereye gidiyorsun?</td></tr>
+<tr><td><b>ne zaman</b></td><td>when</td><td>Ne zaman geliyorsun?</td></tr>
+<tr><td><b>neden / niçin</b></td><td>why</td><td>Neden ağlıyorsun?</td></tr>
+<tr><td><b>nasıl</b></td><td>how</td><td>Nasılsın? — How are you?</td></tr>
+<tr><td><b>kaç</b></td><td>how many/much</td><td>Kaç yaşındasın?</td></tr>
+<tr><td><b>hangi</b></td><td>which</td><td>Hangi kitap? — Which book?</td></tr></table>
+<p>💡 <i>Sen <b>nereye</b> gidiyorsun?</i> — the question word replaces "okula" exactly where it would stand. Answer by swapping it back: <i>Okula gidiyorum.</i></p>`,
+ qs:[{q:'“WHEN are you coming?”:',opts:['Nerede geliyorsun?','Ne zaman geliyorsun?','Nasıl geliyorsun?','Kaç geliyorsun?'],a:'Ne zaman geliyorsun?'},
+     {q:'“Kaç yaşındasın?” asks your…',opts:['name','age','address','job'],a:'age'},
+     {q:'“WHICH tea do you want?”:',opts:['Ne çay istersin?','Hangi çayı istersin?','Nasıl çay istersin?','Kim çay istersin?'],a:'Hangi çayı istersin?'}]},
+];
+
 /* ===== Reading corner — A1 micro-stories with comprehension checks ===== */
 const READING=[
 {id:'R1',ico:'🏠',title:'Ali’nin Evi',txt:'Ali’nin evi küçük ama çok güzel. Evde iki oda var. Mutfak temiz ve aydınlık.',
@@ -639,7 +799,7 @@ function blank(){return{
   lessons:0,reviews:0,quiz:0,questsDone:0,listen:0,speak:0,
   cards:{},units:{},skills:{Vocabulary:0,Grammar:0,Speaking:0,Listening:0,Reading:0,Writing:0},
   xpLog:{},quest:{date:null,newWords:0,reviews:0,lesson:false,listen:false},badges:[],
-  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0},matchN:0,sentN:0
+  week:{id:'',xp:0},boostUntil:0,chests:0,cultureN:0,dlg:{},writes:0,reads:0,read:{},suffixN:0,certs:{},lexams:{},blitz:{best:0,plays:0},matchN:0,sentN:0,gl:{}
 };}
 let S=blank();
 function loadRaw(k){try{const d=JSON.parse(localStorage.getItem(k));return d?Object.assign(blank(),d):null;}catch(e){return null;}}
@@ -873,6 +1033,54 @@ function renderUnits(){
     wrap.appendChild(el);
   });
   renderJourney();
+}
+
+/* 🏫 Dil Okulu engine — read the lesson, pass 2/3, earn your seat */
+function renderSchool(){
+  const done=Object.keys(S.gl||{}).length;
+  $('#glSub').textContent=done>=14?'Okul bitti — hoca gururlu (ama söylemez). 🏫✓'
+    :done+' / 14 lessons mastered · read, then pass the mini-quiz (2/3)';
+  const cats=['Suffixes','Tenses','Vocabulary'];
+  $('#glList').innerHTML=cats.map(c=>`<div class="leveltag">${c==='Suffixes'?'🧬 THE SUFFIX MACHINE':c==='Tenses'?'⏳ THE TENSES':'📚 WORD POWER'}</div>`+
+    GLESSONS.filter(g=>g.cat===c).map(g=>`<div class="unit ${S.gl&&S.gl[g.id]?'complete':''}" data-g="${g.id}">
+      <div class="unum">${S.gl&&S.gl[g.id]?'✓':g.ico}</div>
+      <div class="uinfo"><h4>${g.title}</h4><p>${g.cat} · 3-question check · +20 XP</p></div></div>`).join('')).join('');
+  $$('#glList .unit').forEach(el=>el.onclick=()=>openGLesson(GLESSONS.find(g=>g.id===el.dataset.g)));
+}
+function openGLesson(g){
+  $('#glList').innerHTML='';
+  $('#glStage').innerHTML=`<div class="pill">${g.ico} ${g.cat} · ${g.title}</div>
+    <div class="glesson">${g.body}</div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn" id="glQuizBtn">✍️ Take the check →</button>
+      <button class="btn ghost" id="glBackBtn">← All lessons</button></div>`;
+  $('#glQuizBtn').onclick=()=>glQuiz(g,0,0);
+  $('#glBackBtn').onclick=()=>{$('#glStage').innerHTML='';renderSchool();};
+}
+function glQuiz(g,qi,score){
+  if(qi>=g.qs.length){
+    const pass=score>=2,first=pass&&!(S.gl&&S.gl[g.id]);
+    if(pass){if(!S.gl)S.gl={};S.gl[g.id]=true;
+      if(first){addXp(20,g.cat==='Tenses'?'Grammar':g.cat==='Suffixes'?'Grammar':'Vocabulary');checkBadges();}
+      save();celebrate();snd('quest');}
+    $('#glStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">${pass?'🏫':'📚'}</div>
+      <h2>${pass?'Ders geçildi!':'Bir daha oku'}</h2>
+      <p class="muted">${score}/3${pass?(first?' · +20 XP · lesson mastered':' · already mastered'):' — the hoca says: read it again, slowly this time.'}</p></div>
+      <div class="row" style="justify-content:center">
+        ${pass?'':'<button class="btn" id="glRe">↺ Re-read the lesson</button>'}
+        <button class="btn ghost" id="glDone2">All lessons</button></div></div>`;
+    if(!pass)$('#glRe').onclick=()=>openGLesson(g);
+    $('#glDone2').onclick=()=>{$('#glStage').innerHTML='';renderSchool();};
+    return;
+  }
+  const qq=g.qs[qi];
+  $('#glStage').innerHTML=`<div class="stage"><div class="pill">${g.ico} Check ${qi+1} / 3</div>
+    <div class="flash"><div class="cat">${g.title}</div><div class="tr" style="font-size:19px;line-height:1.5">${qq.q}</div></div>
+    <div class="choices" style="max-width:520px">${shuffle(qq.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
+    const ok=ch.dataset.val===qq.a;buzz(ok?12:60);snd(ok?'ok':'no');
+    if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===qq.a)c.classList.add('correct');});}
+    setTimeout(()=>glQuiz(g,qi+1,score+(ok?1:0)),850);});
 }
 
 /* 🗺️ Journey map — the tree becomes a road across Turkey */
@@ -1472,7 +1680,7 @@ function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:lea
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
   suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,lexBest:lexBest(),
-  blitzBest:(S.blitz&&S.blitz.best)||0,
+  blitzBest:(S.blitz&&S.blitz.best)||0,glDone:Object.keys(S.gl||{}).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1657,7 +1865,7 @@ function showExplain(item){
 /* ===================== NAV ===================== */
 function switchView(v){$$('nav.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.v===v));$$('.view').forEach(s=>s.classList.toggle('active',s.id===v));
   if(flow&&flow.mode==='blitz'&&v!=='practice'){clearInterval(blitzTimer);flow=null;} // leaving blitz forfeits the run
-  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
+  if(v==='dash')renderDash();if(v==='quest')renderQuest();if(v==='flow'){if(!F)renderFlowHome();}if(v==='learn'){flow=null;renderUnits();$('#glStage').innerHTML='';renderSchool();}if(v==='practice'){if(!flow)renderPracticeHome();}if(v==='exams'){flow=null;$('#lexStage').innerHTML='';renderExams();}if(v==='badges')renderBadges();}
 $$('nav.tabs button').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 $('#dashFlow').onclick=startFlow;
 $('#kpiBadges').onclick=()=>switchView('badges');
@@ -1698,6 +1906,7 @@ function mergeStates(a,b){
     .forEach(k=>m.lexams[k]=Math.max((a.lexams||{})[k]||0,(b.lexams||{})[k]||0));
   m.blitz={best:Math.max((a.blitz||{}).best||0,(b.blitz||{}).best||0),
            plays:Math.max((a.blitz||{}).plays||0,(b.blitz||{}).plays||0)};
+  m.gl=Object.assign({},a.gl||{},b.gl||{});
   const wid=weekId();
   m.week={id:wid,xp:Math.max((a.week&&a.week.id===wid)?a.week.xp:0,(b.week&&b.week.id===wid)?b.week.xp:0)};
   m.dlg=Object.assign({},a.dlg||{},b.dlg||{});
