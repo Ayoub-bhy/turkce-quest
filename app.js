@@ -324,6 +324,174 @@ const VOCAB = [
 {id:'go6',tr:'Örnek',en:'Example',cat:'Discussion',skill:'Vocabulary',ex:'Bir örnek verebilir misin?'},
 {id:'go7',tr:'Açıklamak',en:'To explain',cat:'Discussion',skill:'Grammar',ex:'Kuralı açıklar mısın?'},
 {id:'go8',tr:'Anlatmak',en:'To tell / narrate',cat:'Discussion',skill:'Grammar',ex:'Bana her şeyi anlat.'},
+
+/* ===== 📕 Yedi İklim A1 book vocabulary pack — the full word bank ===== */
+{id:'x1',tr:'Salı',en:'Tuesday',cat:'Time',skill:'Vocabulary',ex:'Salı günü ders var.'},
+{id:'x2',tr:'Çarşamba',en:'Wednesday',cat:'Time',skill:'Vocabulary',ex:'Çarşamba günü sinemaya gidiyoruz.'},
+{id:'x3',tr:'Perşembe',en:'Thursday',cat:'Time',skill:'Vocabulary',ex:'Perşembe akşamı boş musun?'},
+{id:'x4',tr:'Cumartesi',en:'Saturday',cat:'Time',skill:'Vocabulary',ex:'Cumartesi günü çalışmıyorum.'},
+{id:'x5',tr:'Pazar',en:'Sunday / market',cat:'Time',skill:'Vocabulary',ex:'Pazar günü aile ile kahvaltı yapıyoruz.'},
+{id:'x6',tr:'Ocak',en:'January',cat:'Time',skill:'Vocabulary',ex:'Ocak ayında kar yağıyor.'},
+{id:'x7',tr:'Şubat',en:'February',cat:'Time',skill:'Vocabulary',ex:'Şubat en kısa aydır.'},
+{id:'x8',tr:'Mart',en:'March',cat:'Time',skill:'Vocabulary',ex:'Mart ayında bahar başlıyor.'},
+{id:'x9',tr:'Nisan',en:'April',cat:'Time',skill:'Vocabulary',ex:'Nisan yağmurları çok güzel.'},
+{id:'x10',tr:'Mayıs',en:'May',cat:'Time',skill:'Vocabulary',ex:'Mayıs ayında hava ılık.'},
+{id:'x11',tr:'Haziran',en:'June',cat:'Time',skill:'Vocabulary',ex:'Haziranda okullar kapanıyor.'},
+{id:'x12',tr:'Temmuz',en:'July',cat:'Time',skill:'Vocabulary',ex:'Temmuzda deniz çok sıcak.'},
+{id:'x13',tr:'Ağustos',en:'August',cat:'Time',skill:'Vocabulary',ex:'Ağustosta tatile gidiyoruz.'},
+{id:'x14',tr:'Eylül',en:'September',cat:'Time',skill:'Vocabulary',ex:'Eylülde okul başlıyor.'},
+{id:'x15',tr:'Ekim',en:'October',cat:'Time',skill:'Vocabulary',ex:'Ekimde yapraklar dökülüyor.'},
+{id:'x16',tr:'Kasım',en:'November',cat:'Time',skill:'Vocabulary',ex:'Kasımda hava soğuyor.'},
+{id:'x17',tr:'Aralık',en:'December',cat:'Time',skill:'Vocabulary',ex:'Aralık yılın son ayıdır.'},
+{id:'x18',tr:'İlkbahar',en:'Spring',cat:'Weather',skill:'Vocabulary',ex:'İlkbaharda çiçekler açıyor.'},
+{id:'x19',tr:'Sonbahar',en:'Autumn',cat:'Weather',skill:'Vocabulary',ex:'Sonbaharda hava serin.'},
+{id:'x20',tr:'Otuz',en:'Thirty (30)',cat:'Numbers',skill:'Vocabulary',ex:'Otuz gün bir ay eder.'},
+{id:'x21',tr:'Kırk',en:'Forty (40)',cat:'Numbers',skill:'Vocabulary',ex:'Kırk dakika bekledim.'},
+{id:'x22',tr:'Elli',en:'Fifty (50)',cat:'Numbers',skill:'Vocabulary',ex:'Bu kitap elli lira.'},
+{id:'x23',tr:'Altmış',en:'Sixty (60)',cat:'Numbers',skill:'Vocabulary',ex:'Bir saat altmış dakikadır.'},
+{id:'x24',tr:'Yetmiş',en:'Seventy (70)',cat:'Numbers',skill:'Vocabulary',ex:'Dedem yetmiş yaşında.'},
+{id:'x25',tr:'Seksen',en:'Eighty (80)',cat:'Numbers',skill:'Vocabulary',ex:'Seksen kişi geldi.'},
+{id:'x26',tr:'Doksan',en:'Ninety (90)',cat:'Numbers',skill:'Vocabulary',ex:'Doksan dakika sürdü.'},
+{id:'x27',tr:'Bin',en:'Thousand (1000)',cat:'Numbers',skill:'Vocabulary',ex:'Bin teşekkür!'},
+{id:'x28',tr:'Amca',en:'Uncle (paternal)',cat:'Family',skill:'Vocabulary',ex:'Amcam Ankara’da oturuyor.'},
+{id:'x29',tr:'Teyze',en:'Aunt (maternal)',cat:'Family',skill:'Vocabulary',ex:'Teyzem çok güzel yemek yapıyor.'},
+{id:'x30',tr:'Oğul',en:'Son',cat:'Family',skill:'Vocabulary',ex:'Onların bir oğlu var.'},
+{id:'x31',tr:'Kız',en:'Girl / daughter',cat:'Family',skill:'Vocabulary',ex:'Kızım okula gidiyor.'},
+{id:'x32',tr:'Kalem',en:'Pen',cat:'School',skill:'Vocabulary',ex:'Kalemim yok, senin var mı?'},
+{id:'x33',tr:'Defter',en:'Notebook',cat:'School',skill:'Vocabulary',ex:'Deftere yazıyorum.'},
+{id:'x34',tr:'Silgi',en:'Eraser',cat:'School',skill:'Vocabulary',ex:'Silgiyi verir misin?'},
+{id:'x35',tr:'Tahta',en:'Board',cat:'School',skill:'Vocabulary',ex:'Öğretmen tahtaya yazıyor.'},
+{id:'x36',tr:'Çanta',en:'Bag',cat:'School',skill:'Vocabulary',ex:'Çantam çok ağır.'},
+{id:'x37',tr:'Sıra',en:'Desk / queue',cat:'School',skill:'Vocabulary',ex:'Sıra bende!'},
+{id:'x38',tr:'Soru',en:'Question',cat:'School',skill:'Vocabulary',ex:'Bir sorum var.'},
+{id:'x39',tr:'Cevap',en:'Answer',cat:'School',skill:'Vocabulary',ex:'Cevap çok kolay.'},
+{id:'x40',tr:'Kulak',en:'Ear',cat:'Body',skill:'Vocabulary',ex:'Kulağım ağrıyor.'},
+{id:'x41',tr:'Burun',en:'Nose',cat:'Body',skill:'Vocabulary',ex:'Burnu kırmızı oldu.'},
+{id:'x42',tr:'Ağız',en:'Mouth',cat:'Body',skill:'Vocabulary',ex:'Ağzını aç, lütfen.'},
+{id:'x43',tr:'Saç',en:'Hair',cat:'Body',skill:'Vocabulary',ex:'Saçların çok güzel.'},
+{id:'x44',tr:'Yüz',en:'Face / hundred',cat:'Body',skill:'Vocabulary',ex:'Yüzünü yıka.'},
+{id:'x45',tr:'Parmak',en:'Finger',cat:'Body',skill:'Vocabulary',ex:'On parmağım var.'},
+{id:'x46',tr:'Kol',en:'Arm',cat:'Body',skill:'Vocabulary',ex:'Kolum yoruldu.'},
+{id:'x47',tr:'Bacak',en:'Leg',cat:'Body',skill:'Vocabulary',ex:'Bacakların uzun.'},
+{id:'x48',tr:'Kalp',en:'Heart',cat:'Body',skill:'Vocabulary',ex:'Kalbim hızlı atıyor.'},
+{id:'x49',tr:'Koltuk',en:'Armchair / seat',cat:'Home',skill:'Vocabulary',ex:'Koltukta oturuyorum.'},
+{id:'x50',tr:'Halı',en:'Carpet',cat:'Home',skill:'Vocabulary',ex:'Halı çok yumuşak.'},
+{id:'x51',tr:'Perde',en:'Curtain',cat:'Home',skill:'Vocabulary',ex:'Perdeyi aç, lütfen.'},
+{id:'x52',tr:'Buzdolabı',en:'Refrigerator',cat:'Home',skill:'Vocabulary',ex:'Süt buzdolabında.'},
+{id:'x53',tr:'Televizyon',en:'Television',cat:'Home',skill:'Vocabulary',ex:'Akşam televizyon izliyoruz.'},
+{id:'x54',tr:'Lamba',en:'Lamp',cat:'Home',skill:'Vocabulary',ex:'Lambayı kapat.'},
+{id:'x55',tr:'Ayna',en:'Mirror',cat:'Home',skill:'Vocabulary',ex:'Aynaya bakıyorum.'},
+{id:'x56',tr:'Dolap',en:'Wardrobe / cupboard',cat:'Home',skill:'Vocabulary',ex:'Elbiseler dolapta.'},
+{id:'x57',tr:'Duvar',en:'Wall',cat:'Home',skill:'Vocabulary',ex:'Duvarda bir resim var.'},
+{id:'x58',tr:'Merdiven',en:'Stairs',cat:'Home',skill:'Vocabulary',ex:'Merdivenden çık.'},
+{id:'x59',tr:'Mor',en:'Purple',cat:'Colors',skill:'Vocabulary',ex:'Mor çiçekler açtı.'},
+{id:'x60',tr:'Gri',en:'Grey',cat:'Colors',skill:'Vocabulary',ex:'Gökyüzü gri bugün.'},
+{id:'x61',tr:'Lacivert',en:'Navy blue',cat:'Colors',skill:'Vocabulary',ex:'Lacivert bir ceket aldım.'},
+{id:'x62',tr:'Meyve',en:'Fruit',cat:'Food',skill:'Vocabulary',ex:'Her gün meyve yiyorum.'},
+{id:'x63',tr:'Sebze',en:'Vegetable',cat:'Food',skill:'Vocabulary',ex:'Sebze çok sağlıklı.'},
+{id:'x64',tr:'Portakal',en:'Orange (fruit)',cat:'Food',skill:'Vocabulary',ex:'Portakal suyu içer misin?'},
+{id:'x65',tr:'Muz',en:'Banana',cat:'Food',skill:'Vocabulary',ex:'Muz sarıdır.'},
+{id:'x66',tr:'Üzüm',en:'Grapes',cat:'Food',skill:'Vocabulary',ex:'Üzüm çok tatlı.'},
+{id:'x67',tr:'Domates',en:'Tomato',cat:'Food',skill:'Vocabulary',ex:'Salataya domates koy.'},
+{id:'x68',tr:'Patates',en:'Potato',cat:'Food',skill:'Vocabulary',ex:'Patates kızartması seviyorum.'},
+{id:'x69',tr:'Salata',en:'Salad',cat:'Food',skill:'Vocabulary',ex:'Bir salata, lütfen.'},
+{id:'x70',tr:'Pilav',en:'Rice (cooked)',cat:'Food',skill:'Vocabulary',ex:'Pilav ve köfte istiyorum.'},
+{id:'x71',tr:'Köfte',en:'Meatballs',cat:'Food',skill:'Vocabulary',ex:'Köfte çok lezzetli.'},
+{id:'x72',tr:'Balık',en:'Fish',cat:'Food',skill:'Vocabulary',ex:'Akşam balık yedik.'},
+{id:'x73',tr:'Tavuk',en:'Chicken',cat:'Food',skill:'Vocabulary',ex:'Tavuk çorbası içtim.'},
+{id:'x74',tr:'Tatlı',en:'Dessert / sweet',cat:'Food',skill:'Vocabulary',ex:'Tatlı ister misiniz?'},
+{id:'x75',tr:'Ayran',en:'Ayran (yogurt drink)',cat:'Food',skill:'Vocabulary',ex:'Köftenin yanında ayran iyi gider.'},
+{id:'x76',tr:'Zeytin',en:'Olive',cat:'Food',skill:'Vocabulary',ex:'Kahvaltıda zeytin var.'},
+{id:'x77',tr:'Bal',en:'Honey',cat:'Food',skill:'Vocabulary',ex:'Bal ve tereyağı aldım.'},
+{id:'x78',tr:'Tuz',en:'Salt',cat:'Food',skill:'Vocabulary',ex:'Çorbada tuz az.'},
+{id:'x79',tr:'Hemşire',en:'Nurse',cat:'Work',skill:'Vocabulary',ex:'Hemşire hastaya bakıyor.'},
+{id:'x80',tr:'Polis',en:'Police officer',cat:'Work',skill:'Vocabulary',ex:'Polis trafiği yönetiyor.'},
+{id:'x81',tr:'Avukat',en:'Lawyer',cat:'Work',skill:'Vocabulary',ex:'Ablam avukat.'},
+{id:'x82',tr:'Aşçı',en:'Cook / chef',cat:'Work',skill:'Vocabulary',ex:'Aşçı harika yemekler yapıyor.'},
+{id:'x83',tr:'Garson',en:'Waiter',cat:'Work',skill:'Vocabulary',ex:'Garson menüyü getirdi.'},
+{id:'x84',tr:'Şoför',en:'Driver',cat:'Work',skill:'Vocabulary',ex:'Şoför çok hızlı sürüyor.'},
+{id:'x85',tr:'Pilot',en:'Pilot',cat:'Work',skill:'Vocabulary',ex:'Pilot uçağı kullanıyor.'},
+{id:'x86',tr:'Berber',en:'Barber',cat:'Work',skill:'Vocabulary',ex:'Berbere gidiyorum.'},
+{id:'x87',tr:'Çiftçi',en:'Farmer',cat:'Work',skill:'Vocabulary',ex:'Çiftçi tarlada çalışıyor.'},
+{id:'x88',tr:'Mimar',en:'Architect',cat:'Work',skill:'Vocabulary',ex:'Mimar yeni bir bina çiziyor.'},
+{id:'x89',tr:'Futbolcu',en:'Footballer',cat:'Work',skill:'Vocabulary',ex:'Futbolcu gol attı.'},
+{id:'x90',tr:'Vapur',en:'Ferry',cat:'Transport',skill:'Vocabulary',ex:'Vapurla karşıya geçiyoruz.'},
+{id:'x91',tr:'Tramvay',en:'Tram',cat:'Transport',skill:'Vocabulary',ex:'Tramvay durağı nerede?'},
+{id:'x92',tr:'Bisiklet',en:'Bicycle',cat:'Transport',skill:'Vocabulary',ex:'Bisikletle işe gidiyorum.'},
+{id:'x93',tr:'Motosiklet',en:'Motorcycle',cat:'Transport',skill:'Vocabulary',ex:'Motosiklet çok hızlı.'},
+{id:'x94',tr:'Dolmuş',en:'Shared taxi (dolmuş)',cat:'Transport',skill:'Vocabulary',ex:'Dolmuşla beş dakika sürüyor.'},
+{id:'x95',tr:'Durak',en:'Stop (bus/tram)',cat:'Transport',skill:'Vocabulary',ex:'Bir sonraki durakta iniyorum.'},
+{id:'x96',tr:'İstasyon',en:'Station',cat:'Transport',skill:'Vocabulary',ex:'Tren istasyonu uzak mı?'},
+{id:'x97',tr:'Havalimanı',en:'Airport',cat:'Transport',skill:'Vocabulary',ex:'Havalimanına taksiyle gittik.'},
+{id:'x98',tr:'Bulutlu',en:'Cloudy',cat:'Weather',skill:'Vocabulary',ex:'Bugün hava bulutlu.'},
+{id:'x99',tr:'Güneşli',en:'Sunny',cat:'Weather',skill:'Vocabulary',ex:'Güneşli günleri seviyorum.'},
+{id:'x100',tr:'Fırtına',en:'Storm',cat:'Weather',skill:'Vocabulary',ex:'Dün gece fırtına vardı.'},
+{id:'x101',tr:'Sisli',en:'Foggy',cat:'Weather',skill:'Vocabulary',ex:'Sabah hava sisliydi.'},
+{id:'x102',tr:'Derece',en:'Degree',cat:'Weather',skill:'Vocabulary',ex:'Bugün hava yirmi derece.'},
+{id:'x103',tr:'Kuzey',en:'North',cat:'Directions',skill:'Vocabulary',ex:'Karadeniz kuzeyde.'},
+{id:'x104',tr:'Güney',en:'South',cat:'Directions',skill:'Vocabulary',ex:'Antalya güneyde.'},
+{id:'x105',tr:'Doğu',en:'East',cat:'Directions',skill:'Vocabulary',ex:'Güneş doğudan doğar.'},
+{id:'x106',tr:'Batı',en:'West',cat:'Directions',skill:'Vocabulary',ex:'İzmir batıda.'},
+{id:'x107',tr:'Karşı',en:'Opposite / across',cat:'Directions',skill:'Vocabulary',ex:'Eczane okulun karşısında.'},
+{id:'x108',tr:'İleri',en:'Forward / ahead',cat:'Directions',skill:'Vocabulary',ex:'Biraz ileri git.'},
+{id:'x109',tr:'Geri',en:'Back / backward',cat:'Directions',skill:'Vocabulary',ex:'Geri dön, lütfen.'},
+{id:'x110',tr:'Dakika',en:'Minute',cat:'Time',skill:'Vocabulary',ex:'Beş dakika bekle.'},
+{id:'x111',tr:'Saniye',en:'Second (time)',cat:'Time',skill:'Vocabulary',ex:'Bir saniye, lütfen!'},
+{id:'x112',tr:'Öğle',en:'Noon',cat:'Time',skill:'Vocabulary',ex:'Öğle yemeği saat birde.'},
+{id:'x113',tr:'Gece',en:'Night',cat:'Time',skill:'Vocabulary',ex:'Gece geç yattım.'},
+{id:'x114',tr:'Şimdi',en:'Now',cat:'Time',skill:'Vocabulary',ex:'Şimdi ders çalışıyorum.'},
+{id:'x115',tr:'Erken',en:'Early',cat:'Time',skill:'Vocabulary',ex:'Sabah erken kalktım.'},
+{id:'x116',tr:'Geç',en:'Late',cat:'Time',skill:'Vocabulary',ex:'Özür dilerim, geç kaldım.'},
+{id:'x117',tr:'Mesaj',en:'Message',cat:'Media',skill:'Vocabulary',ex:'Sana bir mesaj gönderdim.'},
+{id:'x118',tr:'Numara',en:'Number (phone)',cat:'Media',skill:'Vocabulary',ex:'Telefon numaran kaç?'},
+{id:'x119',tr:'Mektup',en:'Letter (mail)',cat:'Media',skill:'Vocabulary',ex:'Dedeme mektup yazdım.'},
+{id:'x120',tr:'Adres',en:'Address',cat:'City',skill:'Vocabulary',ex:'Adresiniz nedir?'},
+{id:'x121',tr:'E-posta',en:'E-mail',cat:'Media',skill:'Vocabulary',ex:'E-postanı kontrol et.'},
+{id:'x122',tr:'Hediye',en:'Gift',cat:'Holiday',skill:'Vocabulary',ex:'Anneme hediye aldım.'},
+{id:'x123',tr:'Misafir',en:'Guest',cat:'Holiday',skill:'Vocabulary',ex:'Bu akşam misafir geliyor.'},
+{id:'x124',tr:'Ziyaret',en:'Visit',cat:'Holiday',skill:'Vocabulary',ex:'Bayramda dedemi ziyaret ediyoruz.'},
+{id:'x125',tr:'Kutlamak',en:'To celebrate',cat:'Holiday',skill:'Grammar',ex:'Bayramı ailece kutluyoruz.'},
+{id:'x126',tr:'Vermek',en:'To give',cat:'Verbs',skill:'Grammar',ex:'Kitabı bana ver.'},
+{id:'x127',tr:'Görmek',en:'To see',cat:'Verbs',skill:'Grammar',ex:'Seni görmek çok güzel.'},
+{id:'x128',tr:'Bilmek',en:'To know',cat:'Verbs',skill:'Grammar',ex:'Cevabı bilmiyorum.'},
+{id:'x129',tr:'Bakmak',en:'To look',cat:'Verbs',skill:'Grammar',ex:'Tahtaya bak, lütfen.'},
+{id:'x130',tr:'Dinlemek',en:'To listen',cat:'Verbs',skill:'Grammar',ex:'Müzik dinliyorum.'},
+{id:'x131',tr:'İzlemek',en:'To watch',cat:'Verbs',skill:'Grammar',ex:'Film izlemek istiyorum.'},
+{id:'x132',tr:'Oturmak',en:'To sit / to live',cat:'Verbs',skill:'Grammar',ex:'Nerede oturuyorsunuz?'},
+{id:'x133',tr:'Kalkmak',en:'To get up',cat:'Verbs',skill:'Grammar',ex:'Her sabah yedide kalkıyorum.'},
+{id:'x134',tr:'Uyumak',en:'To sleep',cat:'Verbs',skill:'Grammar',ex:'Bebek şimdi uyuyor.'},
+{id:'x135',tr:'Uyanmak',en:'To wake up',cat:'Verbs',skill:'Grammar',ex:'Sabah erken uyanıyorum.'},
+{id:'x136',tr:'Açmak',en:'To open / turn on',cat:'Verbs',skill:'Grammar',ex:'Pencereyi açar mısın?'},
+{id:'x137',tr:'Kapatmak',en:'To close / turn off',cat:'Verbs',skill:'Grammar',ex:'Işığı kapat, lütfen.'},
+{id:'x138',tr:'Başlamak',en:'To begin',cat:'Verbs',skill:'Grammar',ex:'Ders dokuzda başlıyor.'},
+{id:'x139',tr:'Beklemek',en:'To wait',cat:'Verbs',skill:'Grammar',ex:'Beni durakta bekle.'},
+{id:'x140',tr:'Sormak',en:'To ask',cat:'Verbs',skill:'Grammar',ex:'Öğretmene soru soruyorum.'},
+{id:'x141',tr:'Yürümek',en:'To walk',cat:'Verbs',skill:'Grammar',ex:'Parkta yürümeyi seviyorum.'},
+{id:'x142',tr:'Koşmak',en:'To run',cat:'Verbs',skill:'Grammar',ex:'Her sabah koşuyorum.'},
+{id:'x143',tr:'Oynamak',en:'To play',cat:'Verbs',skill:'Grammar',ex:'Çocuklar bahçede oynuyor.'},
+{id:'x144',tr:'Yüzmek',en:'To swim',cat:'Verbs',skill:'Grammar',ex:'Denizde yüzmek harika.'},
+{id:'x145',tr:'Giymek',en:'To wear',cat:'Verbs',skill:'Grammar',ex:'Bugün mavi gömlek giydim.'},
+{id:'x146',tr:'Ödemek',en:'To pay',cat:'Verbs',skill:'Grammar',ex:'Hesabı ben ödüyorum.'},
+{id:'x147',tr:'İnmek',en:'To get off / go down',cat:'Verbs',skill:'Grammar',ex:'Bu durakta iniyorum.'},
+{id:'x148',tr:'Yıkamak',en:'To wash',cat:'Verbs',skill:'Grammar',ex:'Elini yıka, yemek hazır.'},
+{id:'x149',tr:'Temizlemek',en:'To clean',cat:'Verbs',skill:'Grammar',ex:'Odamı temizliyorum.'},
+{id:'x150',tr:'Aramak',en:'To call / to search',cat:'Verbs',skill:'Grammar',ex:'Seni akşam ararım.'},
+{id:'x151',tr:'Yavaş',en:'Slow',cat:'Adjectives',skill:'Vocabulary',ex:'Yavaş konuş, lütfen.'},
+{id:'x152',tr:'Hızlı',en:'Fast',cat:'Adjectives',skill:'Vocabulary',ex:'Tren çok hızlı gidiyor.'},
+{id:'x153',tr:'Boş',en:'Empty / free',cat:'Adjectives',skill:'Vocabulary',ex:'Bu koltuk boş mu?'},
+{id:'x154',tr:'Dolu',en:'Full',cat:'Adjectives',skill:'Vocabulary',ex:'Otobüs çok dolu.'},
+{id:'x155',tr:'Açık',en:'Open / light (color)',cat:'Adjectives',skill:'Vocabulary',ex:'Market açık mı?'},
+{id:'x156',tr:'Kapalı',en:'Closed',cat:'Adjectives',skill:'Vocabulary',ex:'Pazar günü banka kapalı.'},
+{id:'x157',tr:'Temiz',en:'Clean',cat:'Adjectives',skill:'Vocabulary',ex:'Oda çok temiz.'},
+{id:'x158',tr:'Kirli',en:'Dirty',cat:'Adjectives',skill:'Vocabulary',ex:'Elbiseler kirli.'},
+{id:'x159',tr:'Genç',en:'Young',cat:'Adjectives',skill:'Vocabulary',ex:'O çok genç görünüyor.'},
+{id:'x160',tr:'Yaşlı',en:'Old (person)',cat:'Adjectives',skill:'Vocabulary',ex:'Yaşlı adama yardım ettim.'},
+{id:'x161',tr:'Şişman',en:'Fat / overweight',cat:'Adjectives',skill:'Vocabulary',ex:'Kedimiz biraz şişman.'},
+{id:'x162',tr:'İnce',en:'Thin / slim',cat:'Adjectives',skill:'Vocabulary',ex:'İnce bir kitap okuyorum.'},
+{id:'x163',tr:'Meşgul',en:'Busy',cat:'Adjectives',skill:'Vocabulary',ex:'Bugün çok meşgulüm.'},
+{id:'x164',tr:'Hazır',en:'Ready',cat:'Adjectives',skill:'Vocabulary',ex:'Yemek hazır!'},
+{id:'x165',tr:'Aç',en:'Hungry',cat:'Adjectives',skill:'Vocabulary',ex:'Çok açım, hadi yiyelim.'},
+{id:'x166',tr:'Tok',en:'Full (not hungry)',cat:'Adjectives',skill:'Vocabulary',ex:'Teşekkürler, tokum.'},
 ];
 
 /* ===================== UNITS (skill tree) ===================== */
@@ -414,6 +582,8 @@ const BADGES=[
 {id:'lex10',ico:'🐺',name:'Bozkurt',desc:'Pass the wolf exam (E10)',test:s=>s.lexBest>=10},
 {id:'blitz500',ico:'⚡',name:'Şimşek',desc:'Blitz score 500+',test:s=>s.blitzBest>=500},
 {id:'blitz1500',ico:'🌩️',name:'Fırtına',desc:'Blitz score 1500+',test:s=>s.blitzBest>=1500},
+{id:'echo500',ico:'🎧',name:'Yankı',desc:'Echo Blitz 500+',test:s=>s.echoBest>=500},
+{id:'storm500',ico:'⌨️',name:'Daktilo',desc:'Yazı Fırtınası 500+',test:s=>s.stormBest>=500},
 {id:'okul',ico:'🏫',name:'Dil Okulu',desc:'All 14 grammar lessons',test:s=>s.glDone>=14},
 {id:'plan28',ico:'📅',name:'Dört Hafta',desc:'Finish the 28-day A1 plan',test:s=>s.planDone>=28},
 ];
@@ -1321,6 +1491,8 @@ function renderPracticeHome(){
   const readDone=Object.values(S.read||{}).filter(Boolean).length;
   $('#practiceStage').innerHTML=`<div class="modehub">
     <div class="mode" id="mBlitz" style="border-color:var(--gold)"><div class="mi">⚡</div><h4>Blitz</h4><p>60s · 3 hearts · multipliers</p><div class="cnt" style="color:var(--gold)">${(S.blitz&&S.blitz.best)||0}</div></div>
+    <div class="mode" id="mEcho" style="border-color:var(--blue)"><div class="mi">🎧</div><h4>Echo Blitz</h4><p>Ears only · same rules</p><div class="cnt" style="color:var(--blue)">${(S.blitz&&S.blitz.bestL)||0}</div></div>
+    <div class="mode" id="mStorm" style="border-color:var(--accent2)"><div class="mi">⌨️</div><h4>Yazı Fırtınası</h4><p>Type storm · +2s per hit</p><div class="cnt" style="color:var(--accent2)">${(S.blitz&&S.blitz.bestT)||0}</div></div>
     <div class="mode" id="mSrs"><div class="mi">🃏</div><h4>SRS Review</h4><p>Flashcards due now</p><div class="cnt" style="color:var(--accent2)">${due}</div></div>
     <div class="mode" id="mWeak"><div class="mi">🩹</div><h4>Weak Words</h4><p>The ones that keep slipping</p><div class="cnt" style="color:var(--gold)">${weak}</div></div>
     <div class="mode" id="mDlg"><div class="mi">💬</div><h4>Dialogues</h4><p>Real conversations + quiz</p><div class="cnt" style="color:var(--green)">${dlgDone}/${DIALOGUES.length}</div></div>
@@ -1334,6 +1506,8 @@ function renderPracticeHome(){
   </div>
   <p class="muted center" style="margin-top:16px">${known<4?'Learn at least 4 words in the Learn tab to unlock the drills.':'Drills draw from your '+known+' learned words.'}</p>`;
   $('#mBlitz').onclick=()=>startBlitz();
+  $('#mEcho').onclick=()=>startBlitz('listen');
+  $('#mStorm').onclick=()=>startBlitz('type');
   $('#mSrs').onclick=()=>{if(!due){toast('No cards due — learn a unit first!');return;}startSrs();};
   $('#mWeak').onclick=()=>{if(!weak){toast('No weak words — keep it up! 💪');return;}startWeak();};
   $('#mDlg').onclick=()=>dlgList();
@@ -1497,21 +1671,59 @@ function sentCard(){
   const v=flow.pool[flow.n%flow.pool.length];
   flow.cur=v;flow.target=v.ex.split(' ');flow.built=[];flow.used=[];
   flow.tiles=shuffle(flow.target.map((w,i)=>({w,i})));
-  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🧱 ${flow.n+1} / ${flow.total} · tap the words in order</div>
+  $('#practiceStage').innerHTML=`<div class="stage"><div class="pill">🧱 ${flow.n+1} / ${flow.total} · tap words · tap again to remove</div>
     <div class="flash"><div class="cat">${v.tr} — ${v.en}</div>
-    <div class="en" id="sBuilt" style="opacity:1;min-height:30px;font-size:18px">…</div></div>
+    <div class="row" id="sBuilt" style="justify-content:center;min-height:40px;gap:6px;margin-top:10px"></div></div>
     <div class="choices" id="sTiles" style="grid-template-columns:repeat(auto-fit,minmax(96px,1fr));max-width:520px">
     ${flow.tiles.map((t,i)=>`<div class="choice" data-i="${i}" style="justify-content:center;font-size:15px">${t.w}</div>`).join('')}</div>
-    <button class="btn ghost" id="sHear">🔊 Hear it</button></div>`;
+    <div class="row" style="justify-content:center">
+      <button class="btn ghost" id="sHear">🔊 Hear it</button>
+      <button class="btn ghost" id="sClear">↺ Clear</button>
+      <button class="btn green" id="sCheck">✓ Confirm</button>
+    </div><div class="kbd">drag chips to reorder · tap ✕ to remove · nothing is judged until Confirm</div></div>`;
   $('#sHear').onclick=()=>speak(v.ex);
+  $('#sClear').onclick=()=>{if(!flow)return;flow.built=[];flow.used=[];sentSync();};
+  $('#sCheck').onclick=sentCheck;
   $$('#sTiles .choice').forEach(el=>el.onclick=()=>{if(el.dataset.i!=null)sentTap(+el.dataset.i);});
+  sentSync();
+}
+let sentDragI=null;
+function sentSync(){ /* redraw built chips: DRAG to reorder, tap ✕ to remove */
+  if(!flow||flow.mode!=='sent')return;
+  const el=$('#sBuilt');
+  if(el){el.innerHTML=flow.built.length
+    ?flow.built.map((w,bi)=>`<button class="btn ghost pchip schip" draggable="true" data-b="${bi}" title="Drag to reorder · tap to remove">${w} <span style="opacity:.6">✕</span></button>`).join('')
+    :'<span class="muted">…tap words below</span>';
+    $$('#sBuilt .pchip').forEach(c=>{
+      c.onclick=()=>{if(c.dataset.b!=null)sentUndo(+c.dataset.b);};
+      c.ondragstart=e=>{sentDragI=+c.dataset.b;try{e&&e.dataTransfer&&e.dataTransfer.setData('text','');}catch(x){}};
+      c.ondragover=e=>{if(e&&e.preventDefault)e.preventDefault();};
+      c.ondrop=e=>{if(e&&e.preventDefault)e.preventDefault();
+        if(sentDragI!=null&&c.dataset.b!=null)sentMove(sentDragI,+c.dataset.b);sentDragI=null;};
+    });}
+  $$('#sTiles .choice').forEach(t=>{if(t.dataset.i!=null){const used=flow.used.includes(+t.dataset.i);
+    t.style.opacity=used?'.35':'1';t.style.pointerEvents=used?'none':'auto';}});
+  const ck=$('#sCheck');if(ck)ck.disabled=flow.built.length!==flow.target.length;
+}
+function sentMove(from,to){ /* drag-and-drop reorder — reform the tense before Confirm */
+  if(!flow||flow.mode!=='sent')return;
+  if(from===to||from<0||to<0||from>=flow.built.length||to>=flow.built.length)return;
+  const [w]=flow.built.splice(from,1);flow.built.splice(to,0,w);
+  const [u]=flow.used.splice(from,1);flow.used.splice(to,0,u);
+  buzz(8);sentSync();
 }
 function sentTap(i){
   if(!flow||flow.mode!=='sent'||!flow.tiles[i]||flow.used.includes(i))return;
   flow.used.push(i);flow.built.push(flow.tiles[i].w);
-  const el=$('#sBuilt');if(el)el.textContent=flow.built.join(' ');
-  buzz(8);
-  if(flow.built.length<flow.target.length)return;
+  buzz(8);sentSync();
+}
+function sentUndo(bi){ /* remove one placed word — reform your tense before committing */
+  if(!flow||flow.mode!=='sent'||bi<0||bi>=flow.built.length)return;
+  flow.built.splice(bi,1);flow.used.splice(bi,1);
+  buzz(8);sentSync();
+}
+function sentCheck(){
+  if(!flow||flow.mode!=='sent'||flow.built.length!==flow.target.length)return;
   const ok=flow.built.join(' ')===flow.target.join(' ');
   S.sentN=(S.sentN||0)+1;
   if(ok){flow.score++;snd('ok',comboBoost(flow.score));addXp(9,'Writing');xpPop(9,flow.score);speak(flow.cur.ex);}
@@ -1532,12 +1744,15 @@ function hocaSay(){
   return p[new Date().getDate()%p.length];
 }
 
-/* ⚡ BLITZ — 60 seconds, 3 hearts, multiplier ×1–×5. Finally, something to LOSE. */
+/* ⚡ BLITZ — 60 seconds, 3 hearts, multiplier ×1–×5. Three arenas: see, hear, type. */
 let blitzTimer=null;
-function startBlitz(){
+const BVAR={see:{ico:'⚡',name:'Blitz',key:'best'},listen:{ico:'🎧',name:'Echo Blitz',key:'bestL'},type:{ico:'⌨️',name:'Yazı Fırtınası',key:'bestT'}};
+function startBlitz(variant){
+  variant=BVAR[variant]?variant:'see';
   const learned=learnedCards();
-  const pool=learned.length>=8?learned:VOCAB.slice(0,30);
-  flow={mode:'blitz',score:0,combo:0,mult:1,hearts:3,time:60,n:0,pool:shuffle(pool.slice())};
+  /* the whole book is the arena: learned words first, then everything else */
+  const pool=learned.length>=12?learned.concat(shuffle(unlearned())):VOCAB.slice();
+  flow={mode:'blitz',variant,score:0,combo:0,mult:1,hearts:3,time:60,n:0,pool:shuffle(pool.slice())};
   clearInterval(blitzTimer);
   blitzTimer=setInterval(blitzTick,1000);
   blitzQ();
@@ -1559,10 +1774,31 @@ function blitzHud(){
 function blitzQ(){
   if(!flow||flow.mode!=='blitz')return;
   const v=flow.pool[flow.n%flow.pool.length];flow.cur=v;flow.n++;
+  const va=flow.variant||'see';
+  if(va==='type'){ /* ⌨️ Yazı Fırtınası — see English, TYPE the Turkish against the clock */
+    $('#practiceStage').innerHTML=`<div class="stage">${blitzHud()}
+      <div class="flash" style="padding:24px"><div class="cat">⌨️ Type it in Turkish — fast!</div><div class="tr" style="font-size:24px">${v.en}</div></div>
+      <input class="typein" id="btin" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Türkçe yaz…">
+      <button class="btn" id="btsub">Check</button><div class="kbd">Enter to check</div></div>`;
+    const inp=$('#btin');setTimeout(()=>inp.focus(),60);
+    const submit=()=>{const a=norm(inp.value);if(!a)return;const t=norm(v.tr);
+      blitzAnswer(a===t||lev(a,t)<=Math.max(1,Math.floor(t.length*0.2)));};
+    $('#btsub').onclick=submit;
+    window.__flowKey=e=>{if(e.key==='Enter')submit();};
+    return;
+  }
   const opts=mcChoices(v,'en');
-  $('#practiceStage').innerHTML=`<div class="stage">${blitzHud()}
-    <div class="flash" style="padding:26px"><div class="cat">⚡ Quick! What does it mean?</div><div class="tr" style="font-size:30px">${v.tr}</div></div>
-    <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  if(va==='listen'){ /* 🎧 Echo Blitz — ears only */
+    $('#practiceStage').innerHTML=`<div class="stage">${blitzHud()}
+      <div class="flash" style="padding:22px"><div class="cat">🎧 Listen! What did you hear?</div>
+      <button class="micbig" id="bplay" style="background:linear-gradient(135deg,var(--blue),#2b6fb8)">🔊</button></div>
+      <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+    $('#bplay').onclick=()=>speak(v.tr);speak(v.tr);
+  }else{
+    $('#practiceStage').innerHTML=`<div class="stage">${blitzHud()}
+      <div class="flash" style="padding:26px"><div class="cat">⚡ Quick! What does it mean?</div><div class="tr" style="font-size:30px">${v.tr}</div></div>
+      <div class="choices">${opts.map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
+  }
   $$('.choice').forEach(ch=>ch.onclick=()=>{if(ch.dataset.done)return;$$('.choice').forEach(c=>c.dataset.done=1);
     const ok=ch.dataset.val===v.en;
     if(ok)ch.classList.add('correct');else{ch.classList.add('wrong');$$('.choice').forEach(c=>{if(c.dataset.val===v.en)c.classList.add('correct');});}
@@ -1574,8 +1810,9 @@ function blitzAnswer(ok){
   if(ok){
     flow.combo++;flow.mult=Math.min(5,1+Math.floor(flow.combo/3));
     const pts=10*flow.mult;flow.score+=pts;
-    flow.time=Math.min(60,flow.time+1);                     // +1s per kill — stay alive by being good
+    flow.time=Math.min(60,flow.time+(flow.variant==='type'?2:1)); // typing earns +2s — it's harder
     buzz(12);snd('ok',comboBoost(flow.combo));xpPop(pts,flow.combo);
+    if((flow.variant||'see')!=='see')S[flow.variant==='listen'?'listen':'writes']=(S[flow.variant==='listen'?'listen':'writes']||0)+1;
     setTimeout(()=>blitzQ(),350);                           // FAST — no dawdling in blitz
   }else{
     const lost=flow.combo;flow.hearts--;flow.combo=0;flow.mult=1;
@@ -1588,22 +1825,22 @@ function blitzAnswer(ok){
 function endBlitz(){
   clearInterval(blitzTimer);
   if(!flow||flow.mode!=='blitz')return;
-  const sc=flow.score,died=flow.hearts<=0;flow=null;window.__flowKey=null;
+  const sc=flow.score,died=flow.hearts<=0,va=flow.variant||'see',bv=BVAR[va];flow=null;window.__flowKey=null;
   if(!S.blitz)S.blitz={best:0,plays:0};
-  const isBest=sc>(S.blitz.best||0);
-  S.blitz.best=Math.max(S.blitz.best||0,sc);S.blitz.plays=(S.blitz.plays||0)+1;
+  const isBest=sc>(S.blitz[bv.key]||0);
+  S.blitz[bv.key]=Math.max(S.blitz[bv.key]||0,sc);S.blitz.plays=(S.blitz.plays||0)+1;
   const gain=Math.min(80,Math.round(sc/12));
-  if(gain>0)addXp(gain,'Vocabulary');
+  if(gain>0)addXp(gain,va==='listen'?'Listening':va==='type'?'Writing':'Vocabulary');
   checkBadges();save();
   if(isBest&&sc>0)celebrate();
   $('#practiceStage').innerHTML=`<div class="stage"><div class="flash"><div class="tr">${died?'💀':'⏱️'}</div>
-    <h2>${died?'Out of hearts!':'Time!'}</h2>
-    <p class="muted" style="line-height:1.9;font-size:14px">⚡ Score: <b style="color:var(--gold)">${sc}</b>${isBest&&sc>0?' — <b style="color:var(--green)">NEW BEST!</b>':' · best '+(S.blitz.best||0)}<br>+${gain} XP</p></div>
+    <h2>${bv.ico} ${bv.name} — ${died?'Out of hearts!':'Time!'}</h2>
+    <p class="muted" style="line-height:1.9;font-size:14px">Score: <b style="color:var(--gold)">${sc}</b>${isBest&&sc>0?' — <b style="color:var(--green)">NEW BEST!</b>':' · best '+(S.blitz[bv.key]||0)}<br>+${gain} XP</p></div>
     <div class="row" style="justify-content:center">
-      <button class="btn purple" id="bAgain">⚡ Again!</button>
+      <button class="btn purple" id="bAgain">${bv.ico} Again!</button>
       <button class="btn ghost" id="bBack">Back</button>
     </div></div>`;
-  $('#bAgain').onclick=startBlitz;
+  $('#bAgain').onclick=()=>startBlitz(va);
   $('#bBack').onclick=renderPracticeHome;
 }
 
@@ -1620,7 +1857,7 @@ function renderExams(){
       <div class="uinfo"><h4>${i+1}. ${e.name} · ${e.cefr}</h4><p>${e.desc} · ${sc!=null?('best '+sc+'/10'):'not attempted'}</p></div></div>`;}).join('');
   $$('#lexList .unit').forEach(el=>el.onclick=()=>startLexam(LEXAMS.find(e=>e.id===el.dataset.e)));
 }
-function startLexam(e){flow={mode:'lex',ex:e,qi:0,score:0};$('#lexList').innerHTML='';lexQ();}
+function startLexam(e){flow={mode:'lex',ex:e,qi:0,score:0,order:shuffle(e.qs.map((_,i)=>i))};$('#lexList').innerHTML='';lexQ();}
 function lexQ(){
   if(!flow||!flow.ex)return;
   const e=flow.ex;
@@ -1641,7 +1878,7 @@ function lexQ(){
     if(!passed)$('#lexRetry').onclick=()=>startLexam(e);
     return;
   }
-  const qq=e.qs[flow.qi];
+  const qq=e.qs[flow.order?flow.order[flow.qi]:flow.qi]; // fresh order every attempt
   $('#lexStage').innerHTML=`<div class="stage"><div class="pill">${e.ico} ${e.name} · ${flow.qi+1} / ${e.qs.length} · geçme notu 8/10</div>
     <div class="flash" style="max-width:560px"><div class="cat">Hoca soruyor</div><div class="tr" style="font-size:20px;line-height:1.55">${qq.q}</div></div>
     <div class="choices" style="max-width:560px">${shuffle(qq.opts.slice()).map(o=>`<div class="choice" data-val="${esc(o)}">${o}</div>`).join('')}</div></div>`;
@@ -1835,7 +2072,8 @@ function badgeStats(){return{lessons:S.lessons,bestStreak:S.bestStreak,known:lea
   chests:S.chests||0,cultureN:S.cultureN||0,dlgDone:Object.values(S.dlg||{}).filter(Boolean).length,
   writes:S.writes||0,readDone:Object.values(S.read||{}).filter(Boolean).length,
   suffixN:S.suffixN||0,certsN:Object.keys(S.certs||{}).length,lexBest:lexBest(),
-  blitzBest:(S.blitz&&S.blitz.best)||0,glDone:Object.keys(S.gl||{}).length,planDone:Object.keys(S.plan||{}).length,
+  blitzBest:(S.blitz&&S.blitz.best)||0,echoBest:(S.blitz&&S.blitz.bestL)||0,stormBest:(S.blitz&&S.blitz.bestT)||0,
+  glDone:Object.keys(S.gl||{}).length,planDone:Object.keys(S.plan||{}).length,
   unitsDone:Object.values(S.units).filter(u=>u.complete).length,
   a1Done:UNITS.filter(u=>u.lvl==='A1'&&S.units[u.id]&&S.units[u.id].complete).length};}
 function checkBadges(){
@@ -1899,11 +2137,15 @@ function flowNext(){
   const newOnes=unlearned(),due=dueCards(),learned=learnedCards();
   const struggling=F.recent.slice(-4).filter(x=>!x).length>=2;
   let item,isNew=false;
+  /* 🔁 anti-repeat: remember the last 8 questions and dodge them when possible */
+  const rec=F.recentIds||(F.recentIds=[]);
+  const fresh=a=>{const f2=a.filter(x=>!rec.includes(x.id));return f2.length?f2:a;};
   if(newOnes.length&&(learned.length<4||(!struggling&&F.n%3===0))){item=newOnes[0];isNew=true;}
-  else if(due.length){const sorted=due.slice().sort((x,y)=>((S.cards[y.id].miss||0)-(S.cards[x.id].miss||0)));
+  else if(due.length){const sorted=fresh(due).slice().sort((x,y)=>((S.cards[y.id].miss||0)-(S.cards[x.id].miss||0)));
     item=sorted[Math.floor(Math.random()*Math.min(sorted.length,4))];}
-  else if(learned.length){item=learned[Math.floor(Math.random()*learned.length)];}
+  else if(learned.length){const pool2=fresh(learned);item=pool2[Math.floor(Math.random()*pool2.length)];}
   else{$('#flowStage').innerHTML='<div class="flash"><div class="tr">🎉</div><h2>Harika!</h2><p class="muted">You’ve learned every word — reviews will keep them sharp.</p></div>';return;}
+  rec.push(item.id);if(rec.length>8)rec.shift();
   if(isNew)return teachThenTest(item);
   let d=curDiff();const c=card(item.id);if((c.miss||0)>=2)d=Math.min(d,2);
   renderChallenge(item,d);
@@ -2065,6 +2307,8 @@ function mergeStates(a,b){
   new Set([...Object.keys(a.lexams||{}),...Object.keys(b.lexams||{})])
     .forEach(k=>m.lexams[k]=Math.max((a.lexams||{})[k]||0,(b.lexams||{})[k]||0));
   m.blitz={best:Math.max((a.blitz||{}).best||0,(b.blitz||{}).best||0),
+           bestL:Math.max((a.blitz||{}).bestL||0,(b.blitz||{}).bestL||0),
+           bestT:Math.max((a.blitz||{}).bestT||0,(b.blitz||{}).bestT||0),
            plays:Math.max((a.blitz||{}).plays||0,(b.blitz||{}).plays||0)};
   m.gl=Object.assign({},a.gl||{},b.gl||{});
   m.plan=Object.assign({},a.plan||{},b.plan||{});
