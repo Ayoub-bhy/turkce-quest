@@ -2616,6 +2616,41 @@ function speechMatch(alts,item){
 /* ===================== HEADER & DASHBOARD ===================== */
 function renderHeader(){const{cur}=levelInfo();$('#cLevel').textContent=cur.name;
   $('#cXp').textContent=S.xp+((Date.now()<(S.boostUntil||0))?' ⚡2×':'');$('#cStreak').textContent=S.streak;}
+
+/* ===== Honest A1 progress: measured against the official Yedi İklim A1 book scope ===== */
+function a1Scope(){
+  const ids=new Set(VOCAB.filter(v=>v.cat==='A1 Dizin').map(v=>v.id));
+  UNITS.filter(u=>u.lvl==='A1').forEach(u=>u.ids.forEach(i=>ids.add(i)));
+  return ids;
+}
+function a1Stats(){
+  const scope=a1Scope();
+  const words=scope.size;
+  let learned=0;scope.forEach(id=>{if(S.cards[id]&&S.cards[id].learned)learned++;});
+  const unitsA1=UNITS.filter(u=>u.lvl==='A1');
+  const unitsDone=unitsA1.filter(u=>S.units[u.id]&&S.units[u.id].complete).length;
+  const glDone=Math.min(Object.keys(S.gl||{}).length,GLESSONS.length);
+  const planDone=Math.min(Object.keys(S.plan||{}).length,28);
+  const examOk=((S.lexams||{})['E2']||0)>=8?1:0;
+  const pct=Math.min(100,Math.round(
+    (learned/words)*45+(unitsDone/unitsA1.length)*20+(glDone/GLESSONS.length)*15+(planDone/28)*15+examOk*5));
+  return{words,learned,unitsA1:unitsA1.length,unitsDone,glDone,glTotal:GLESSONS.length,planDone,examOk,pct};
+}
+function renderA1(){
+  const a=a1Stats();
+  $('#a1Pct').textContent=a.pct+'%';
+  $('#a1Bar').style.width=a.pct+'%';
+  const lvl=a.pct>=100?'A1 tamamlandı! 🎉':a.pct>=75?'A1 — son düzlük':a.pct>=40?'A1 — yolun yarısı':a.pct>=15?'A1 başlangıç':'A0 → A1';
+  $('#a1Sub').textContent='Real level: '+lvl+' · based on the full official A1 word list ('+a.words+' words), units, grammar, 28-day plan & exam';
+  const rem=[];
+  if(a.learned<a.words)rem.push('📚 <b>'+(a.words-a.learned)+'</b> A1 words left ('+a.learned+'/'+a.words+' learned)');
+  if(a.unitsDone<a.unitsA1)rem.push('🗺️ <b>'+(a.unitsA1-a.unitsDone)+'</b> A1 units left ('+a.unitsDone+'/'+a.unitsA1+')');
+  if(a.glDone<a.glTotal)rem.push('🏫 <b>'+(a.glTotal-a.glDone)+'</b> grammar lessons left ('+a.glDone+'/'+a.glTotal+')');
+  if(a.planDone<28)rem.push('📅 <b>'+(28-a.planDone)+'</b> plan days left ('+a.planDone+'/28)');
+  if(!a.examOk)rem.push('🎓 Pass the <b>Temel (A1)</b> master exam to verify');
+  $('#a1Remain').innerHTML=rem.length?('To finish A1:<br>'+rem.join('<br>')):'✅ Nothing left — A1 is fully complete!';
+}
+
 function renderDash(){
   const{cur,nxt}=levelInfo();const lo=cur.xp,hi=nxt?nxt.xp:cur.xp+500;
   const pct=Math.min(100,Math.round((S.xp-lo)/(hi-lo)*100));
@@ -2667,6 +2702,7 @@ function renderDash(){
   $('#kLessons').textContent=S.lessons;$('#kReviews').textContent=S.reviews;
   $('#kLS').textContent=S.listen+' / '+S.speak;$('#kBadges').textContent=S.badges.length+' / '+BADGES.length;
   const lb=lexBest();$('#kExams').textContent=lb?(LEXAMS[lb-1].ico+' '+LEXAMS[lb-1].cefr):'—';
+  renderA1();
   renderWeek();renderHeat();renderCharts();
 }
 const WEEK_TIERS=[{xp:300,t:'🥉 Bronze'},{xp:700,t:'🥈 Silver'},{xp:1500,t:'🏆 Gold'}];
