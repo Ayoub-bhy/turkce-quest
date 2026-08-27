@@ -2028,36 +2028,22 @@ const VOCAB = [
 
 /* ===================== UNITS (skill tree) ===================== */
 const UNITS=[
-{id:'U1',lvl:'A1',title:'Selamlaşma — Greetings',desc:'Hello, thanks & goodbye',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','g11','g12'],
- lesson:{title:'Greetings & politeness',body:'Greetings change by time of day: <b>Günaydın</b> (morning), <b>İyi günler</b> (day), <b>İyi akşamlar</b> (evening). The person leaving says <b>Hoşça kal</b>; the one staying replies <b>Güle güle</b>. “Thank you” is <b>Teşekkür ederim</b>; the reply is <b>Rica ederim</b>.'}},
-{id:'U2',lvl:'A1',title:'Tanışma — Introductions',desc:'Pronouns & meeting people',ids:['i1','i2','i3','i4','i5','i6','i7','i8','i9','i10','i11'],
- lesson:{title:'Pronouns & “to be” suffix',body:'Pronouns: <b>ben, sen, o, biz, siz, onlar</b>. Turkish has no separate verb “to be” — add a suffix: <b>öğrenci-yim</b> (I am a student), <b>öğrenci-sin</b> (you are). The suffix vowel follows 4-way harmony with the LAST vowel of the word: a/ı → <b>-ım</b> (kızım), e/i → <b>-im</b> (öğrenciyim), o/u → <b>-um</b> (doktorum), ö/ü → <b>-üm</b> (Türküm).'}},
-{id:'U3',lvl:'A1',title:'Sayılar — Numbers',desc:'Count to 100',ids:['n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','n12'],
- lesson:{title:'Numbers',body:'1–10: bir, iki, üç, dört, beş, altı, yedi, sekiz, dokuz, on. Then yirmi(20), otuz(30)… yüz(100). The noun after a number stays singular: <b>iki kitap</b> (two books), never “kitaplar”.'}},
-{id:'U4',lvl:'A1',title:'Aile — Family',desc:'Talk about your family',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10'],
- lesson:{title:'Possessive “my” + var/yok',body:'Add a possessive suffix for “my”: <b>anne-m</b> (my mother), <b>baba-m</b>. To say you have something use <b>var</b>: <b>Bir kardeşim var</b>. The negative is <b>yok</b>: <b>Param yok</b>.'}},
-{id:'U5',lvl:'A1',title:'Renkler — Colors',desc:'Describe with color',ids:['c1','c2','c3','c4','c5','c6','c7','c8','c9'],
- lesson:{title:'Adjectives before nouns',body:'Adjectives come <b>before</b> the noun and don’t change: <b>kırmızı elma</b> (red apple), <b>mavi deniz</b> (blue sea). Add <b>çok</b> for emphasis: <b>çok güzel</b>.'}},
-{id:'U6',lvl:'A1',title:'Yiyecekler — Food',desc:'Order food & drink',ids:['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12'],
- lesson:{title:'Ordering politely',body:'Order with <b>… lütfen</b>: <b>Bir çay, lütfen</b>. Say what you want with <b>istiyorum</b>: <b>Su istiyorum</b>. Turkish breakfast (<b>kahvaltı</b>) — peynir, ekmek, çay — is a cultural cornerstone.'}},
-{id:'U7',lvl:'A1',title:'Fiiller — Present tense',desc:'Present continuous -iyor',ids:['v1','v2','v3','v4','v5','v6','v7','v8','v9','v10'],
- lesson:{title:'Present continuous (-iyor)',body:'For “I am doing”, drop <b>-mek/-mak</b> and add <b>-iyor</b> + person ending: <b>git → gidiyorum</b> (I’m going), <b>iç → içiyorum</b>. The vowel harmonizes: -ıyor/-iyor/-uyor/-üyor.'}},
-{id:'U8',lvl:'A1',title:'Günlük — Daily phrases',desc:'Survival phrases & questions',ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10'],
- lesson:{title:'Question words & mı',body:'Question words: <b>ne</b> (what), <b>nerede</b> (where), <b>ne kadar</b> (how much). Yes/no questions add <b>mı/mi/mu/mü</b>: <b>Çay var mı?</b> = Is there tea?'}},
-{id:'U9',lvl:'A1',title:'Zaman — Time & days',desc:'Days, months, telling time',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','t11','t12'],
- lesson:{title:'Time & the locative -de',body:'<b>Saat kaç?</b> = What time is it? Days take <b>günü</b> when specific: <b>Pazartesi günü</b> (on Monday). The locative <b>-de/-da</b> means “at/in/on” and follows vowel harmony: <b>ev-de</b> (at home), <b>okul-da</b> (at school), <b>saat üç-te</b> (at three — d becomes t after voiceless consonants).'}},
-{id:'U10',lvl:'A1',title:'Hava — Weather',desc:'Weather & seasons',ids:['w1','w2','w3','w4','w5','w6','w7','w8','w9','w10'],
- lesson:{title:'Weather expressions',body:'<b>Hava nasıl?</b> = How’s the weather? Use the verb <b>yağmak</b> for falling weather: <b>Yağmur yağıyor</b> (it’s raining), <b>Kar yağıyor</b> (it’s snowing). Seasons: ilkbahar, yaz, sonbahar, kış.'}},
-{id:'U11',lvl:'A1',title:'Vücut — Body & health',desc:'Body parts & the doctor',ids:['b1','b2','b3','b4','b5','b6','b7','b8','b9','b10'],
- lesson:{title:'Saying what hurts',body:'Use the verb <b>ağrımak</b> (to ache) with a possessive: <b>Başım ağrıyor</b> = My head hurts, <b>Dişim ağrıyor</b>. To someone ill you say <b>Geçmiş olsun</b> (get well soon).'}},
-{id:'U12',lvl:'A1',title:'Ev — Home',desc:'Rooms & furniture',ids:['h1','h2','h3','h4','h5','h6','h7','h8','h9'],
- lesson:{title:'Location with -de + var',body:'Combine locative + var: <b>Masada kitap var</b> = There’s a book on the table. <b>Mutfakta</b> (in the kitchen), <b>banyoda</b> (in the bathroom).'}},
-{id:'U13',lvl:'A1',title:'Şehir — City & places',desc:'Places around town',ids:['y1','y2','y3','y4','y5','y6','y7','y8','y9','y10'],
- lesson:{title:'Going places with -e/-a (dative)',body:'The dative <b>-e/-a</b> means “to”: <b>okul-a</b> (to school), <b>market-e</b> (to the market). With the verb gitmek: <b>Markete gidiyorum</b>.'}},
-{id:'U14',lvl:'A1',title:'Ulaşım — Transport',desc:'Getting around & directions',ids:['r1','r2','r3','r4','r5','r6','r7','r8','r9','r10'],
- lesson:{title:'binmek & directions',body:'Use <b>binmek</b> (to board) with the dative: <b>Otobüse biniyorum</b>. Directions: <b>sağ</b> (right), <b>sol</b> (left), <b>Sağa dön</b> (turn right). <b>yakın/uzak</b> = near/far.'}},
-{id:'U15',lvl:'A1',title:'Sıfatlar — Adjectives',desc:'Opposites & describing',ids:['a1','a2','a3','a4','a5','a6','a7','a8','a9','a10'],
- lesson:{title:'Opposites & comparison',body:'Pairs: büyük/küçük, yeni/eski, iyi/kötü, uzun/kısa, kolay/zor. For “more” use <b>daha</b>: <b>daha büyük</b> (bigger). “The most” uses <b>en</b>: <b>en güzel</b>.'}},
+{id:'U1',lvl:'A1',title:'Ünite 1: Tanışma',desc:'A) Merhaba · B) Nerelisiniz? · C) Karşılaşma-Selamlaşma (s.9–32)',ids:['g1','g2','g3','g4','g5','g6','g7','g8','g9','g10','i1','i2','i3','i4','i5','i6','n1','n2','n3','n4','n5','n6'],
+ lesson:{title:'Ü1 Dil Bilgisi — bu/şu/o · mI?/değil · var/yok · -DA · Sayılar · Çokluk',body:'<b>bu, şu, o; burası, şurası, orası</b>: Bu ne? — Bu, bir kuş. · <b>mI? / değil</b>: Bu kedi mi? Hayır, kedi değil. · <b>var / yok</b>: Sınıfta ne var? Buzdolabı yok. · <b>Bulunma hâli -DA</b>: Masada üç kitap var. · <b>Sayılar</b> ve <b>Çokluk -lAr</b>: Elmalar — iki, üç, dört elma.<br>🎧 Tanışalım · Kahvaltı · Güle Güle Sana &nbsp;📖 Adınız Ne? · Öğrenci Hayatı · Boş Odanız Var mı? &nbsp;🗣️ Tanıştığımıza Memnun Oldum · İyi Günler · Haydi Tanışalım &nbsp;✍️ Nasılsın? · Sınıfta ne/kim var-yok? · Otel Kayıt Formu'}},
+{id:'U2',lvl:'A1',title:'Ünite 2: Ailemiz',desc:'A) Ailem ve Ben · B) Evim · C) Adresim (s.33–54)',ids:['f1','f2','f3','f4','f5','f6','f7','f8','f9','f10','h1','h2','h3','h4','h5','h6','h7','h8'],
+ lesson:{title:'Ü2 Dil Bilgisi — Hâl ekleri · Emir · Şahıs zamirleri · Şimdiki Zaman',body:'<b>Hâl ekleri</b>: -DAn (ayrılma), -(y)I (belirtme), -DA (bulunma), -(y)A (yönelme) — Oğuz ceketini giyiyor, işe gidiyor, işte çalışıyor, işten çıkıyor. · <b>-DAn önce / -DAn sonra</b>. · <b>Emir</b>: Kapıyı aç, dışarı çık! · <b>Şahıs zamirleri</b>: ben, sen, o, biz, siz, onlar. · <b>Şimdiki zaman -(I)yor</b>: Türkçe öğreniyoruz.<br>🎧 Ben Kimim? · Güzel Evim · Evim Nerede? &nbsp;📖 Ailemi Çok Seviyorum · Aile Bahçede · Haydi Öğrenelim &nbsp;🗣️ Kaç Kardeşin Var · Sedatın Bir Günü · Nereden Geliyorsun? &nbsp;✍️ Siz Kimsiniz? · Bir Günüm · Benim Adım'}},
+{id:'U3',lvl:'A1',title:'Ünite 3: Günlük Hayat',desc:'A) Saat Kaçta? · B) Ne Kadar? Kaç Lira? · C) Nerede? Ne Zaman? (s.55–76)',ids:['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10','n7','n8','n9','n10','d1','d2','d3','d4','d5','d6'],
+ lesson:{title:'Ü3 Dil Bilgisi — Belirli Geçmiş · Zaman Zarfları · -(y)lA · -mAk istemek',body:'<b>Belirli geçmiş zaman -(İ)DI</b>: Ben dün çok televizyon seyrettim. · <b>Ek fiil -(İ)DI</b>: İki yıl önce öğrenciydim. · <b>Zaman zarfları</b>: dün, yarın, pazartesi günü, her gün. · <b>-mAk istemek</b>: Türkçe öğrenmek istiyorum. · <b>-(y)lA / ile</b>: Uçakla Ankaraya gidiyorum. · <b>Belirtme -(y)I</b>: Antalyayı gezmek istiyorum. · <b>Saat</b>: buçuk, çeyrek, geçe, kala.<br>🎧 Yağmurlu Bir Gün · Bereket Manavı · Uzun İnce Bir Yoldayım &nbsp;📖 Murat Dün Neler Yaptı? · Derya Kuzusu · Para &nbsp;🗣️ Neler Yapıyorum? · Alışveriş Sepeti · Renklerin Dili &nbsp;✍️ Sınav Takvimim · Sevgili Günlük · Nerede? Ne Zaman?'}},
+{id:'U4',lvl:'A1',title:'Ünite 4: Çevremiz',desc:'A) Bizim Sokağımız · B) Ne? Nerede? · C) Bir Haftalık Planımız (s.77–96)',ids:['y1','y2','y3','y4','y5','y6','y7','y8','y9','y10','h9','r1','r2','r3','r4'],
+ lesson:{title:'Ü4 Dil Bilgisi — İyelik · -DAn ... -A kadar · Gelecek Zaman',body:'<b>İyelik ekleri</b>: babam, adın, arabası, öğretmenimiz, adınız, evi — O adam benim babam. · <b>-DAn ... -A kadar</b>: Her gün sabah dokuzdan akşam altıya kadar çalışıyorum. · <b>Gelecek zaman -(y)AcAk</b>: Yarın kütüphaneye gideceğim.<br>🎧 Bizim Sokağımız · Kızılay Meydanı · Hacı Bayram Gezisi &nbsp;📖 Arkadaşım Derya · Muhtarlık Nerede? · Haftalık Planımız &nbsp;🗣️ Mahallem · Nerede Oturuyorsun? · Alo! &nbsp;✍️ Nerede Okuyorsun? · Pazardan Eve Kadar · Gelecek Elli Yılda Neler Olacak?'}},
+{id:'U5',lvl:'A1',title:'Ünite 5: Meslekler',desc:'A) Meslekleri Tanıyalım · B) Ne Olmak İstiyorsun? · C) Hobilerim (s.97–116)',ids:['j1','j2','j3','j4','j5','j6','j7','j8','e1','e2','e3','e4','a1','a2','a3','a4'],
+ lesson:{title:'Ü5 Dil Bilgisi — İsim Tamlamaları',body:'<b>İsim tamlamaları</b>: arabanın camı, suyun sıcaklığı, okulun kapısı… Tamlayan -(n)In + tamlanan -(s)I. Meslekler: doktorluk, öğretmenlik — Ne olmak istiyorsun? Öğretmen olacağım.<br>🎧 Kızılırmakta Bir Fotoğrafçı · Esranın Mesleği · Hobiler &nbsp;📖 Öğretmen Olacağım · Aile Sağlığı Merkezinde · Âmâ Ressam &nbsp;🗣️ Mesleğinizi Tanıyalım · Ne Yapıyorlar? · Kuaförde &nbsp;✍️ Sonra Neler Oldu? · Hayalimdeki Meslek · Benim Sayfam'}},
+{id:'U6',lvl:'A1',title:'Ünite 6: Ulaşım',desc:'A) Yolculuk Nereye? · B) Trafikte · C) Bugün Hava Nasıl? (s.117–136)',ids:['r5','r6','r7','r8','r9','r10','w1','w2','w3','w4','w5','w6','w7','w8','w9','w10'],
+ lesson:{title:'Ü6 Dil Bilgisi — -ki / -DAki · -(I)ncI',body:'<b>-ki / -DAki</b>: Duvardaki saat bozuk. Dünkü ders çok eğlenceliydi. · <b>-(I)ncI sıra sayıları</b>: Onlar sekizinci katta oturuyor — birinci, ikinci, üçüncü…<br>🎧 Uçağımıza Hoş Geldiniz · Otel Nerede? · Bugün Hava Nasıl? &nbsp;📖 Uçakta · Ben Kimim? · Sedat ve Ailesi Piknikte &nbsp;🗣️ Uçakta · Tercihim · En Sevdiğim Piknik &nbsp;✍️ İlk Uçuşum · Benim Kursum / Okulum · Hangi Mevsim, Nasıl?'}},
+{id:'U7',lvl:'A1',title:'Ünite 7: İletişim',desc:'A) Telefon · B) Bilgisayar ve İnternet · C) Yüz Yüze (s.137–154)',ids:['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','a5','a6','a7','a8'],
+ lesson:{title:'Ü7 Dil Bilgisi — -A göre/bence · Karşılaştırma · en · -DEn beri/-DIr',body:'<b>-A göre, bence</b>: Bence internet çok faydalı. · <b>-DEn daha + sıfat</b>: Baklava, sütlaçtan daha tatlı. · <b>en + sıfat</b>: İstanbul, Türkiyenin en kalabalık şehri. · <b>-DEn beri / -DIr</b>: 1999 yılından beri Türkiyedeyim. On dört yıldır Türkiyedeyim.<br>🎧 Cep Telefonu Alıyoruz · Bilgisayarla İletişim · Sınav Sonucunu Öğrenme &nbsp;📖 Alonun Hikâyesi · Bilgisayar Size Ne Diyor? &nbsp;🗣️ İletişim Araçları · İnternetin Faydaları ve Zararları · Hangisi Size Uygun? &nbsp;✍️ Mesaj · Hangisini İstersin? · İyi ki Doğdun Fatih'}},
+{id:'U8',lvl:'A1',title:'Ünite 8: Tatil',desc:'A) Hafta Sonu · B) Yaz Tatili · C) Bayram (s.155–174)',ids:['tr1','tr2','tr3','tr4','tr5','tr6','tr7','tr8','tr9','tr10','t11','t12'],
+ lesson:{title:'Ü8 Dil Bilgisi — A1 Genel Tekrar',body:'<b>A1 konularının genel tekrarı</b>: bu/şu/o · mI?/değil · var/yok · hâl ekleri · çokluk · iyelik · şimdiki, geçmiş ve gelecek zaman · -(y)lA · karşılaştırma · -ki · -(I)ncI · -DAn…-A kadar · -DEn beri. Bayram kelimeleri: bayramlaşmak, harçlık, tebrik kartı.<br>🎧 Arkadaşım · Alinin Tatili · Ramazan Bayramı &nbsp;📖 Büyükadada Hafta Sonu · Melikenin Yaz Tatili Planı · Bayram Günü &nbsp;🗣️ Hafta Sonu Nereye Gidelim? · En Önemlisi · Bayramlarımız &nbsp;✍️ Hafta Sonu Planım · Okul Gezisi · Bayram Tebrik Kartı'}},
 {id:'U16',lvl:'A2',title:'Geçmiş Zaman — Past',desc:'Definite past tense -di',ids:['k1','k2','k3','k4','k5','k6','k7','k8'],
  lesson:{title:'Past tense (-di)',body:'Add <b>-di</b> + person ending (harmonizes to -dı/-di/-du/-dü, and -tı/-ti after voiceless): <b>gel → geldim</b> (I came), <b>git → gittim</b>, <b>ye → yedim</b>. Time markers: <b>dün</b>, <b>geçen hafta</b>.'}},
 {id:'U17',lvl:'A2',title:'Gelecek Zaman — Future',desc:'Future tense -ecek & plans',ids:['fu1','fu2','fu3','fu4','fu5','fu6','fu7'],
@@ -2098,14 +2084,14 @@ const BADGES=[
 {id:'listen',ico:'👂',name:'Kulak Dolgunu',desc:'25 listening reps',test:s=>s.listen>=25},
 {id:'speak',ico:'🎤',name:'Konuşkan',desc:'25 speaking reps',test:s=>s.speak>=25},
 {id:'quiz10',ico:'✅',name:'Sınav Kralı',desc:'10 quizzes passed',test:s=>s.quiz>=10},
-{id:'a1done',ico:'⛰️',name:'A1 Bitti',desc:'All 15 A1 units',test:s=>s.a1Done>=15},
+{id:'a1done',ico:'⛰️',name:'A1 Bitti',desc:'All 8 official A1 units',test:s=>s.a1Done>=8},
 {id:'a2done',ico:'🏔️',name:'Yedi İklim',desc:'All A1+A2 units',test:s=>s.unitsDone>=21},
 {id:'quest',ico:'🎯',name:'Görev Tamam',desc:'A daily quest done',test:s=>s.questsDone>=1},
 {id:'streak30',ico:'🗓️',name:'Bir Ay',desc:'30-day streak',test:s=>s.bestStreak>=30},
 {id:'chest5',ico:'🎁',name:'Hazine Avcısı',desc:'Open 5 chests',test:s=>s.chests>=5},
 {id:'dlg6',ico:'💬',name:'Konuşkan Usta',desc:'All 6 dialogues',test:s=>s.dlgDone>=6},
 {id:'cult12',ico:'🌹',name:'Gönül Eri',desc:'Full culture deck',test:s=>s.cultureN>=12},
-{id:'b1done',ico:'🎓',name:'B1 Yolcusu',desc:'All 29 units done',test:s=>s.unitsDone>=29},
+{id:'b1done',ico:'🎓',name:'B1 Yolcusu',desc:'All 22 units done',test:s=>s.unitsDone>=22},
 {id:'write25',ico:'✍️',name:'Kalem Ustası',desc:'25 writing reps',test:s=>s.writes>=25},
 {id:'read6',ico:'📖',name:'Kitap Kurdu',desc:'All 6 readings',test:s=>s.readDone>=6},
 {id:'suffix25',ico:'🧩',name:'Ek Ustası',desc:'25 suffix builds',test:s=>s.suffixN>=25},
@@ -2380,16 +2366,17 @@ const GLESSONS=[
  qs:[{q:'“I am coming” (gelmek):',opts:['geliyorum','gelirim','geldim','geleceğim'],a:'geliyorum'},
      {q:'“she is looking” (bakmak):',opts:['bakiyor','bakıyor','bakuyor','bakar'],a:'bakıyor'},
      {q:'“I am NOT going”:',opts:['gitmiyorum','gitmedim','gitmem','gidiyorum değil'],a:'gitmiyorum'}]},
-{id:'G8',ico:'🔁',cat:'Tenses',title:'Geniş Zaman -r — habits & truths',
- body:`<p>The "wide tense" covers what is <i>generally</i> true: habits, promises, offers.</p>
-<table class="gtable"><tr><td><b>Her sabah çay içerim</b></td><td>I drink tea every morning (habit)</td></tr>
-<tr><td><b>Güneş doğudan doğar</b></td><td>The sun rises in the east (truth)</td></tr>
-<tr><td><b>Kapıyı açar mısın?</b></td><td>Would you open the door? (polite)</td></tr></table>
-<p>Form: verb stem + <b>-r / -ir / -er</b> + person: içer<b>im</b>, gider<b>sin</b>, yapar<b>ız</b>.</p>
-<p>⚠️ <b>The famous irregular negative:</b> -mem/-mezsin/-mez… <i>İçmem</i> — I don't drink (flat refusal!). And the legendary noncommittal <b>Bakarız</b> — "we'll see" — half of Turkish diplomacy lives in this tense.</p>`,
- qs:[{q:'“I drink coffee every day” uses…',opts:['içiyorum','içerim','içtim','içeceğim'],a:'içerim'},
-     {q:'“I do NOT eat meat” (flat habit):',opts:['Et yemiyorum','Et yemem','Et yemedim','Et yok'],a:'Et yemem'},
-     {q:'“Bakarız” famously means…',opts:['We saw it','We will definitely look','Noncommittal “we’ll see”','Look at us'],a:'Noncommittal “we’ll see”'}]},
+{id:'G8',ico:'🕐',cat:'Tenses',title:'Saat & Zaman Zarfları — telling time (Ü3, Ü8)',
+ body:`<p><b>Saat kaç?</b> Saat on iki <b>buçuk</b> (12:30). Beş <b>dakika</b> konuşalım mı? Saat dokuz<b>u</b> beş <b>geçiyor</b> (9:05). Saat on<b>u</b> on <b>geçe</b> görüşelim (at 10:10). Üç<b>e</b> çeyrek <b>kala</b> (quarter to 3).</p>
+<table class="gtable"><tr><th>Kalıp</th><th>Örnek</th></tr>
+<tr><td>-I ... geçiyor</td><td>Dokuzu beş geçiyor</td></tr>
+<tr><td>-A ... var</td><td>Ona çeyrek var</td></tr>
+<tr><td>-I ... geçe</td><td>Onu on geçe görüşelim</td></tr>
+<tr><td>-A ... kala</td><td>Üçe beş kala çıktım</td></tr></table>
+<p>💡 Zaman zarfları: <b>dün</b> sinemaya gittim · <b>yarın</b> sınav var · <b>pazartesi günü</b> dönüyorum · <b>her gün</b> beşi çeyrek geçe derse başlıyorum.</p>`,
+ qs:[{q:'9:05 = Saat dokuzu beş …',opts:['kala','geçiyor','var','buçuk'],a:'geçiyor'},
+     {q:'“quarter to ten” =',opts:['Ona çeyrek var','Onu çeyrek geçiyor','On buçuk','Ona çeyrek geçe'],a:'Ona çeyrek var'},
+     {q:'“on Monday” =',opts:['pazartesi günü','pazarteside','pazartesiyle','pazartesiden'],a:'pazartesi günü'}]},
 {id:'G9',ico:'⏪',cat:'Tenses',title:'Geçmiş Zaman -di — the witnessed past',
  body:`<p>For things you SAW happen: stem + <b>-di/-dı/-du/-dü</b> + person.</p>
 <table class="gtable"><tr><th></th><th>gelmek</th><th>bakmak</th><th>gitmek ⚠️</th></tr>
@@ -2401,16 +2388,13 @@ const GLESSONS=[
  qs:[{q:'“I looked” (bakmak):',opts:['bakdım','baktım','bakıtım','baktim'],a:'baktım'},
      {q:'“we went” (gitmek):',opts:['gitdik','gittik','gidik','gittiz'],a:'gittik'},
      {q:'“I did not come”:',opts:['gelmedim','gelmemdi','değil geldim','gelmiyordum'],a:'gelmedim'}]},
-{id:'G10',ico:'🗣️',cat:'Tenses',title:'Rivayet -miş — the heard past',
- body:`<p>Turkish grammatically separates what you <b>witnessed</b> (-di) from what you <b>heard about or infer</b> (-mış/-miş/-muş/-müş). English can't do this in one word — Turkish does it always.</p>
-<table class="gtable"><tr><td><b>Kaza oldu</b></td><td>There was an accident (I saw it)</td></tr>
-<tr><td><b>Kaza olmuş</b></td><td>Apparently there was an accident (someone told me)</td></tr>
-<tr><td><b>Uyumuşum!</b></td><td>I (apparently) fell asleep! (surprise at yourself)</td></tr>
-<tr><td><b>Çok güzelmiş</b></td><td>They say it's beautiful / turns out it's beautiful</td></tr></table>
-<p>💡 Nicknamed the <b>dedikodu</b> (gossip) tense — all rumors, fairy tales (<i>Bir varmış, bir yokmuş…</i> = once upon a time), and pleasant surprises live here.</p>`,
- qs:[{q:'You heard Ali got sick. You say:',opts:['Ali hastalandı','Ali hastalanmış','Ali hastadır','Ali hastalanıyor'],a:'Ali hastalanmış'},
-     {q:'Fairy tales begin with…',opts:['Bir vardı, bir yoktu','Bir varmış, bir yokmuş','Bir var, bir yok','Vardı yokmuş'],a:'Bir varmış, bir yokmuş'},
-     {q:'-miş vs -di: -miş is for…',opts:['things you saw','future plans','hearsay & inference','polite requests'],a:'hearsay & inference'}]},
+{id:'G10',ico:'⚖️',cat:'Suffixes',title:'Karşılaştırma — -DEn daha, en, bence (Ü7)',
+ body:`<p>Compare with <b>-DEn daha + sıfat</b>: Baklava, sütlaç<b>tan daha</b> tatlı. Superlative with <b>en</b>: İstanbul, Türkiyenin <b>en kalabalık</b> şehri.</p>
+<p>Opinions: <b>bence</b> (in my view), <b>-A göre</b> (according to): <b>Bana göre</b> internet çok faydalı.</p>
+<p>Duration: <b>-DEn beri</b> / <b>-DIr</b>: 1999 yılın<b>dan beri</b> Türkiyedeyim = On dört yıl<b>dır</b> Türkiyedeyim.</p>`,
+ qs:[{q:'“sweeter than sütlaç” =',opts:['sütlaçtan daha tatlı','sütlaçta daha tatlı','sütlaça tatlı','en sütlaç tatlı'],a:'sütlaçtan daha tatlı'},
+     {q:'“the most crowded city” =',opts:['daha kalabalık şehir','en kalabalık şehir','çok kalabalık şehir','kalabalık en şehir'],a:'en kalabalık şehir'},
+     {q:'“since 1999” =',opts:['1999dan beri','1999a kadar','1999 için','1999la'],a:'1999dan beri'}]},
 {id:'G11',ico:'⏩',cat:'Tenses',title:'Gelecek Zaman -ecek — the future',
  body:`<p>Stem + <b>-ecek/-acak</b> + person:</p>
 <table class="gtable"><tr><th></th><th>gelmek</th><th>yapmak</th></tr>
@@ -2422,17 +2406,13 @@ const GLESSONS=[
  qs:[{q:'“I will do” (yapmak):',opts:['yapacakım','yapacağım','yapeceğim','yaparım'],a:'yapacağım'},
      {q:'“she will come”:',opts:['gelecek','geleceğ','gelir','geliyor'],a:'gelecek'},
      {q:'“I will NOT come”:',opts:['gelmeyeceğim','gelmeceğim','değil geleceğim','gelmem olacak'],a:'gelmeyeceğim'}]},
-{id:'G12',ico:'💪',cat:'Tenses',title:'-meli & -ebil — must and can',
- body:`<p>Two suffixes that turn any verb into obligation or ability:</p>
-<table class="gtable"><tr><th>Suffix</th><th>Meaning</th><th>gitmek →</th></tr>
-<tr><td><b>-meli/-malı</b></td><td>must / should</td><td>git<b>meliyim</b> — I must go</td></tr>
-<tr><td><b>-(y)ebil/-abil</b></td><td>can / may</td><td>gid<b>ebilirim</b> — I can go</td></tr></table>
-<p>⚠️ <b>The negative of ability is its own creature</b> — not -ebil+me but <b>-eme/-ama</b>:<br>
-<i>gidemem</i> — I can't go (ever) · <i>gidemiyorum</i> — I can't go (right now)<br>
-<i>Yüzebilirim ama bugün yüzemem</i> — I can swim, but today I can't.</p>`,
- qs:[{q:'“I must work” (çalışmak):',opts:['çalışmalıyım','çalışabilirim','çalışırım','çalışıyorum'],a:'çalışmalıyım'},
-     {q:'“Can you help?” =',opts:['Yardım edebilir misin?','Yardım etmeli misin?','Yardım eder?','Yardım edemezsin'],a:'Yardım edebilir misin?'},
-     {q:'“I cannot swim (at all)”:',opts:['yüzemem','yüzmebilirim','yüzmem','yüzemiyorum değil'],a:'yüzemem'}]},
+{id:'G12',ico:'📣',cat:'Tenses',title:'Emir & -mAk istemek — commands and wishes (Ü2, Ü3)',
+ body:`<p><b>Emir kipi</b> (imperative): Kapıyı <b>aç</b>, hemen dışarı <b>çık</b>! Polite plural: <b>gelin, buyurun, açın</b>.</p>
+<p><b>-mAk istemek</b>: verb infinitive + istemek — Türkçe <b>öğrenmek istiyorum</b> (I want to learn Turkish). Antalyayı <b>gezmek istiyorum</b>.</p>
+<p>💡 Negative imperative: <b>-mA</b> — Gitme! (Do not go!) Koşma! (Do not run!)</p>`,
+ qs:[{q:'“Open the door!” =',opts:['Kapıyı aç!','Kapıyı açtı!','Kapıyı açmak!','Kapı açıyor!'],a:'Kapıyı aç!'},
+     {q:'“I want to learn Turkish” =',opts:['Türkçe öğreniyorum istiyorum','Türkçe öğrenmek istiyorum','Türkçe öğrendim','Türkçe öğrenmek isti'],a:'Türkçe öğrenmek istiyorum'},
+     {q:'“Do not go!” =',opts:['Gitme!','Gitmedi!','Gitmek yok!','Git!'],a:'Gitme!'}]},
 {id:'G13',ico:'🏭',cat:'Vocabulary',title:'The Word Factory — -ci, -lik, -li, -siz',
  body:`<p>Four suffixes multiply your vocabulary. Learn one root, harvest five words:</p>
 <table class="gtable"><tr><th>Suffix</th><th>Makes</th><th>Examples</th></tr>
@@ -2460,6 +2440,18 @@ const GLESSONS=[
  qs:[{q:'“WHEN are you coming?”:',opts:['Nerede geliyorsun?','Ne zaman geliyorsun?','Nasıl geliyorsun?','Kaç geliyorsun?'],a:'Ne zaman geliyorsun?'},
      {q:'“Kaç yaşındasın?” asks your…',opts:['name','age','address','job'],a:'age'},
      {q:'“WHICH tea do you want?”:',opts:['Ne çay istersin?','Hangi çayı istersin?','Nasıl çay istersin?','Kim çay istersin?'],a:'Hangi çayı istersin?'}]},
+{id:'G15',ico:'📍',cat:'Suffixes',title:'-ki / -DAki & -(I)ncI — that one there, ordinals (Ü6)',
+ body:`<p><b>-DAki</b> turns a location into an adjective: Duvar<b>daki</b> saat bozuk (the clock ON THE WALL). Dün<b>kü</b> ders çok eğlenceliydi (yesterday's lesson).</p>
+<p><b>-(I)ncI</b> makes ordinals: bir<b>inci</b>, iki<b>nci</b>, üç<b>üncü</b>, dörd<b>üncü</b>… Onlar sekiz<b>inci</b> katta oturuyor.</p>`,
+ qs:[{q:'“the clock on the wall” =',opts:['duvardaki saat','duvarda saat','duvarki saat','duvardan saat'],a:'duvardaki saat'},
+     {q:'“eighth floor” =',opts:['sekizinci kat','sekiz katı','sekizli kat','sekizinci katı kat'],a:'sekizinci kat'},
+     {q:'“yesterday\'s lesson” =',opts:['dünkü ders','dündeki ders','dünden ders','dünlü ders'],a:'dünkü ders'}]},
+{id:'G16',ico:'↔️',cat:'Suffixes',title:'-DAn ... -A kadar — from ... to (Ü4)',
+ body:`<p><b>-DAn ... -A kadar</b> marks a span: Her gün sabah dokuz<b>dan</b> akşam altı<b>ya kadar</b> çalışıyorum (from 9 to 6). Pazar<b>dan</b> ev<b>e kadar</b> yürüdüm.</p>
+<p>Also with places: Ankara<b>dan</b> İstanbul<b>a kadar</b> üç saat.</p>`,
+ qs:[{q:'“from 9 to 6” =',opts:['dokuzdan altıya kadar','dokuzda altıda','dokuzla altıyla','dokuzu altıyı'],a:'dokuzdan altıya kadar'},
+     {q:'“from the market to home” =',opts:['pazardan eve kadar','pazarda evde','pazara evden','pazarı evi'],a:'pazardan eve kadar'},
+     {q:'kadar takes which case before it?',opts:['-DAn ... -A','-DA ... -DA','-I ... -I','-lA ... -lA'],a:'-DAn ... -A'}]}
 ];
 
 /* ===== Reading corner — A1 micro-stories with comprehension checks ===== */
@@ -2782,22 +2774,22 @@ const PLAN28=[
 {w:1,t:'Sayılar & çokluk',bk:'Ü1C Selamlaşma',wb:'ÇK s.13–15',acts:['U3','G2','SL'],goal:'Count 1–20 · “iki kitap” rule perfect'},
 {w:1,t:'Ünite 1 tekrar',bk:'Ü1 tekrar',wb:'ÇK s.16–17',acts:['BL','MP','FL'],goal:'Workbook Ü1 finished · bu/şu/o instant'},
 {w:1,t:'Ailem ve ben',bk:'Ü2A Ailem ve Ben',wb:'ÇK s.18–21',acts:['U4','G3'],goal:'Present 4 family members: “Bu annem…”'},
-{w:1,t:'Evim & renkler',bk:'Ü2B Evim',wb:'ÇK s.22–25',acts:['U5','U12','G4','R1'],goal:'5 sentences with -DE var: “Evde iki oda var”'},
+{w:1,t:'Evim & renkler',bk:'Ü2B Evim',wb:'ÇK s.22–25',acts:['U5','U2','G4','R1'],goal:'5 sentences with -DE var: “Evde iki oda var”'},
 {w:1,t:'Şimdiki zaman + SINAV',bk:'Ü2C Adresim + tekrar',wb:'ÇK s.26–29',acts:['G7','SB','E1'],goal:'PASS E1 (8/10) · “Türkçe öğreniyorum”'},
-{w:2,t:'Saat kaçta?',bk:'Ü3A Saat Kaçta?',wb:'ÇK s.30–33',acts:['U9','G14'],goal:'Tell 5 clock times aloud'},
+{w:2,t:'Saat kaçta?',bk:'Ü3A Saat Kaçta?',wb:'ÇK s.30–33',acts:['U3','G14'],goal:'Tell 5 clock times aloud'},
 {w:2,t:'Kaç lira?',bk:'Ü3B Ne Kadar? Kaç Lira?',wb:'ÇK s.34–37',acts:['U6','D3','R3'],goal:'Role-play buying 3 items with prices'},
 {w:2,t:'Dün ne yaptın? (-DI)',bk:'Ü3C Nerede? Ne Zaman?',wb:'ÇK s.38–39',acts:['G9','SL'],goal:'Yesterday in 5 sentences: “Dün markete gittim…”'},
 {w:2,t:'“ile” + tekrar',bk:'Ü3 tekrar',wb:'ÇK s.40–41',acts:['BL','FL'],goal:'“Okula otobüsle gidiyorum” + days fluent'},
-{w:2,t:'Bizim sokağımız',bk:'Ü4A Bizim Sokağımız',wb:'ÇK s.42–45',acts:['U13','D4'],goal:'Give directions: “sağa dön, düz git”'},
-{w:2,t:'-DAn -A kadar',bk:'Ü4B Ne? Nerede?',wb:'ÇK s.46–49',acts:['U14','G5'],goal:'5 sentences: “Evden okula kadar yürüyorum”'},
+{w:2,t:'Bizim sokağımız',bk:'Ü4A Bizim Sokağımız',wb:'ÇK s.42–45',acts:['U4','D4'],goal:'Give directions: “sağa dön, düz git”'},
+{w:2,t:'-DAn -A kadar',bk:'Ü4B Ne? Nerede?',wb:'ÇK s.46–49',acts:['U6','G5'],goal:'5 sentences: “Evden okula kadar yürüyorum”'},
 {w:2,t:'Gelecek zaman + SINAV',bk:'Ü4C Haftalık Plan',wb:'ÇK s.50–53',acts:['G11','SB','E2'],goal:'PASS E2 · next week in -AcAk'},
 {w:3,t:'Meslekler (-CI!)',bk:'Ü5A Meslekleri Tanıyalım',wb:'ÇK s.54–57',acts:['U19','G13'],goal:'8 professions from -CI + “Ne iş yapıyorsunuz?”'},
 {w:3,t:'Geniş zaman',bk:'Ü5B Ne Olmak İstiyorsun?',wb:'ÇK s.58–61',acts:['G8','SP'],goal:'“Her gün kahve içerim ama çay içmem”'},
-{w:3,t:'Hobiler & vücut',bk:'Ü5C Hobilerim',wb:'ÇK s.62–63',acts:['U11','D5'],goal:'3 hobbies + “Başım ağrıyor” sentences'},
+{w:3,t:'Hobiler & vücut',bk:'Ü5C Hobilerim',wb:'ÇK s.62–63',acts:['U5','D5'],goal:'3 hobbies + “Başım ağrıyor” sentences'},
 {w:3,t:'Ad tamlamaları',bk:'Ü5 tekrar (tamlamalar!)',wb:'ÇK s.64–65',acts:['SL','BL'],goal:'10 compounds: “okul çantası, Ali’nin evi”'},
 {w:3,t:'Yolculuk nereye?',bk:'Ü6A Yolculuk Nereye?',wb:'ÇK s.66–69',acts:['U21','R2'],goal:'Book a ticket aloud + “Kaçıncı peron?”'},
-{w:3,t:'Trafikte (-DAki)',bk:'Ü6B Trafikte',wb:'ÇK s.70–73',acts:['U14','SB'],goal:'5 sentences with -ki/-DAki: “duraktaki adam”'},
-{w:3,t:'Hava durumu + SINAV',bk:'Ü6C Bugün Hava Nasıl?',wb:'ÇK s.74–77',acts:['U10','D6','R4','E3'],goal:'PASS E3 · 4-season weather report'},
+{w:3,t:'Trafikte (-DAki)',bk:'Ü6B Trafikte',wb:'ÇK s.70–73',acts:['U6','SB'],goal:'5 sentences with -ki/-DAki: “duraktaki adam”'},
+{w:3,t:'Hava durumu + SINAV',bk:'Ü6C Bugün Hava Nasıl?',wb:'ÇK s.74–77',acts:['U6','D6','R4','E3'],goal:'PASS E3 · 4-season weather report'},
 {w:4,t:'Telefon',bk:'Ü7A Telefon',wb:'ÇK s.78–81',acts:['SP','FL'],goal:'Phone script aloud: “Alo! … görüşmek üzere”'},
 {w:4,t:'Karşılaştırma',bk:'Ü7B Bilgisayar ve İnternet',wb:'ÇK s.82–85',acts:['G12','FL'],goal:'“Tren otobüsten daha hızlı. En hızlı uçak.”'},
 {w:4,t:'Bence… / -DEn beri',bk:'Ü7C Yüz Yüze',wb:'ÇK s.86–89',acts:['MP','BL'],goal:'“İki aydır Türkçe öğreniyorum”'},
@@ -2977,7 +2969,7 @@ function glQuiz(g,qi,score){
 }
 
 /* 🗺️ Journey map — the tree becomes a road across Turkey */
-const CITIES={0:'🏡 Köy',7:'🌊 Bursa',14:'🏛️ Ankara',20:'🎈 Kapadokya',28:'🕌 İstanbul'};
+const CITIES={0:'🏡 Köy',5:'🌊 Bursa',10:'🏛️ Ankara',15:'🎈 Kapadokya',21:'🕌 İstanbul'};
 function renderJourney(){
   let pts=[],nodes='';
   UNITS.forEach((u,i)=>{
@@ -2989,7 +2981,7 @@ function renderJourney(){
     if(CITIES[i])nodes+=`<text class="jcity" x="${x}" y="${y-22}" text-anchor="middle">${CITIES[i]}</text>`;
     if(cur)nodes+=`<text class="jyou" x="${x}" y="${y+34}" text-anchor="middle">📍 Buradasın</text>`;
   });
-  const W=36+29*46;
+  const W=36+UNITS.length*46;
   $('#journey').innerHTML=`<svg viewBox="0 0 ${W} 148" style="min-width:${W}px;height:148px;display:block">
     <polyline points="${pts.join(' ')}" class="jroad"/>${nodes}</svg>`;
   $$('#journey .jn').forEach(el=>el.onclick=()=>{
